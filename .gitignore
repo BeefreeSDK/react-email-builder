@@ -1,0 +1,32 @@
+# dependencies
+node_modules
+
+# testing
+coverage
+
+# production
+dist
+build
+
+# misc
+.DS_Store
+npm-debug.log
+yarn-error.log
+.yalc
+yalc.lock
+
+# Environments
+.env
+.env.*
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.idea/
+
+#except
+!.env.sample
