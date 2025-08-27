@@ -2,19 +2,18 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 
 const App = () => {
-    return (
-        <div>
-            <h1>Hello from React!</h1>
-            <p>Welcome to my React application</p>
-        </div>
-    );
-};
-
+  return (
+    <div>
+      <h1>Beefree SDK React Demo</h1>
+      <p>Welcome to the Beefree SDK React Demo</p>
+    </div>
+  )
+}
 
 const container = document.getElementById('root')
 const root = createRoot(container)
 root.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
 )

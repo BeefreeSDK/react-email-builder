@@ -15,6 +15,12 @@ yarn-error.log
 .yalc
 yalc.lock
 
+# example
+example/index.js
+example/index.es.js
+example/index.js.map
+example/index.es.js.map
+
 # Environments
 .env
 .env.*
