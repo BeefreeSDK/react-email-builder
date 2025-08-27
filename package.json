@@ -10,7 +10,9 @@
   "private": true,
   "scripts": {
     "build": "rollup -c",
-    "start": "rollup -c -w"
+    "start": "rollup -c -w",
+    "pretest": "yarn install",
+    "test": "yarn pretest && jest --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.28.3",
@@ -22,6 +24,15 @@
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-replace": "^6.0.2",
+    "@stylistic/eslint-plugin": "^5.2.3",
+    "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.3.0",
     "husky": "^9.1.7",
     "jest": "^30.0.5",
     "lint-staged": "^16.1.5",
