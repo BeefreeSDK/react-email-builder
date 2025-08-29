@@ -1,18 +1,20 @@
-/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/naming-convention */
-const path = require('path')
-const typescriptParser = require('@typescript-eslint/parser')
-const globals = require('globals')
-const typescriptEslintPlugin = require('@typescript-eslint/eslint-plugin')
-const stylisticPlugin = require('@stylistic/eslint-plugin')
-const reactPlugin = require('eslint-plugin-react')
-const importPlugin = require('eslint-plugin-import')
-const reactHooksPlugin = require('eslint-plugin-react-hooks')
+import { fileURLToPath } from 'node:url'
+import typescriptParser from '@typescript-eslint/parser'
+import globals from 'globals'
+import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin'
+import stylisticPlugin from '@stylistic/eslint-plugin'
+import reactPlugin from 'eslint-plugin-react'
+import importPlugin from 'eslint-plugin-import'
+import reactHooksPlugin from 'eslint-plugin-react-hooks'
+
+const tsconfigPath = fileURLToPath(new URL('./tsconfig.json', import.meta.url))
+
 
 const eslintConfig = [{
   languageOptions: {
     parser: typescriptParser,
     parserOptions: {
-      project: path.resolve(__dirname, './tsconfig.eslint.json'),
+      project: tsconfigPath,
     },
     globals: {
       ...globals.jest,
@@ -34,7 +36,7 @@ const eslintConfig = [{
   },
   files: ['src/**/*.[jt]s*(x)', '*.config.[jt]s', '.storybook/**/*.[jt]s*(x)'],
   rules: {
-    ...stylisticPlugin.configs['recommended-extends'].rules,
+    ...stylisticPlugin.configs.recommended.rules,
     ...typescriptEslintPlugin.configs['eslint-recommended'].rules,
     ...typescriptEslintPlugin.configs.recommended.rules,
     ...reactPlugin.configs.recommended.rules,
@@ -42,4 +44,4 @@ const eslintConfig = [{
   },
 }]
 
-module.exports = eslintConfig
+export default eslintConfig

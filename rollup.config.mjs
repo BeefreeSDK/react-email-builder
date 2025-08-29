@@ -3,9 +3,8 @@ import babel from '@rollup/plugin-babel'
 import nodeResolve from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
 import devServer from 'rollup-plugin-serve'
+import dotenv from "rollup-plugin-dotenv"
 // import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-
-import pkg from './package.json' with { type: 'json' }
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -22,6 +21,7 @@ const commonPlugins = [
     presets: ['@babel/preset-react', '@babel/preset-typescript'],
     plugins: production ? ["@babel/plugin-transform-runtime"] : []
   }),
+  dotenv()
 ]
 
 const distConfig = {

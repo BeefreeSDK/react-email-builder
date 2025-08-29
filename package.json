@@ -45,6 +45,7 @@
     "lint-staged": "^16.1.5",
     "rimraf": "^6.0.1",
     "rollup": "^4.47.1",
+    "rollup-plugin-dotenv": "^0.5.1",
     "rollup-plugin-dts": "^6.2.3",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^3.0.0",
