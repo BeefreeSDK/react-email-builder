@@ -34,7 +34,7 @@ const eslintConfig = [{
     'react-hooks': reactHooksPlugin,
     import: importPlugin,
   },
-  files: ['src/**/*.[jt]s*(x)', '*.config.[jt]s', '.storybook/**/*.[jt]s*(x)'],
+  files: ['src/**/*.[jt]s*(x)', 'example/**/*.[jt]s*(x)', '*.config.[jt]s', '.storybook/**/*.[jt]s*(x)'],
   rules: {
     ...stylisticPlugin.configs.recommended.rules,
     ...typescriptEslintPlugin.configs['eslint-recommended'].rules,
