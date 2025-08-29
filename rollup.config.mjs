@@ -12,14 +12,15 @@ const production = !process.env.ROLLUP_WATCH;
 const commonPlugins = [
   // peerDepsExternal(), // TODO: commented for now, check if needed
   nodeResolve({
-    extensions: ['.ts', '.tsx']
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   }),
   commonjs(),
   babel({
-    babelHelpers: 'runtime',
+    babelHelpers: production ? 'runtime' : 'bundled',
     exclude: 'node_modules/**',
-    extensions: ['.ts', '.tsx'],
-    presets: ['@babel/preset-react', '@babel/preset-typescript']
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    presets: ['@babel/preset-react', '@babel/preset-typescript'],
+    plugins: production ? ["@babel/plugin-transform-runtime"] : []
   }),
 ]
 
@@ -27,17 +28,17 @@ const distConfig = {
   input: 'src/index.ts',
   output: [{
     file: 'dist/index.js',
-    sourcemap: false,
+    sourcemap: !production,
     name: 'index',
     format: 'cjs',
   }, {
     file: 'dist/index.es.js',
-    sourcemap: false,
+    sourcemap: !production,
     name: 'index',
     format: 'es',
   }],
-  external: [/@babel\/runtime/, production && 'react'],
-  plugins: [...commonPlugins]
+  external: [/@babel\/runtime/, ...(production ? ['react', '@beefree.io/sdk'] : [])],
+  plugins: [...commonPlugins, ]
 }
 
 const exampleConfig = {
@@ -46,9 +47,9 @@ const exampleConfig = {
     file: 'example/index.js',
     sourcemap: true,
     name: 'example',
-    format: 'iife'
+    format: 'iife',
   },
-  external: [/@babel\/runtime/, production && 'react'],
+  external: [/@babel\/runtime/],
   plugins: [
     ...commonPlugins,
     replace({
@@ -66,5 +67,5 @@ const exampleConfig = {
 
 export default [
   distConfig,
-  !production && exampleConfig,
+  ...production ? [] : [exampleConfig],
 ]
