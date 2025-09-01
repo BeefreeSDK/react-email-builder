@@ -4,6 +4,7 @@ import nodeResolve from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
 import devServer from 'rollup-plugin-serve'
 import dotenv from "rollup-plugin-dotenv"
+import livereload from "rollup-plugin-livereload";
 // import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -37,7 +38,7 @@ const distConfig = {
     name: 'index',
     format: 'es',
   }],
-  external: [/@babel\/runtime/, ...(production ? ['react', '@beefree.io/sdk'] : [])],
+  external: [/@babel\/runtime/, 'react', '@beefree.io/sdk'],
   plugins: [...commonPlugins, ]
 }
 
@@ -49,11 +50,10 @@ const exampleConfig = {
     name: 'example',
     format: 'iife',
   },
-  external: [/@babel\/runtime/],
   plugins: [
     ...commonPlugins,
     replace({
-      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+      'process.env.NODE_ENV': JSON.stringify('development'),
       preventAssignment: true
     }),
     devServer({
@@ -61,7 +61,8 @@ const exampleConfig = {
       contentBase: ['example'],
       host: 'localhost',
       port: 3003
-    })
+    }),
+    livereload(['dist', 'example/index.js']),
   ]
 }
 

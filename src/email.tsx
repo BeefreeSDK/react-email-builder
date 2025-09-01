@@ -1,24 +1,7 @@
-import React, { createContext, useContext, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
-
-export function useBuilder() {
-  const ctx = useContext(BuilderContext)
-  if (!ctx) {
-    throw new Error('useBuilder must be used inside a <Builder />')
-  }
-  return ctx
-}
-
-export function useBuilderActions() {
-  const builder = useBuilder()
-  return {
-    load: (...args) => builder.load(...args),
-    loadConfig: (...args) => builder.loadConfig(...args),
-    save: (...args) => builder.save(...args),
-  }
-}
-const BuilderContext = createContext(null)
+import { builderRegistry } from './registry'
 
 const EmailBuilder = (props: {
   config: IBeeConfig
@@ -26,9 +9,11 @@ const EmailBuilder = (props: {
   token?: IToken
   shared?: boolean
   type?: string // potentially used with no-auth-sdk-editor
-  children?: React.ReactNode
 }) => {
-  const { config, children } = props
+  const { config } = props
+
+  const [shouldRender, setShouldRender] = useState(true)
+
   // instance is created only once for this component
   const instanceRef = useRef(null)
 
@@ -38,9 +23,19 @@ const EmailBuilder = (props: {
     })
   }
 
-  const beeInstance = instanceRef.current
+  useEffect(() => {
+    builderRegistry.set(config.container, instanceRef.current)
 
-  console.log(`%csf: email - EmailBuilder ->`, `color:${'#00ff00'}`, { beeInstance })
+    if (builderRegistry.size > 1) {
+      setShouldRender(false)
+    }
+
+    return () => {
+      builderRegistry.delete(config.container)
+    }
+  }, [config.container])
+
+  const beeInstance = instanceRef.current
 
   beeInstance.UNSAFE_getToken(
     process.env.SDK_CLIENT_ID,
@@ -49,17 +44,14 @@ const EmailBuilder = (props: {
     {
       authUrl: 'https://pre-bee-auth.getbee.info/loginV2',
     }).then(() => {
-    beeInstance.start(config, {}).then((instance) => {
-      console.log(`%csf: email -  ->`, `color:${'#00ff00'}`, { instance })
-    })
+    beeInstance.start(config, {})
   })
 
-  return (
-    <BuilderContext.Provider value={instanceRef.current}>
-      <div id={config.container} style={{ height: '800px' }}>Email Builder</div>
-      {children}
-    </BuilderContext.Provider>
-  )
+  return shouldRender
+    ? (
+        <div id={config.container} style={{ height: '800px' }}>Email Builder</div>
+      )
+    : <></>
 }
 
 export default EmailBuilder
