@@ -1,15 +1,15 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
+import { Controls } from './Controls'
 import EmailBuilder, { useBuilder } from '../dist/index.es'
-import BeefreeSDK from '@beefree.io/sdk'
 
 const names = ['pippo', 'pluto', 'paperino', 'topolino', 'minnie', 'qui', 'quo', 'qua']
 
 export const App = () => {
-  const builderRef = useRef<BeefreeSDK>(null)
   const [users, setUsers] = useState<string[]>([names[0]])
   const [debug, setDebug] = useState<boolean>(false)
   const [savedRows, setSavedRows] = useState([])
-  const { save: saveHtml } = useBuilder(builderRef)
+  const { save: saveHtml } = useBuilder()
+
   const handleSave = () => {
     saveHtml()
   }
@@ -109,6 +109,7 @@ export const App = () => {
           },
         ],
       },
+      username: 'Tester',
     })
   }, [getMentionsHandler, getRowsHandler, saveRowHandler, debug, errorHandler, warningHandler])
 
@@ -121,8 +122,8 @@ export const App = () => {
       <input id="debug_chk" type="checkbox" checked={debug} onChange={e => setDebug(e.target.checked)} />
       <label htmlFor="debug_chk">Debug</label>
       <div id="email-builder">
+        <Controls />
         <EmailBuilder
-          ref={builderRef}
           config={config}
           template={{
             data: {

@@ -1,7 +1,11 @@
-import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
-import { BEEPLUGIN_URL, BEE_AUTH_URL, DEFAULT_ID } from './constants'
+import { BEE_AUTH_URL, BEEPLUGIN_URL, DEFAULT_ID } from './constants'
+import {
+  addBuilderToRegistry,
+  removeBuilderFromRegistry,
+} from './hooks/useRegistry'
 
 interface IEmailBuilderProps {
   config: IBeeConfig
@@ -11,29 +15,40 @@ interface IEmailBuilderProps {
   type?: string // potentially used with no-auth-sdk-editor
   width?: React.CSSProperties['width']
   height?: React.CSSProperties['height']
+  onError?: (error: Error) => void
 }
 
-const EmailBuilder = forwardRef((props: IEmailBuilderProps, ref: ForwardedRef<BeefreeSDK>) => {
+const EmailBuilder = (props: IEmailBuilderProps) => {
+  const { config: configFromProps, onError } = props
+
   const config = useMemo(() => ({
-    ...props.config,
-    container: props.config.container || DEFAULT_ID,
-  }), [props.config])
+    ...configFromProps,
+    container: configFromProps.container || DEFAULT_ID,
+    onError: onError || configFromProps.onError,
+    onLoad: () => {
+      // setEditorReady(true)
+    },
+  }), [configFromProps, onError])
   const container = config.container
   const [editorReady, setEditorReady] = useState(false)
 
   // instance is created only once for this component
   const instanceRef = useRef<BeefreeSDK>(null)
 
-  useImperativeHandle(ref, () => ({
-    // TODO: Map only needed methods
-    ...instanceRef.current,
-  }))
-
   useEffect(() => {
     if (editorReady) {
       instanceRef.current.loadConfig(config)
     }
   }, [config, editorReady])
+
+  useEffect(() => {
+    if (editorReady) {
+      addBuilderToRegistry(config.container, instanceRef.current)
+    }
+    return () => {
+      removeBuilderFromRegistry(config.container)
+    }
+  }, [config.container, editorReady])
 
   if (instanceRef.current === null) {
     instanceRef.current = new BeefreeSDK(undefined, {
@@ -63,11 +78,8 @@ const EmailBuilder = forwardRef((props: IEmailBuilderProps, ref: ForwardedRef<Be
         width: props.width || '100%',
       }}
     >
-      Email Builder
     </div>
   )
-})
-
-EmailBuilder.displayName = 'EmailBuilder'
+}
 
 export default EmailBuilder
