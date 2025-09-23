@@ -1,18 +1,42 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Controls } from './Controls'
-import EmailBuilder, { useBuilder } from '../dist/index.es'
+import EmailBuilder from '../dist/index.es'
+import { IToken } from '@beefree.io/sdk/dist/types/bee'
+import { BEE_AUTH_URL } from '../src/constants'
 
 const names = ['pippo', 'pluto', 'paperino', 'topolino', 'minnie', 'qui', 'quo', 'qua']
 
+const getToken = async (uid?: string) => {
+  /**
+   * ************************************************************
+   *                      !!!! WARNING !!!!                     *
+   *                                                            *
+   *  This is done on the frontend to get the example working.  *
+   *  You must set up a backend server to perform the login.    *
+   *  Otherwise, your credentials will be at risk!              *
+   *                                                            *
+   * ************************************************************
+   */
+  const response = await fetch(BEE_AUTH_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_id: process.env.SDK_CLIENT_ID,
+      client_secret: process.env.SDK_CLIENT_SECRET,
+      uid: uid || 'demo-user',
+    }),
+  })
+  return response.json()
+}
+
 export const App = () => {
   const [users, setUsers] = useState<string[]>([names[0]])
-  const [debug, setDebug] = useState<boolean>(false)
   const [savedRows, setSavedRows] = useState([])
-  const { save: saveHtml } = useBuilder()
+  const [token, setToken] = useState<IToken>()
 
-  const handleSave = () => {
-    saveHtml()
-  }
+  useEffect(() => {
+    getToken().then(token => setToken(token))
+  }, [])
 
   const handleUsers = () => {
     if (users.length < names.length) setUsers(prevUsers => [...prevUsers, names[prevUsers.length]])
@@ -83,9 +107,6 @@ export const App = () => {
           handler: saveRowHandler,
         },
       },
-      debug: {
-        all: debug,
-      },
       onSaveRow: onSaveRowHandler,
       onError: errorHandler,
       onWarning: warningHandler,
@@ -111,27 +132,29 @@ export const App = () => {
       },
       username: 'Tester',
     })
-  }, [getMentionsHandler, getRowsHandler, saveRowHandler, debug, errorHandler, warningHandler])
+  }, [getMentionsHandler, getRowsHandler, saveRowHandler, errorHandler, warningHandler])
 
   return (
     <>
       <h1>Beefree SDK React Demo</h1>
       <p>Welcome to the Beefree SDK React Demo</p>
-      <button onClick={handleSave}>Save</button>
       <button onClick={handleUsers}>Update users</button>
-      <input id="debug_chk" type="checkbox" checked={debug} onChange={e => setDebug(e.target.checked)} />
-      <label htmlFor="debug_chk">Debug</label>
       <div id="email-builder">
         <Controls />
-        <EmailBuilder
-          config={config}
-          template={{
-            data: {
-              json: undefined,
-              version: 0,
-            },
-          }}
-        />
+        { token
+          ? (
+              <EmailBuilder
+                config={config}
+                template={{
+                  data: {
+                    json: {},
+                    version: 0,
+                  },
+                }}
+                token={token}
+              />
+            )
+          : <></>}
       </div>
     </>
   )

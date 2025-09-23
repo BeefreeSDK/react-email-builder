@@ -10,7 +10,7 @@ import {
 interface IEmailBuilderProps {
   config: IBeeConfig
   template: ITemplateJson
-  token?: IToken
+  token: IToken
   shared?: boolean
   type?: string // potentially used with no-auth-sdk-editor
   width?: React.CSSProperties['width']
@@ -19,15 +19,12 @@ interface IEmailBuilderProps {
 }
 
 const EmailBuilder = (props: IEmailBuilderProps) => {
-  const { config: configFromProps, onError } = props
+  const { config: configFromProps, onError, token, template, width, height } = props
 
   const config = useMemo(() => ({
     ...configFromProps,
     container: configFromProps.container || DEFAULT_ID,
     onError: onError || configFromProps.onError,
-    onLoad: () => {
-      // setEditorReady(true)
-    },
   }), [configFromProps, onError])
   const container = config.container
   const [editorReady, setEditorReady] = useState(false)
@@ -51,22 +48,16 @@ const EmailBuilder = (props: IEmailBuilderProps) => {
   }, [config.container, editorReady])
 
   if (instanceRef.current === null) {
-    instanceRef.current = new BeefreeSDK(undefined, {
+    if (!token) {
+      throw new Error(`Can't start the builder without a token`)
+    }
+    instanceRef.current = new BeefreeSDK(token, {
       beePluginUrl: BEEPLUGIN_URL,
     })
     const beeInstance = instanceRef.current
-    // TODO: we shouldn't call this internally
-    beeInstance.UNSAFE_getToken(
-      process.env.SDK_CLIENT_ID,
-      process.env.SDK_CLIENT_SECRET,
-      'test',
-      {
-        authUrl: BEE_AUTH_URL,
-      }).then(() => {
-      void beeInstance.start(config, props.template ?? {}).then(() => {
-        // TODO: Verify if it's better in the onLoad callback
-        setEditorReady(true)
-      })
+    void beeInstance.start(config, template ?? {}).then(() => {
+      // TODO: Verify if it's better in the onLoad callback
+      setEditorReady(true)
     })
   }
 
@@ -74,8 +65,8 @@ const EmailBuilder = (props: IEmailBuilderProps) => {
     <div
       id={container}
       style={{
-        height: props.height || '800px',
-        width: props.width || '100%',
+        height: height || '800px',
+        width: width || '100%',
       }}
     >
     </div>
