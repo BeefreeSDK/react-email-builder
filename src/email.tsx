@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
-import { BEE_AUTH_URL, BEEPLUGIN_URL, DEFAULT_ID } from './constants'
+import { BEEPLUGIN_URL, DEFAULT_ID } from './constants'
 import {
   addBuilderToRegistry,
   removeBuilderFromRegistry,
@@ -16,16 +16,19 @@ interface IEmailBuilderProps {
   width?: React.CSSProperties['width']
   height?: React.CSSProperties['height']
   onError?: (error: Error) => void
+  onSessionStarted?: (_: { sessionId: string }) => void
+  sessionId?: string
 }
 
 const EmailBuilder = (props: IEmailBuilderProps) => {
-  const { config: configFromProps, onError, token, template, width, height } = props
+  const { config: configFromProps, onError, token, template, width, height, shared, sessionId, onSessionStarted } = props
 
   const config = useMemo(() => ({
     ...configFromProps,
     container: configFromProps.container || DEFAULT_ID,
     onError: onError || configFromProps.onError,
-  }), [configFromProps, onError])
+    onSessionStarted: onSessionStarted || configFromProps.onSessionStarted,
+  }), [configFromProps, onError, onSessionStarted])
   const container = config.container
   const [editorReady, setEditorReady] = useState(false)
 
@@ -55,10 +58,17 @@ const EmailBuilder = (props: IEmailBuilderProps) => {
       beePluginUrl: BEEPLUGIN_URL,
     })
     const beeInstance = instanceRef.current
-    void beeInstance.start(config, template ?? {}).then(() => {
-      // TODO: Verify if it's better in the onLoad callback
-      setEditorReady(true)
-    })
+
+    if (shared && sessionId) {
+      void beeInstance.join(config, sessionId).then(() => {
+        setEditorReady(true)
+      })
+    }
+    else {
+      void beeInstance.start(config, template ?? {}, undefined, { shared }).then(() => {
+        setEditorReady(true)
+      })
+    }
   }
 
   return (

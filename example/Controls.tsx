@@ -20,15 +20,11 @@ export const Controls = ({ id }: { id?: string }) => {
   }
 
   return (
-    <>
-      <div>
-        CONTROLS
-        {' ' + id}
-      </div>
+    <div style={{ marginTop: 20, padding: 10, backgroundColor: '#ccc' }}>
       <button onClick={handleSaveJson}>Save JSON</button>
       <button onClick={handleSaveHtml}>Save HTML</button>
       <input id={'debug_chk_' + id} type="checkbox" checked={debug} onChange={e => setDebug(e.target.checked)} />
       <label htmlFor={'debug_chk_' + id}>Debug</label>
-    </>
+    </div>
   )
 }

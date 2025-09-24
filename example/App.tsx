@@ -33,6 +33,11 @@ export const App = () => {
   const [users, setUsers] = useState<string[]>([names[0]])
   const [savedRows, setSavedRows] = useState([])
   const [token, setToken] = useState<IToken>()
+  const [isShared, setIsShared] = useState<boolean>(false)
+  const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
+  const [sessionId, setSessionId] = useState<string | null>(null)
+
+  console.log(`%csf: App - App ->`, `color:${'#00ff00'}`, { sessionId })
 
   useEffect(() => {
     getToken().then(token => setToken(token))
@@ -139,20 +144,35 @@ export const App = () => {
       <h1>Beefree SDK React Demo</h1>
       <p>Welcome to the Beefree SDK React Demo</p>
       <button onClick={handleUsers}>Update users</button>
+      <input id="shared_chk" type="checkbox" checked={isShared} onChange={e => setIsShared(e.target.checked)} />
+      <label htmlFor="shared_chk">Shared session</label>
+      <button onClick={() => setIsEditorStarted(wasShared => !wasShared)}>Toggle builder</button>
       <div id="email-builder">
-        <Controls />
-        { token
+        { token && isEditorStarted
           ? (
-              <EmailBuilder
-                config={config}
-                template={{
-                  data: {
-                    json: {},
-                    version: 0,
-                  },
-                }}
-                token={token}
-              />
+              <>
+                <Controls />
+                <EmailBuilder
+                  config={config}
+                  template={{
+                    data: {
+                      json: {},
+                      version: 0,
+                    },
+                  }}
+                  shared={isShared}
+                  onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
+                  token={token}
+                />
+                {sessionId && (
+                  <EmailBuilder
+                    config={{ ...config, container: 'bis', id: 'bis', userHandle: 'bis' }}
+                    shared={isShared}
+                    sessionId={sessionId}
+                    token={token}
+                  />
+                )}
+              </>
             )
           : <></>}
       </div>
