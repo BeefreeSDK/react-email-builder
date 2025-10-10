@@ -38,7 +38,7 @@ const distConfig = {
     name: 'index',
     format: 'es',
   }],
-  external: [/@babel\/runtime/, 'react', '@beefree.io/sdk'],
+  external: [/@babel\/runtime/, 'react'],
   plugins: [...commonPlugins, ]
 }
 
