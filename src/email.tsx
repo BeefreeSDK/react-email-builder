@@ -1,57 +1,86 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
-import { builderRegistry } from './registry'
+import { BEEPLUGIN_URL, DEFAULT_ID } from './constants'
+import {
+  addBuilderToRegistry,
+  removeBuilderFromRegistry,
+} from './hooks/useRegistry'
 
-const EmailBuilder = (props: {
+interface IEmailBuilderProps {
   config: IBeeConfig
   template: ITemplateJson
-  token?: IToken
+  token: IToken
   shared?: boolean
   type?: string // potentially used with no-auth-sdk-editor
-}) => {
-  const { config } = props
+  width?: React.CSSProperties['width']
+  height?: React.CSSProperties['height']
+  onError?: (error: Error) => void
+  onSessionStarted?: (_: { sessionId: string }) => void
+  sessionId?: string
+}
 
-  const [shouldRender, setShouldRender] = useState(true)
+const EmailBuilder = (props: IEmailBuilderProps) => {
+  const { config: configFromProps, onError, token, template, width, height, shared, sessionId, onSessionStarted } = props
+
+  const config = useMemo(() => ({
+    ...configFromProps,
+    container: configFromProps.container || DEFAULT_ID,
+    onError: onError || configFromProps.onError,
+    onSessionStarted: onSessionStarted || configFromProps.onSessionStarted,
+  }), [configFromProps, onError, onSessionStarted])
+  const container = config.container
+  const [editorReady, setEditorReady] = useState(false)
 
   // instance is created only once for this component
-  const instanceRef = useRef(null)
-
-  if (instanceRef.current === null) {
-    instanceRef.current = new BeefreeSDK(undefined, {
-      beePluginUrl: 'https://pre-bee-app-rsrc.s3.amazonaws.com/plugin/v2/BeePlugin.js',
-    })
-  }
+  const instanceRef = useRef<BeefreeSDK>(null)
 
   useEffect(() => {
-    builderRegistry.set(config.container, instanceRef.current)
-
-    if (builderRegistry.size > 1) {
-      setShouldRender(false)
+    if (editorReady) {
+      instanceRef.current.loadConfig(config)
     }
+  }, [config, editorReady])
 
+  useEffect(() => {
+    if (editorReady) {
+      addBuilderToRegistry(config.container, instanceRef.current)
+    }
     return () => {
-      builderRegistry.delete(config.container)
+      removeBuilderFromRegistry(config.container)
     }
-  }, [config.container])
+  }, [config.container, editorReady])
 
-  const beeInstance = instanceRef.current
+  if (instanceRef.current === null) {
+    if (!token) {
+      throw new Error(`Can't start the builder without a token`)
+    }
+    instanceRef.current = new BeefreeSDK(token, {
+      beePluginUrl: BEEPLUGIN_URL,
+    })
+    const beeInstance = instanceRef.current
 
-  beeInstance.UNSAFE_getToken(
-    process.env.SDK_CLIENT_ID,
-    process.env.SDK_CLIENT_SECRET,
-    'test',
-    {
-      authUrl: 'https://pre-bee-auth.getbee.info/loginV2',
-    }).then(() => {
-    beeInstance.start(config, {})
-  })
+    if (shared && sessionId) {
+      void beeInstance.join(config, sessionId).then(() => {
+        setEditorReady(true)
+      })
+    }
+    else {
+      void beeInstance.start(config, template ?? {}, undefined, { shared }).then(() => {
+        setEditorReady(true)
+      })
+    }
+  }
 
-  return shouldRender
-    ? (
-        <div id={config.container} style={{ height: '800px' }}>Email Builder</div>
-      )
-    : <></>
+  return (
+    <div
+      id={container}
+      style={{
+        height: height || '800px',
+        width: width || '100%',
+      }}
+    >
+    </div>
+  )
 }
 
 export default EmailBuilder

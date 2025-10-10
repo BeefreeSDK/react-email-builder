@@ -1,19 +1,37 @@
-import { builderRegistry } from '../registry'
-import { useEffect, useRef } from 'react'
+import { useRegistry } from './useRegistry'
+import { DEFAULT_ID } from '../constants'
+import BeefreeSDK from '@beefree.io/sdk'
+import { useEffect, useRef, useState } from 'react'
 
-export const useBuilder = (id: string) => {
-  const instanceRef = useRef(builderRegistry.get(id))
+export const useBuilder = (id = DEFAULT_ID) => {
+  const [builderRegistry, builderRegistryVersion] = useRegistry()
+  const startVersion = useRef<number>(builderRegistryVersion)
+  const [instance, setInstance] = useState<BeefreeSDK>(builderRegistry.get(id))
 
   useEffect(() => {
-    instanceRef.current = instanceRef.current ?? builderRegistry.get(id)
-    if (!instanceRef.current) {
-      throw new Error(`No Builder found with id "${id}"`)
+    if (startVersion.current < builderRegistryVersion) {
+      const instanceToRegister = builderRegistry.get(id)
+
+      setInstance((prevInstance) => {
+        // Do not re-render hook listeners if the instance didn't change
+        return prevInstance === instanceToRegister
+          ? prevInstance
+          : instanceToRegister
+      })
+
+      // If the instance is not found in registry it means there's no instance with that `id`
+      if (!instanceToRegister) {
+        throw new Error(`No Builder found with id "${id}".
+          Make sure to pass the correct id (same as config.container) to the \`useBuilder\` hook
+          or to not set the config.container so the hook gets the correct id automatically. `)
+      }
     }
-  }, [builderRegistry.size, id])
+  }, [builderRegistry, builderRegistryVersion, id])
 
   return {
-    load: () => instanceRef.current.load(),
-    save: () => instanceRef.current.save(),
-    saveAsTemplate: () => instanceRef.current.saveAsTemplate(),
+    load: instance?.load,
+    save: instance?.save,
+    saveAsTemplate: instance?.saveAsTemplate,
+    loadConfig: instance?.loadConfig,
   }
 }
