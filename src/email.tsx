@@ -1,34 +1,93 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
-import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
 import { BEEPLUGIN_URL, DEFAULT_ID } from './constants'
 import {
   addBuilderToRegistry,
   removeBuilderFromRegistry,
 } from './hooks/useRegistry'
+import { EmailBuilderPropsWithCallbacks } from './types'
 
-interface IEmailBuilderProps {
-  config: IBeeConfig
-  template: ITemplateJson
-  token: IToken
-  shared?: boolean
-  type?: string // potentially used with no-auth-sdk-editor
-  width?: React.CSSProperties['width']
-  height?: React.CSSProperties['height']
-  onError?: (error: Error) => void
-  onSessionStarted?: (_: { sessionId: string }) => void
-  sessionId?: string
-}
-
-const EmailBuilder = (props: IEmailBuilderProps) => {
-  const { config: configFromProps, onError, token, template, width, height, shared, sessionId, onSessionStarted } = props
+const EmailBuilder = (props: EmailBuilderPropsWithCallbacks) => {
+  const {
+    config: configFromProps,
+    token,
+    template,
+    width,
+    height,
+    shared,
+    sessionId,
+    // Callbacks
+    onLoad = configFromProps.onLoad,
+    onPreview = configFromProps.onPreview,
+    onTogglePreview = configFromProps.onTogglePreview,
+    onSessionStarted = configFromProps.onSessionStarted,
+    onSessionChange = configFromProps.onSessionChange,
+    onReady = configFromProps.onReady,
+    onSave = configFromProps.onSave,
+    onSaveRow = configFromProps.onSaveRow,
+    onError = configFromProps.onError,
+    onAutoSave = configFromProps.onAutoSave,
+    onSaveAsTemplate = configFromProps.onSaveAsTemplate,
+    onStart = configFromProps.onStart,
+    onSend = configFromProps.onSend,
+    onChange = configFromProps.onChange,
+    onRemoteChange = configFromProps.onRemoteChange,
+    onWarning = configFromProps.onWarning,
+    onComment = configFromProps.onComment,
+    onInfo = configFromProps.onInfo,
+    onLoadWorkspace = configFromProps.onLoadWorkspace,
+    onViewChange = configFromProps.onViewChange,
+    onPreviewChange = configFromProps.onPreviewChange,
+  } = props
 
   const config = useMemo(() => ({
     ...configFromProps,
     container: configFromProps.container || DEFAULT_ID,
-    onError: onError || configFromProps.onError,
-    onSessionStarted: onSessionStarted || configFromProps.onSessionStarted,
-  }), [configFromProps, onError, onSessionStarted])
+    onLoad,
+    onPreview,
+    onTogglePreview,
+    onSessionStarted,
+    onSessionChange,
+    onReady,
+    onSave,
+    onSaveRow,
+    onError,
+    onAutoSave,
+    onSaveAsTemplate,
+    onStart,
+    onSend,
+    onChange,
+    onRemoteChange,
+    onWarning,
+    onComment,
+    onInfo,
+    onLoadWorkspace,
+    onViewChange,
+    onPreviewChange,
+  }), [
+    configFromProps,
+    onLoad,
+    onPreview,
+    onTogglePreview,
+    onSessionStarted,
+    onSessionChange,
+    onReady,
+    onSave,
+    onSaveRow,
+    onError,
+    onAutoSave,
+    onSaveAsTemplate,
+    onStart,
+    onSend,
+    onChange,
+    onRemoteChange,
+    onWarning,
+    onComment,
+    onInfo,
+    onLoadWorkspace,
+    onViewChange,
+    onPreviewChange,
+  ])
   const container = config.container
   const [editorReady, setEditorReady] = useState(false)
 

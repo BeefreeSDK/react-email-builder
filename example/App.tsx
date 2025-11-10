@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Controls } from './Controls'
-import EmailBuilder from '../dist/index.es'
 import { IToken } from '@beefree.io/sdk/dist/types/bee'
+import { Controls } from './Controls'
+import EmailBuilder, { IBeeConfig } from '../dist/index.es'
 import { BEE_AUTH_URL } from '../src/constants'
 
 const names = ['pippo', 'pluto', 'paperino', 'topolino', 'minnie', 'qui', 'quo', 'qua']
@@ -88,7 +88,11 @@ export const App = () => {
     console.log(`%c[APP] - onWarning ->`, `color:${'#fbda00'}`, warning)
   }, [])
 
-  const config = useMemo(() => {
+  const onSave2 = useCallback((...args) => {
+    console.log(`%c[APP] - onSave BIS ->`, `color:${'#00ff00'}`, args)
+  }, [])
+
+  const config: IBeeConfig = useMemo(() => {
     console.log(`%c[APP] - config ->`, `color:${'#a100ff'}`, 'config object re-created')
     return ({
       id: 'test',
@@ -102,6 +106,7 @@ export const App = () => {
       },
       contentDialog: {
         addOn: {
+          label: 'addOns',
           // FIXME: purposely made it to be recreated at every render to test the new loader
           handler: (resolve) => {
             resolve({ type: 'button', value: { text: 'Button' } })
@@ -111,6 +116,15 @@ export const App = () => {
           label: 'Save',
           handler: saveRowHandler,
         },
+      },
+      onSave: (...args) => {
+        console.log(`%c[APP] - onSave ->`, `color:${'#00ff00'}`, args)
+      },
+      onChange: (...args) => {
+        console.log(`%c[APP] - onChange ->`, `color:${'#aaf7ff'}`, args)
+      },
+      onRemoteChange: (...args) => {
+        console.log(`%c[APP] - onRemoteChange ->`, `color:${'#fff7aa'}`, args)
       },
       onSaveRow: onSaveRowHandler,
       onError: errorHandler,
@@ -165,12 +179,16 @@ export const App = () => {
                   token={token}
                 />
                 {sessionId && (
-                  <EmailBuilder
-                    config={{ ...config, container: 'bis', id: 'bis', userHandle: 'bis' }}
-                    shared={isShared}
-                    sessionId={sessionId}
-                    token={token}
-                  />
+                  <>
+                    <Controls id="bis" />
+                    <EmailBuilder
+                      config={{ ...config, container: 'bis', id: 'bis', userHandle: 'bis', onSave: () => console.log(`this won't trigger`) }}
+                      shared={isShared}
+                      sessionId={sessionId}
+                      token={token}
+                      onSave={onSave2}
+                    />
+                  </>
                 )}
               </>
             )

@@ -41,6 +41,17 @@ const eslintConfig = [{
     ...typescriptEslintPlugin.configs.recommended.rules,
     ...reactPlugin.configs.recommended.rules,
     ...reactHooksPlugin.configs.recommended.rules,
+    'import/order': ['warn', {
+      groups: [
+        'builtin',
+        'external',
+        'internal',
+        ['parent', 'sibling', 'index'],
+        'type',
+        'unknown',
+      ],
+      warnOnUnassignedImports: true,
+    }],
   },
 }]
 
