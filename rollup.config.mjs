@@ -68,13 +68,15 @@ const exampleConfig = {
       'process.env.SDK_CLIENT_SECRET': JSON.stringify(process.env.SDK_CLIENT_SECRET || ''),
       preventAssignment: true
     }),
-    devServer({
-      open: false,
-      contentBase: ['example'],
-      host: 'localhost',
-      port: 3003
-    }),
-    livereload(['dist', 'example/index.js']),
+    ...(!production ? [
+      devServer({
+        open: false,
+        contentBase: ['example'],
+        host: 'localhost',
+        port: 3003
+      }),
+      livereload(['dist', 'example/index.js']),
+    ] : [])
   ]
 }
 

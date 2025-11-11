@@ -355,8 +355,10 @@ To run the example:
 
 ```bash
 npm install
-npm run dev
+npm run start
 ```
+
+The development server will start at `http://localhost:3003`
 
 ## Development
 
