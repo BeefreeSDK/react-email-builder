@@ -5,6 +5,7 @@ import replace from '@rollup/plugin-replace'
 import devServer from 'rollup-plugin-serve'
 import dotenv from "rollup-plugin-dotenv"
 import livereload from "rollup-plugin-livereload";
+import dts from 'rollup-plugin-dts'
 // import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -42,6 +43,15 @@ const distConfig = {
   plugins: [...commonPlugins, ]
 }
 
+const typesConfig = {
+  input: 'src/index.ts',
+  output: [{
+    file: 'dist/index.d.ts',
+    format: 'es'
+  }],
+  plugins: [dts()]
+}
+
 const exampleConfig = {
   input: 'example/index.tsx',
   output: {
@@ -70,5 +80,6 @@ const exampleConfig = {
 
 export default [
   distConfig,
+  typesConfig,
   ...production ? [] : [exampleConfig],
 ]
