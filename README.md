@@ -367,7 +367,7 @@ npm run dev
 npm install
 
 # Start development server
-npm run dev
+npm run start
 
 # Run tests
 npm test
