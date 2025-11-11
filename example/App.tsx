@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { IToken } from '@beefree.io/sdk/dist/types/bee'
+import type { beeTypes } from '../dist/index.d.ts'
 import { Controls } from './Controls'
 import EmailBuilder, { IBeeConfig } from '../dist/index.es'
 import { BEE_AUTH_URL } from '../src/constants'
@@ -32,7 +32,7 @@ const getToken = async (uid?: string) => {
 export const App = () => {
   const [users, setUsers] = useState<string[]>([names[0]])
   const [savedRows, setSavedRows] = useState([])
-  const [token, setToken] = useState<IToken>()
+  const [token, setToken] = useState<beeTypes.IToken>()
   const [isShared, setIsShared] = useState<boolean>(false)
   const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
   const [sessionId, setSessionId] = useState<string | null>(null)
