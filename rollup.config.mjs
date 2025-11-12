@@ -39,7 +39,7 @@ const distConfig = {
     name: 'index',
     format: 'es',
   }],
-  external: [/@babel\/runtime/, 'react'],
+  external: [/@babel\/runtime/, 'react', 'react/jsx-runtime'],
   plugins: [...commonPlugins, ]
 }
 

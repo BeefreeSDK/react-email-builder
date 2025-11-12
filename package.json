@@ -19,11 +19,11 @@
     "test": "yarn pretest && jest --watch"
   },
   "dependencies": {
-    "@beefree.io/sdk": "9.3.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "@beefree.io/sdk": "9.4.0"
   },
   "devDependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "@babel/core": "^7.28.3",
     "@babel/plugin-transform-runtime": "^7.28.3",
     "@babel/preset-react": "^7.27.1",

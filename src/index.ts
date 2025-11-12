@@ -1,14 +1,11 @@
 import EmailBuilder from './email'
 import { useBuilder } from './hooks/useBuilder'
-import { beeTypes } from '@beefree.io/sdk'
+import BeeTypesInstance, { beeTypes } from '@beefree.io/sdk'
 
-export default EmailBuilder
-export { EmailBuilder, useBuilder, beeTypes }
+export { EmailBuilder, useBuilder, beeTypes, BeeTypesInstance }
 
 export type {
   EmailBuilderCallbacks,
   EmailBuilderProps,
-  EmailBuilderPropsWithCallbacks
+  EmailBuilderPropsWithCallbacks,
 } from './types'
-
-export { default as BeefreeSDK } from '@beefree.io/sdk'

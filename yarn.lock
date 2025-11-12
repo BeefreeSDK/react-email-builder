@@ -425,10 +425,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@beefree.io/sdk@9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@beefree.io/sdk/-/sdk-9.3.0.tgz#01db7d85368733118f0b1a988222eb8b155a1e16"
-  integrity sha512-sUl+OlaPUW5R9iITJwz0Bjlusd80m/3w90utAW+hME9yFHZIlVQq+vru0vmPumNtOb5DoytNUFExnB2HLvKwZQ==
+"@beefree.io/sdk@9.4.0":
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/@beefree.io/sdk/-/sdk-9.4.0.tgz#8168e37e33483536f4e8ec6ed52384edb40c5e83"
+  integrity sha512-Kv7dEMu4eL7/85dfbRPFc05ywlY7tS2lzloxsTD8WT55vxFImPiNXaP7lj1qC0FGPqOGo2A4ae0BUPLXZdjPHA==
   dependencies:
     fp-ts "^2.13.1"
     load-script "^2.0.0"
