@@ -1,11 +1,17 @@
 import { render } from '@testing-library/react'
 import Builder from '../Builder'
 import BeefreeSDK from '@beefree.io/sdk'
-import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
+import { IBeeConfig, ITemplateJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
 import { DEFAULT_ID } from '../constants'
 
 describe('Builder Component', () => {
-  const mockToken = 'test-token' as unknown as IToken
+  const mockToken: IToken = {
+    access_token: 'test-token',
+    coediting_session_id: 'session-id',
+    shared: false,
+    status: TokenStatus.OK,
+    v2: true,
+  }
   const mockTemplate: ITemplateJson = {
     data: {
       json: {
@@ -76,7 +82,7 @@ describe('Builder Component', () => {
 
   it('uses default container id when not provided', () => {
     const { container } = render(
-      <Builder config={{ uid: 'test-uid' } as any} token={mockToken} template={mockTemplate} />
+      <Builder config={{ uid: 'test-uid', container: '' }} token={mockToken} template={mockTemplate} />
     )
 
     expect(container.querySelector(`#${DEFAULT_ID}`)).toBeTruthy()
@@ -113,7 +119,7 @@ describe('Builder Component', () => {
 
   it('throws error when no token provided', () => {
     expect(() => {
-      render(<Builder config={mockConfig} token={null as any} template={mockTemplate} />)
+      render(<Builder config={mockConfig} token={null} template={mockTemplate} />)
     }).toThrow("Can't start the builder without a token")
   })
 })
