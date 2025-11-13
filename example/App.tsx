@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import type { IToken } from '../dist/index.d.ts'
+import { IToken, Builder, IBeeConfig } from '../dist/index.es'
 import { Controls } from './Controls'
-import EmailBuilder, { IBeeConfig } from '../dist/index.es'
-import { BEE_AUTH_URL } from '../src/constants'
 
 const names = ['pippo', 'pluto', 'paperino', 'topolino', 'minnie', 'qui', 'quo', 'qua']
 
@@ -17,7 +15,9 @@ const getToken = async (uid?: string) => {
    *                                                            *
    * ************************************************************
    */
-  const response = await fetch(BEE_AUTH_URL, {
+  const AUTH_URL = 'https://pre-bee-auth.getbee.info/loginV2'
+
+  const response = await fetch(AUTH_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -166,7 +166,7 @@ export const App = () => {
           ? (
               <>
                 <Controls />
-                <EmailBuilder
+                <Builder
                   config={config}
                   template={{
                     data: {
@@ -181,7 +181,7 @@ export const App = () => {
                 {sessionId && (
                   <>
                     <Controls id="bis" />
-                    <EmailBuilder
+                    <Builder
                       config={{ ...config, container: 'bis', id: 'bis', userHandle: 'bis', onSave: () => console.log(`this won't trigger`) }}
                       shared={isShared}
                       sessionId={sessionId}
