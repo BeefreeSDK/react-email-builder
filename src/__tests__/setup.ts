@@ -1,4 +1,3 @@
-// Mock BeefreeSDK
 jest.mock('@beefree.io/sdk', () => {
   const mockInstance = {
     start: jest.fn().mockResolvedValue(undefined),
