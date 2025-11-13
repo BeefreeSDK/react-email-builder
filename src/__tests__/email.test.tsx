@@ -1,4 +1,4 @@
-import EmailBuilder from '../email'
+import EmailBuilder from '../Builder'
 
 describe('email', () => {
   it('Should return true for valid email', () => {

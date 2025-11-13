@@ -1,13 +1,13 @@
-import EmailBuilder from './email'
+import Builder from './Builder'
 import { useBuilder } from './hooks/useBuilder'
 import BeeTypesInstance from '@beefree.io/sdk'
 
 export * from '@beefree.io/sdk/dist/types/bee'
-export { EmailBuilder, useBuilder, BeeTypesInstance }
+export { Builder, useBuilder, BeeTypesInstance }
 export type {
-  EmailBuilderCallbacks,
-  EmailBuilderProps,
-  EmailBuilderPropsWithCallbacks,
+  BuilderCallbacks,
+  BuilderProps,
+  BuilderPropsWithCallbacks,
 } from './types'
 
 // Re-export runtime values from SDK to ensure they're available in ESM bundle
