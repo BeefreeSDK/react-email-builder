@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
-import { BEEPLUGIN_URL, DEFAULT_ID } from './constants'
+import { SDK_LOADER_URL, DEFAULT_ID } from './constants'
 import {
   addBuilderToRegistry,
   removeBuilderFromRegistry,
 } from './hooks/useRegistry'
-import { EmailBuilderPropsWithCallbacks } from './types'
+import { BuilderPropsWithCallbacks } from './types'
 
-const EmailBuilder = (props: EmailBuilderPropsWithCallbacks) => {
+const Builder = (props: BuilderPropsWithCallbacks) => {
   const {
     config: configFromProps,
     token,
@@ -16,6 +16,7 @@ const EmailBuilder = (props: EmailBuilderPropsWithCallbacks) => {
     height,
     shared,
     sessionId,
+    loaderUrl,
     // Callbacks
     onLoad = configFromProps.onLoad,
     onPreview = configFromProps.onPreview,
@@ -114,7 +115,7 @@ const EmailBuilder = (props: EmailBuilderPropsWithCallbacks) => {
       throw new Error(`Can't start the builder without a token`)
     }
     instanceRef.current = new BeefreeSDK(token, {
-      beePluginUrl: BEEPLUGIN_URL,
+      beePluginUrl: loaderUrl ?? SDK_LOADER_URL,
     })
     const beeInstance = instanceRef.current
 
@@ -142,4 +143,4 @@ const EmailBuilder = (props: EmailBuilderPropsWithCallbacks) => {
   )
 }
 
-export default EmailBuilder
+export default Builder

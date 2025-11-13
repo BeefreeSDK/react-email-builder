@@ -5,6 +5,7 @@ import replace from '@rollup/plugin-replace'
 import devServer from 'rollup-plugin-serve'
 import dotenv from "rollup-plugin-dotenv"
 import livereload from "rollup-plugin-livereload";
+import dts from 'rollup-plugin-dts'
 // import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -38,8 +39,17 @@ const distConfig = {
     name: 'index',
     format: 'es',
   }],
-  external: [/@babel\/runtime/, 'react'],
+  external: [/@babel\/runtime/, 'react', 'react/jsx-runtime', '@beefree.io/sdk'],
   plugins: [...commonPlugins, ]
+}
+
+const typesConfig = {
+  input: 'src/index.ts',
+  output: [{
+    file: 'dist/index.d.ts',
+    format: 'es'
+  }],
+  plugins: [dts()]
 }
 
 const exampleConfig = {
@@ -58,17 +68,20 @@ const exampleConfig = {
       'process.env.SDK_CLIENT_SECRET': JSON.stringify(process.env.SDK_CLIENT_SECRET || ''),
       preventAssignment: true
     }),
-    devServer({
-      open: false,
-      contentBase: ['example'],
-      host: 'localhost',
-      port: 3003
-    }),
-    livereload(['dist', 'example/index.js']),
+    ...(!production ? [
+      devServer({
+        open: false,
+        contentBase: ['example'],
+        host: 'localhost',
+        port: 3003
+      }),
+      livereload(['dist', 'example/index.js']),
+    ] : [])
   ]
 }
 
 export default [
   distConfig,
+  typesConfig,
   ...production ? [] : [exampleConfig],
 ]
