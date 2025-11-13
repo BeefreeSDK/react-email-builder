@@ -354,8 +354,8 @@ Check the `/example` directory for a complete working example including:
 To run the example:
 
 ```bash
-npm install
-npm run start
+yarn install
+yarn start
 ```
 
 The development server will start at `http://localhost:3003`
@@ -366,16 +366,16 @@ The development server will start at `http://localhost:3003`
 
 ```bash
 # Install dependencies
-npm install
+yarn install
 
 # Start development server
-npm run start
+yarn start
 
 # Run tests
-npm test
+yarn test
 
 # Build library
-npm run build
+yarn build
 ```
 
 ### Project Structure
@@ -394,7 +394,7 @@ src/
 ### Building
 
 ```bash
-npm run build
+yarn build
 ```
 
 Outputs:
@@ -416,6 +416,8 @@ Make sure you have the SDK types installed:
 
 ```bash
 npm install @beefree.io/sdk
+# or
+yarn add @beefree.io/sdk
 ```
 
 ### Hook not working
@@ -441,5 +443,5 @@ For issues related to:
 ## Resources
 
 - [Beefree SDK Documentation](https://docs.beefree.io/)
-- [Beefree API Reference](https://docs.beefree.io/api-reference)
-- [Examples and Guides](https://github.com/BEE-Plugin/sdk-examples)
+- [Beefree API Reference](https://docs.beefree.io/beefree-sdk/apis)
+- [Examples and Guides](https://github.com/BeefreeSDK/beefree-sdk-examples)
