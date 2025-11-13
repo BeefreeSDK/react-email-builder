@@ -1,5 +1,5 @@
 import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
-import React from 'react'
+export type * from '@beefree.io/sdk'
 
 export interface EmailBuilderCallbacks {
   onLoad?: IBeeConfig['onLoad']
