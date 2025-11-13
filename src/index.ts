@@ -1,5 +1,35 @@
-import EmailBuilder from './email'
+import Builder from './Builder'
 import { useBuilder } from './hooks/useBuilder'
+import BeeTypesInstance from '@beefree.io/sdk'
 
-export default EmailBuilder
-export { EmailBuilder, useBuilder }
+export * from '@beefree.io/sdk/dist/types/bee'
+export { Builder, useBuilder, BeeTypesInstance }
+export type {
+  BuilderCallbacks,
+  BuilderProps,
+  BuilderPropsWithCallbacks,
+} from './types'
+
+// Re-export runtime values from SDK to ensure they're available in ESM bundle
+export {
+  StageModeOptions,
+  StageDisplayOptions,
+  SidebarTabs,
+  ExecCommands,
+  LoadWorkspaceOptions,
+  BeePluginErrorCodes,
+  OnInfoDetailHandle,
+  ModuleTypes,
+  ModuleDescriptorNames,
+  ModuleDescriptorOrderNames,
+  RowLayoutType,
+  EngageHandle,
+  OnCommentChangeEnum,
+  WorkspaceStage,
+  ContentCodes,
+  ActionCodes,
+  EventCodes,
+  BeePluginRoles,
+  TokenStatus,
+  PREVIEW_CONTROL,
+} from '@beefree.io/sdk/dist/types/bee'

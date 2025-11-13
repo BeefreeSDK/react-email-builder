@@ -31,17 +31,16 @@ This library provides a React component wrapper for the Beefree SDK, allowing yo
 ## Installation
 
 ```bash
-npm install @beefree.io/sdk-react
+npm install @beefree.io/react
 # or
-yarn add @beefree.io/sdk-react
+yarn add @beefree.io/react
 ```
 
 ## Quick Start
 
 ```tsx
 import React, { useState, useEffect } from 'react'
-import EmailBuilder from '@beefree.io/sdk-react'
-import { IToken } from '@beefree.io/sdk/dist/types/bee'
+import { Builder, IToken } from '@beefree.io/react'
 
 function App() {
   const [token, setToken] = useState<IToken | null>(null)
@@ -54,7 +53,7 @@ function App() {
   if (!token) return <div>Loading...</div>
 
   return (
-    <EmailBuilder
+    <Builder
       token={token}
       config={{
         uid: 'unique-user-id',
@@ -73,7 +72,7 @@ function App() {
 
 ## API Reference
 
-### `EmailBuilder` Component
+### `Builder` Component
 
 #### Props
 
@@ -92,7 +91,7 @@ function App() {
 #### Basic Configuration
 
 ```tsx
-<EmailBuilder
+<Builder
   token={token}
   config={{
     uid: 'user-123',
@@ -133,7 +132,7 @@ function App() {
 Access builder instance methods to programmatically control the builder.
 
 ```tsx
-import { useBuilder } from '@beefree.io/sdk-react'
+import { useBuilder } from '@beefree.io/react'
 
 function MyComponent() {
   const { save, load, saveAsTemplate, loadConfig } = useBuilder('bee-container')
@@ -236,8 +235,8 @@ const config = useMemo(() => ({
 When using multiple builders on the same page, ensure unique `container` IDs:
 
 ```tsx
-<EmailBuilder config={{ container: 'builder-1' }} {...props} />
-<EmailBuilder config={{ container: 'builder-2' }} {...props} />
+<Builder config={{ container: 'builder-1' }} {...props} />
+<Builder config={{ container: 'builder-2' }} {...props} />
 ```
 
 ### 🔄 Collaborative Editing
@@ -251,7 +250,7 @@ function CollaborativeEditor() {
   return (
     <>
       {/* Host creates the session */}
-      <EmailBuilder
+      <Builder
         shared={true}
         onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
         {...otherProps}
@@ -259,7 +258,7 @@ function CollaborativeEditor() {
 
       {/* Guest joins with sessionId */}
       {sessionId && (
-        <EmailBuilder
+        <Builder
           shared={true}
           sessionId={sessionId}
           {...otherProps}
@@ -354,9 +353,11 @@ Check the `/example` directory for a complete working example including:
 To run the example:
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn start
 ```
+
+The development server will start at `http://localhost:3003`
 
 ## Development
 
@@ -364,23 +365,23 @@ npm run dev
 
 ```bash
 # Install dependencies
-npm install
+yarn install
 
 # Start development server
-npm run dev
+yarn start
 
 # Run tests
-npm test
+yarn test
 
 # Build library
-npm run build
+yarn build
 ```
 
 ### Project Structure
 
 ```
 src/
-├── email.tsx           # Main EmailBuilder component
+├── Builder.tsx           # Main Builder component
 ├── index.ts            # Public exports
 ├── constants.ts        # Configuration constants
 ├── hooks/
@@ -392,7 +393,7 @@ src/
 ### Building
 
 ```bash
-npm run build
+yarn build
 ```
 
 Outputs:
@@ -414,6 +415,8 @@ Make sure you have the SDK types installed:
 
 ```bash
 npm install @beefree.io/sdk
+# or
+yarn add @beefree.io/sdk
 ```
 
 ### Hook not working
@@ -439,5 +442,5 @@ For issues related to:
 ## Resources
 
 - [Beefree SDK Documentation](https://docs.beefree.io/)
-- [Beefree API Reference](https://docs.beefree.io/api-reference)
-- [Examples and Guides](https://github.com/BEE-Plugin/sdk-examples)
+- [Beefree API Reference](https://docs.beefree.io/beefree-sdk/apis)
+- [Examples and Guides](https://github.com/BeefreeSDK/beefree-sdk-examples)

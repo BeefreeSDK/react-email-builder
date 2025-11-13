@@ -1,7 +1,7 @@
 import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
-import React from 'react'
+export type * from '@beefree.io/sdk'
 
-export interface EmailBuilderCallbacks {
+export interface BuilderCallbacks {
   onLoad?: IBeeConfig['onLoad']
   onPreview?: IBeeConfig['onPreview']
   onTogglePreview?: IBeeConfig['onTogglePreview']
@@ -25,7 +25,7 @@ export interface EmailBuilderCallbacks {
   onPreviewChange?: IBeeConfig['onPreviewChange']
 }
 
-export interface EmailBuilderProps {
+export interface BuilderProps {
   config: IBeeConfig
   template: ITemplateJson
   token: IToken
@@ -34,6 +34,7 @@ export interface EmailBuilderProps {
   width?: React.CSSProperties['width']
   height?: React.CSSProperties['height']
   sessionId?: string
+  loaderUrl?: string  
 }
 
-export interface EmailBuilderPropsWithCallbacks extends EmailBuilderProps, EmailBuilderCallbacks {}
+export interface BuilderPropsWithCallbacks extends BuilderProps, BuilderCallbacks {}
