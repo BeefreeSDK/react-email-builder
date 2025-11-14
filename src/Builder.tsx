@@ -122,11 +122,15 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     if (shared && sessionId) {
       void beeInstance.join(config, sessionId).then(() => {
         setEditorReady(true)
+      }).catch((error) => {
+        console.error('Error joining the shared session:', error)
       })
     }
     else {
-      void beeInstance.start(config, template ?? {}, undefined, { shared }).then(() => {
+      void beeInstance.start(config, template, undefined, { shared }).then(() => {
         setEditorReady(true)
+      }).catch((error) => {
+        console.error('Error starting the builder:', error)
       })
     }
   }
