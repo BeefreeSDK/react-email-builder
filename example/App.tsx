@@ -168,12 +168,7 @@ export const App = () => {
                 <Controls />
                 <Builder
                   config={config}
-                  template={{
-                    data: {
-                      json: {},
-                      version: 0,
-                    },
-                  }}
+                  template={{}}
                   shared={isShared}
                   onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
                   token={token}

@@ -1,4 +1,4 @@
-import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
+import { IBeeConfig, IEntityContentJson, IToken } from '@beefree.io/sdk/dist/types/bee'
 export type * from '@beefree.io/sdk'
 
 export interface BuilderCallbacks {
@@ -27,7 +27,7 @@ export interface BuilderCallbacks {
 
 export interface BuilderProps {
   config: IBeeConfig
-  template: ITemplateJson
+  template: IEntityContentJson
   token: IToken
   shared?: boolean
   type?: string // potentially used with no-auth-sdk-editor
