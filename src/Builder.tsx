@@ -18,6 +18,7 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     sessionId,
     loaderUrl,
     // Callbacks
+    onInstanceReady,
     onLoad = configFromProps.onLoad,
     onPreview = configFromProps.onPreview,
     onTogglePreview = configFromProps.onTogglePreview,
@@ -122,6 +123,7 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     if (shared && sessionId) {
       void beeInstance.join(config, sessionId).then(() => {
         setEditorReady(true)
+        onInstanceReady(beeInstance)
       }).catch((error) => {
         console.error('Error joining the shared session:', error)
       })
@@ -129,6 +131,7 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     else {
       void beeInstance.start(config, template, undefined, { shared }).then(() => {
         setEditorReady(true)
+        onInstanceReady(beeInstance)
       }).catch((error) => {
         console.error('Error starting the builder:', error)
       })
@@ -139,7 +142,7 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     <div
       id={container}
       style={{
-        height: height || '800px',
+        height: height || '100%',
         width: width || '100%',
       }}
     >

@@ -1,4 +1,5 @@
 import { IBeeConfig, IEntityContentJson, IToken } from '@beefree.io/sdk/dist/types/bee'
+import BeePlugin from '@beefree.io/sdk'
 export type * from '@beefree.io/sdk'
 
 export interface BuilderCallbacks {
@@ -23,6 +24,7 @@ export interface BuilderCallbacks {
   onLoadWorkspace?: IBeeConfig['onLoadWorkspace']
   onViewChange?: IBeeConfig['onViewChange']
   onPreviewChange?: IBeeConfig['onPreviewChange']
+  onInstanceReady?: (instance: BeePlugin) => void
 }
 
 export interface BuilderProps {
