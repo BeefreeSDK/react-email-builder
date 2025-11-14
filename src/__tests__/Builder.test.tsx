@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import Builder from '../Builder'
 import BeefreeSDK from '@beefree.io/sdk'
-import { IBeeConfig, ITemplateJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
+import { IBeeConfig, IEntityContentJson, ITemplateJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
 import { DEFAULT_ID } from '../constants'
 
 describe('Builder Component', () => {
@@ -12,45 +12,41 @@ describe('Builder Component', () => {
     status: TokenStatus.OK,
     v2: true,
   }
-  const mockTemplate: ITemplateJson = {
-    data: {
-      json: {
-        comments: {},
-        page: {
-          body: {
-            type: '',
-            webFonts: [],
-            container: {
-              style: {
-                'background-color': '',
-              },
-            },
-            content: {
-              style: {
-                'font-family': '',
-                color: '',
-              },
-              computedStyle: {
-                align: '',
-                linkColor: '',
-                messageBackgroundColor: '',
-                messageWidth: '',
-              },
-            },
+  const mockTemplate: IEntityContentJson = {
+    comments: {},
+    page: {
+      body: {
+        type: '',
+        webFonts: [],
+        container: {
+          style: {
+            'background-color': '',
           },
-          description: '',
-          rows: [],
-          template: {
-            name: '',
-            type: '',
-            version: '',
+        },
+        content: {
+          style: {
+            'font-family': '',
+            color: '',
           },
-          title: 'a title',
+          computedStyle: {
+            align: '',
+            linkColor: '',
+            messageBackgroundColor: '',
+            messageWidth: '',
+          },
         },
       },
-      version: 0
-    }
+      description: '',
+      rows: [],
+      template: {
+        name: '',
+        type: '',
+        version: '',
+      },
+      title: 'a title',
+    },
   }
+
   const mockConfig: IBeeConfig = {
     uid: 'test-uid',
     container: 'test-container',
@@ -66,7 +62,7 @@ describe('Builder Component', () => {
     )
 
     const div = container.querySelector('#test-container')
-    expect(div?.getAttribute('style')).toContain('height: 800px')
+    expect(div?.getAttribute('style')).toContain('height: 100%')
     expect(div?.getAttribute('style')).toContain('width: 100%')
   })
 
