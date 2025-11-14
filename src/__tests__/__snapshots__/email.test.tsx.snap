@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
-
-exports[`email Should return true for valid email 1`] = `
-<div>
-  Email Builder
-</div>
-`;
