@@ -17,6 +17,7 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     shared,
     sessionId,
     loaderUrl,
+    bucketDir,
     // Callbacks
     onInstanceReady,
     onLoad = configFromProps.onLoad,
@@ -129,7 +130,7 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
       })
     }
     else {
-      void beeInstance.start(config, template, undefined, { shared }).then(() => {
+      void beeInstance.start(config, template, bucketDir, { shared }).then(() => {
         setEditorReady(true)
         onInstanceReady(beeInstance)
       }).catch((error) => {

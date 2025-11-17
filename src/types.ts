@@ -35,8 +35,9 @@ export interface BuilderProps {
   type?: string // potentially used with no-auth-sdk-editor
   width?: React.CSSProperties['width']
   height?: React.CSSProperties['height']
-  sessionId?: string
-  loaderUrl?: string  
+  sessionId?: string | null
+  loaderUrl?: string
+  bucketDir?: string 
 }
 
 export interface BuilderPropsWithCallbacks extends BuilderProps, BuilderCallbacks {}
