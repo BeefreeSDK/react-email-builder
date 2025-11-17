@@ -1,4 +1,5 @@
-import { IBeeConfig, ITemplateJson, IToken } from '@beefree.io/sdk/dist/types/bee'
+import { IBeeConfig, IEntityContentJson, IToken } from '@beefree.io/sdk/dist/types/bee'
+import BeePlugin from '@beefree.io/sdk'
 export type * from '@beefree.io/sdk'
 
 export interface BuilderCallbacks {
@@ -23,18 +24,20 @@ export interface BuilderCallbacks {
   onLoadWorkspace?: IBeeConfig['onLoadWorkspace']
   onViewChange?: IBeeConfig['onViewChange']
   onPreviewChange?: IBeeConfig['onPreviewChange']
+  onInstanceReady?: (instance: BeePlugin) => void
 }
 
 export interface BuilderProps {
   config: IBeeConfig
-  template: ITemplateJson
+  template: IEntityContentJson
   token: IToken
   shared?: boolean
   type?: string // potentially used with no-auth-sdk-editor
   width?: React.CSSProperties['width']
   height?: React.CSSProperties['height']
-  sessionId?: string
-  loaderUrl?: string  
+  sessionId?: string | null
+  loaderUrl?: string
+  bucketDir?: string 
 }
 
 export interface BuilderPropsWithCallbacks extends BuilderProps, BuilderCallbacks {}
