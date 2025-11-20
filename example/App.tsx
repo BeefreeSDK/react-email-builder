@@ -162,31 +162,33 @@ export const App = () => {
       <label htmlFor="shared_chk">Shared session</label>
       <button onClick={() => setIsEditorStarted(wasShared => !wasShared)}>Toggle builder</button>
       <div id="email-builder">
-        { token && isEditorStarted
+        {token && isEditorStarted
           ? (
-              <>
-                <Controls />
-                <Builder
-                  config={config}
-                  template={{}}
-                  shared={isShared}
-                  onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
-                  token={token}
-                />
-                {sessionId && (
-                  <>
-                    <Controls id="bis" />
-                    <Builder
-                      config={{ ...config, container: 'bis', id: 'bis', userHandle: 'bis', onSave: () => console.log(`this won't trigger`) }}
-                      shared={isShared}
-                      sessionId={sessionId}
-                      token={token}
-                      onSave={onSave2}
-                    />
-                  </>
-                )}
-              </>
-            )
+            <>
+              <Controls />
+              <Builder
+                config={config}
+                template={{}}
+                shared={isShared}
+                onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
+                token={token}
+                height="800px"
+              />
+              {sessionId && (
+                <>
+                  <Controls id="bis" />
+                  <Builder
+                    config={{ ...config, container: 'bis', id: 'bis', userHandle: 'bis', onSave: () => console.log(`this won't trigger`) }}
+                    shared={isShared}
+                    sessionId={sessionId}
+                    token={token}
+                    onSave={onSave2}
+                    height="800px"
+                  />
+                </>
+              )}
+            </>
+          )
           : <></>}
       </div>
     </>
