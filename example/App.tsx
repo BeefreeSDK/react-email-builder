@@ -1,9 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useMemo } from 'react'
 import { IToken } from '@beefree.io/sdk/dist/types/bee'
-import { Builder } from '../dist/index.es'
+import { Builder, IBeeConfig, useBuilder } from '../dist/index.es'
 import { Controls } from './Controls'
-import { useBuilder } from '../dist'
-import { config } from './config'
 
 const names = ['pippo', 'pluto', 'paperino', 'topolino', 'minnie', 'qui', 'quo', 'qua']
 
@@ -40,11 +38,54 @@ export const App = () => {
   const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
   const [sessionId, setSessionId] = useState<string | null>(null)
 
+  const config: IBeeConfig = useMemo(() => {
+    console.log(`%c[APP] - config ->`, `color:${'#a100ff'}`, 'config object re-created')
+    return ({
+      container: 'test',
+      username: 'Tester',
+      uid: 'demo-user',
+      userHandle: 'test',
+      userColor: '#fff',
+      rowsConfiguration: {
+        emptyRows: true,
+        defaultRows: true,
+        externalContentURLs: [
+          {
+            name: 'Saved rows',
+            handle: 'saved-rows',
+            isLocal: true,
+          },
+          {
+            name: 'Custom rows',
+            handle: 'custom-rows',
+            isLocal: true,
+            behaviors: {
+              canEdit: false,
+              canDelete: false,
+            },
+          },
+        ],
+      }
+    })
+  }, [])
+
   console.log(`%csf: App - App ->`, `color:${'#00ff00'}`, { sessionId })
 
-  // Initialize builders with useBuilder hook
-  const { updateConfig } = useBuilder({ ...config })
-  useBuilder({ ...config, container: 'bis', userHandle: 'bis', onSave: () => console.log(`this won't trigger`) })
+  const config1 = useMemo(() => ({ ...config }), [config])
+  const config2 = useMemo(() => {
+    const result = {
+      ...config,
+      username: "User 2",
+      container: 'bis',
+      userColor: '#000',
+      userHandle: 'bis'
+    }
+    console.log('[APP] config2 created:', result.username, result.userHandle, result.userColor, result.container)
+    return result
+  }, [config])
+
+  const { updateConfig } = useBuilder(config1)
+  const builder2 = useBuilder(config2)
 
   const handleUsers = () => {
     if (users.length < names.length) setUsers(prevUsers => [...prevUsers, names[prevUsers.length]])
@@ -79,6 +120,11 @@ export const App = () => {
     setSavedRows(prevRows => [...prevRows, JSON.parse(savedRow)])
   }
 
+  const onSaveRowHandlerBis = (savedRow) => {
+    console.log(`%c[APP] - onSaveRow Bis ->`, `color:${'#00ff00'}`, savedRow)
+    setSavedRows(prevRows => [...prevRows, JSON.parse(savedRow)])
+  }
+
   const saveRowHandler = useCallback(async (resolve) => {
     resolve({ name: 'row' })
   }, [])
@@ -87,12 +133,20 @@ export const App = () => {
     console.log(`%c[APP] - onError ->`, `color:${'#ff0000'}`, error)
   }, [])
 
+  const errorHandlerBis = useCallback((error) => {
+    console.log(`%c[APP] - onError Bis ->`, `color:${'#ff0000'}`, error)
+  }, [])
+
   const warningHandler = useCallback((warning) => {
     console.log(`%c[APP] - onWarning ->`, `color:${'#fbda00'}`, warning)
   }, [])
 
+  const warningHandlerBis = useCallback((warning) => {
+    console.log(`%c[APP] - onWarning Bis ->`, `color:${'#fbda00'}`, warning)
+  }, [])
+
   const onSave2 = useCallback((...args) => {
-    console.log(`%c[APP] - onSave BIS ->`, `color:${'#00ff00'}`, args)
+    console.log(`%c[APP] - onSave Bis ->`, `color:${'#00ff00'}`, args)
   }, [])
 
   useEffect(() => {
@@ -137,9 +191,14 @@ export const App = () => {
         {token && isEditorStarted
           ? (
             <>
-              <Controls id={config.container} />
-              <Builder
+              <Controls
                 id={config.container}
+                save={async () => { }}
+                saveAsTemplate={async () => { }}
+                updateConfig={updateConfig}
+              />
+              <Builder
+                id="test"
                 template={{}}
                 shared={isShared}
                 onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
@@ -161,14 +220,28 @@ export const App = () => {
               />
               {sessionId && (
                 <>
-                  <Controls id="bis" />
+                  <Controls
+                    id="bis"
+                    save={builder2.save}
+                    saveAsTemplate={builder2.saveAsTemplate}
+                    updateConfig={builder2.updateConfig}
+                  />
                   <Builder
                     id="bis"
                     template={{}}
                     shared={isShared}
                     sessionId={sessionId}
                     token={token}
+                    onChange={(...args) => {
+                      console.log(`%c[APP] Bis - onChange ->`, `color:${'#aaf7ff'}`, args)
+                    }}
+                    onRemoteChange={(...args) => {
+                      console.log(`%c[APP] Bis - onRemoteChange ->`, `color:${'#fff7aa'}`, args)
+                    }}
                     onSave={onSave2}
+                    onSaveRow={onSaveRowHandlerBis}
+                    onError={errorHandlerBis}
+                    onWarning={warningHandlerBis}
                     height="800px"
                     loaderUrl="https://pre-bee-loader.getbee.info/v2/api/loader"
                   />

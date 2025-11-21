@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { useBuilder } from '../dist/index.es'
-import { config } from './config'
 
-export const Controls = ({ id }: { id?: string }) => {
-  const containerConfig = { ...config, container: id || 'root' }
-  const { save, saveAsTemplate, updateConfig } = useBuilder(containerConfig)
+interface ControlsProps {
+  id: string
+  save?: () => Promise<any>
+  saveAsTemplate?: () => Promise<any>
+  updateConfig?: (config: any) => void
+}
 
+export const Controls = ({ id, save, saveAsTemplate, updateConfig }: ControlsProps) => {
   const [debug, setDebug] = useState<boolean>(false)
 
   useEffect(() => {
-    updateConfig({ debug: { all: debug } })
+    if (updateConfig) {
+      updateConfig({ debug: { all: debug } })
+    }
   }, [debug, updateConfig])
 
   const handleSaveJson = async () => {
