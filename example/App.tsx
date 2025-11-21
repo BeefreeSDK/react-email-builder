@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { IToken, Builder, IBeeConfig } from '../dist/index.es'
+import React, { useCallback, useEffect, useState } from 'react'
+import { IToken } from '@beefree.io/sdk/dist/types/bee'
+import { Builder } from '../dist/index.es'
 import { Controls } from './Controls'
+import { useBuilder } from '../dist'
+import { config } from './config'
 
 const names = ['pippo', 'pluto', 'paperino', 'topolino', 'minnie', 'qui', 'quo', 'qua']
 
@@ -39,9 +42,9 @@ export const App = () => {
 
   console.log(`%csf: App - App ->`, `color:${'#00ff00'}`, { sessionId })
 
-  useEffect(() => {
-    getToken().then(token => setToken(token))
-  }, [])
+  // Initialize builders with useBuilder hook
+  const { updateConfig } = useBuilder({ ...config })
+  useBuilder({ ...config, container: 'bis', userHandle: 'bis', onSave: () => console.log(`this won't trigger`) })
 
   const handleUsers = () => {
     if (users.length < names.length) setUsers(prevUsers => [...prevUsers, names[prevUsers.length]])
@@ -92,10 +95,12 @@ export const App = () => {
     console.log(`%c[APP] - onSave BIS ->`, `color:${'#00ff00'}`, args)
   }, [])
 
-  const config: IBeeConfig = useMemo(() => {
-    console.log(`%c[APP] - config ->`, `color:${'#a100ff'}`, 'config object re-created')
-    return ({
-      id: 'test',
+  useEffect(() => {
+    getToken().then(token => setToken(token))
+  }, [])
+
+  useEffect(() => {
+    updateConfig({
       hooks: {
         getMentions: {
           handler: getMentionsHandler,
@@ -117,41 +122,8 @@ export const App = () => {
           handler: saveRowHandler,
         },
       },
-      onSave: (...args) => {
-        console.log(`%c[APP] - onSave ->`, `color:${'#00ff00'}`, args)
-      },
-      onChange: (...args) => {
-        console.log(`%c[APP] - onChange ->`, `color:${'#aaf7ff'}`, args)
-      },
-      onRemoteChange: (...args) => {
-        console.log(`%c[APP] - onRemoteChange ->`, `color:${'#fff7aa'}`, args)
-      },
-      onSaveRow: onSaveRowHandler,
-      onError: errorHandler,
-      onWarning: warningHandler,
-      rowsConfiguration: {
-        emptyRows: true,
-        defaultRows: true,
-        externalContentURLs: [
-          {
-            name: 'Saved rows',
-            handle: 'saved-rows',
-            isLocal: true,
-          },
-          {
-            name: 'Custom rows',
-            handle: 'custom-rows',
-            isLocal: true,
-            behaviors: {
-              canEdit: false,
-              canDelete: false,
-            },
-          },
-        ],
-      },
-      username: 'Tester',
     })
-  }, [getMentionsHandler, getRowsHandler, saveRowHandler, errorHandler, warningHandler])
+  }, [updateConfig])
 
   return (
     <>
@@ -165,25 +137,40 @@ export const App = () => {
         {token && isEditorStarted
           ? (
             <>
-              <Controls />
+              <Controls id={config.container} />
               <Builder
-                config={config}
+                id={config.container}
                 template={{}}
                 shared={isShared}
                 onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
                 token={token}
+                onSave={(...args) => {
+                  console.log(`%c[APP] - onSave ->`, `color:${'#00ff00'}`, args)
+                }}
+                onChange={(...args) => {
+                  console.log(`%c[APP] - onChange ->`, `color:${'#aaf7ff'}`, args)
+                }}
+                onRemoteChange={(...args) => {
+                  console.log(`%c[APP] - onRemoteChange ->`, `color:${'#fff7aa'}`, args)
+                }}
+                onSaveRow={onSaveRowHandler}
+                onError={errorHandler}
+                onWarning={warningHandler}
                 height="800px"
+                loaderUrl="https://pre-bee-loader.getbee.info/v2/api/loader"
               />
               {sessionId && (
                 <>
                   <Controls id="bis" />
                   <Builder
-                    config={{ ...config, container: 'bis', id: 'bis', userHandle: 'bis', onSave: () => console.log(`this won't trigger`) }}
+                    id="bis"
+                    template={{}}
                     shared={isShared}
                     sessionId={sessionId}
                     token={token}
                     onSave={onSave2}
                     height="800px"
+                    loaderUrl="https://pre-bee-loader.getbee.info/v2/api/loader"
                   />
                 </>
               )}

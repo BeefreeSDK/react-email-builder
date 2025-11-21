@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useBuilder } from '../dist/index.es'
+import { config } from './config'
 
 export const Controls = ({ id }: { id?: string }) => {
-  const { save, saveAsTemplate, loadConfig } = useBuilder(id)
+  const containerConfig = { ...config, container: id || 'root' }
+  const { save, saveAsTemplate, updateConfig } = useBuilder(containerConfig)
 
   const [debug, setDebug] = useState<boolean>(false)
 
   useEffect(() => {
-    loadConfig?.({ debug: { all: debug } })
-  }, [debug, loadConfig])
+    updateConfig({ debug: { all: debug } })
+  }, [debug, updateConfig])
 
   const handleSaveJson = async () => {
     const template = await saveAsTemplate()
