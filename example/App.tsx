@@ -216,7 +216,6 @@ export const App = () => {
                 onError={errorHandler}
                 onWarning={warningHandler}
                 height="800px"
-                loaderUrl="https://pre-bee-loader.getbee.info/v2/api/loader"
               />
               {sessionId && (
                 <>
@@ -243,7 +242,6 @@ export const App = () => {
                     onError={errorHandlerBis}
                     onWarning={warningHandlerBis}
                     height="800px"
-                    loaderUrl="https://pre-bee-loader.getbee.info/v2/api/loader"
                   />
                 </>
               )}
