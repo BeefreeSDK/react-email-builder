@@ -129,40 +129,60 @@ function App() {
 
 ### `useBuilder`
 
-Access builder instance methods to programmatically control the builder.
+The `useBuilder` hook provides programmatic control over the builder instance and allows you to dynamically update configuration properties (non-callback properties like `uid`, `language`, etc.).
 
 ```tsx
-import { useBuilder } from '@beefree.io/react'
+import { Builder, useBuilder } from '@beefree.io/react'
 
 function MyComponent() {
-  const { save, load, saveAsTemplate, loadConfig } = useBuilder('bee-container')
+  // Initialize useBuilder with config including container ID
+  const initialConfig = {
+    container: 'bee-editor', // This is the ID that links hook and component
+    uid: 'user-123',
+    language: 'en-US',
+    // ...more configs
+  }
+
+  const { config, updateConfig, load, save, saveAsTemplate } = useBuilder(initialConfig)
+
+  // Update configuration dynamically
+  const changeLanguage = (lang: string) => {
+    updateConfig({ language: lang })
+  }
+
+  const changeUser = (userId: string) => {
+    updateConfig({ uid: userId })
+  }
 
   const handleSave = async () => {
     const result = await save()
     console.log('Saved:', result)
   }
 
-  const handleLoad = async () => {
-    await load(newTemplate)
-  }
-
   return (
     <div>
+      <button onClick={() => changeLanguage('it-IT')}>Switch to Italian</button>
+      <button onClick={() => changeUser('user-456')}>Change User</button>
       <button onClick={handleSave}>Save</button>
-      <button onClick={handleLoad}>Load New Template</button>
+      
+      <Builder
+        token={token}
+        template={template}
+        // Define callbacks directly in the component
+        onSave={(json, html) => {
+          console.log('Content saved:', json, html)
+        }}
+        onChange={(json, metadata) => {
+          console.log('Content changed')
+        }}
+        onReady={() => {
+          console.log('Builder is ready!')
+        }}
+      />
     </div>
   )
 }
 ```
-
-#### Hook Methods
-
-- `save()` - Save current content and get JSON/HTML
-- `load(template)` - Load a new template
-- `saveAsTemplate()` - Save current content as a template
-- `loadConfig(config)` - Update builder configuration
-
-**Note:** Pass the same `container` ID to `useBuilder()` as specified in your `config.container` prop, or use the default if not specified.
 
 ## Best Practices
 
