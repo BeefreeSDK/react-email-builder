@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import Builder from '../Builder'
 import BeefreeSDK from '@beefree.io/sdk'
-import { IBeeConfig, IEntityContentJson, ITemplateJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
+import { IBeeConfig, ITemplateJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
 import { DEFAULT_ID } from '../constants'
 
 describe('Builder Component', () => {
