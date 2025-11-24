@@ -125,7 +125,7 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
       })
     }
     else {
-      void beeInstance.start(config, template, undefined, { shared }).then(() => {
+      void beeInstance.start(config, template ?? {}, undefined, { shared }).then(() => {
         setEditorReady(true)
       })
     }
