@@ -50,7 +50,11 @@ const Builder = ({
     const registry = getConfigRegistry()
     const firstConfig = registry.values().next().value
 
-    return firstConfig?.container
+    if (!firstConfig) {
+      throw new Error('Builder requires at least the container in config to be registered')
+    }
+
+    return firstConfig.container
   }, [id, configRegistryVersion])
 
   const config = useMemo(() => {
@@ -124,7 +128,7 @@ const Builder = ({
   }, [editorReady, configRegistryVersion])
 
   useEffect(() => {
-    if (editorReady) {
+    if (editorReady && instanceRef.current) {
       setBuilderInstanceToRegistry(container, instanceRef.current)
     }
     return () => {
