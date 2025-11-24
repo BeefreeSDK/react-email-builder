@@ -12,41 +12,45 @@ describe('Builder Component', () => {
     status: TokenStatus.OK,
     v2: true,
   }
-  const mockTemplate: IEntityContentJson = {
-    comments: {},
-    page: {
-      body: {
-        type: '',
-        webFonts: [],
-        container: {
-          style: {
-            'background-color': '',
+  const mockTemplate: ITemplateJson = {
+    data: {
+      json: {
+        comments: {},
+        page: {
+          body: {
+            type: '',
+            webFonts: [],
+            container: {
+              style: {
+                'background-color': '',
+              },
+            },
+            content: {
+              style: {
+                'font-family': '',
+                color: '',
+              },
+              computedStyle: {
+                align: '',
+                linkColor: '',
+                messageBackgroundColor: '',
+                messageWidth: '',
+              },
+            },
           },
-        },
-        content: {
-          style: {
-            'font-family': '',
-            color: '',
+          description: '',
+          rows: [],
+          template: {
+            name: '',
+            type: '',
+            version: '',
           },
-          computedStyle: {
-            align: '',
-            linkColor: '',
-            messageBackgroundColor: '',
-            messageWidth: '',
-          },
+          title: 'a title',
         },
       },
-      description: '',
-      rows: [],
-      template: {
-        name: '',
-        type: '',
-        version: '',
-      },
-      title: 'a title',
-    },
+      version: 0
+    }
   }
-
   const mockConfig: IBeeConfig = {
     uid: 'test-uid',
     container: 'test-container',
@@ -62,7 +66,7 @@ describe('Builder Component', () => {
     )
 
     const div = container.querySelector('#test-container')
-    expect(div?.getAttribute('style')).toContain('height: 100%')
+    expect(div?.getAttribute('style')).toContain('height: 800px')
     expect(div?.getAttribute('style')).toContain('width: 100%')
   })
 
