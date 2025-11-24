@@ -2,7 +2,7 @@ import { render } from '@testing-library/react'
 import Builder from '../Builder'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IEntityContentJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
-import { setConfigInRegistry } from '../hooks/useRegistry'
+import { setConfigInstanceInRegistry } from '../hooks/useRegistry'
 
 describe('Builder Component', () => {
   const mockToken: IToken = {
@@ -49,8 +49,7 @@ describe('Builder Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    // Register a test config directly in the registry
-    setConfigInRegistry('test-container', { container: 'test-container', uid: 'test-uid' })
+    setConfigInstanceInRegistry('test-container', { container: 'test-container', uid: 'test-uid' })
   })
 
   it('renders container div with default height and width', () => {
