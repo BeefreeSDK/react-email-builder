@@ -1,72 +1,91 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
-import { SDK_LOADER_URL, DEFAULT_ID } from './constants'
+import { SDK_LOADER_URL } from './constants'
 import {
-  addBuilderToRegistry,
-  removeBuilderFromRegistry,
+  setBuilderInstanceToRegistry,
+  removeBuilderInstanceFromRegistry,
+  useConfigRegistry,
+  getConfigRegistry,
 } from './hooks/useRegistry'
+import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import { BuilderPropsWithCallbacks } from './types'
 
-const Builder = (props: BuilderPropsWithCallbacks) => {
-  const {
-    config: configFromProps,
-    token,
-    template,
-    width,
-    height,
-    shared,
-    sessionId,
-    loaderUrl,
-    // Callbacks
-    onLoad = configFromProps.onLoad,
-    onPreview = configFromProps.onPreview,
-    onTogglePreview = configFromProps.onTogglePreview,
-    onSessionStarted = configFromProps.onSessionStarted,
-    onSessionChange = configFromProps.onSessionChange,
-    onReady = configFromProps.onReady,
-    onSave = configFromProps.onSave,
-    onSaveRow = configFromProps.onSaveRow,
-    onError = configFromProps.onError,
-    onAutoSave = configFromProps.onAutoSave,
-    onSaveAsTemplate = configFromProps.onSaveAsTemplate,
-    onStart = configFromProps.onStart,
-    onSend = configFromProps.onSend,
-    onChange = configFromProps.onChange,
-    onRemoteChange = configFromProps.onRemoteChange,
-    onWarning = configFromProps.onWarning,
-    onComment = configFromProps.onComment,
-    onInfo = configFromProps.onInfo,
-    onLoadWorkspace = configFromProps.onLoadWorkspace,
-    onViewChange = configFromProps.onViewChange,
-    onPreviewChange = configFromProps.onPreviewChange,
-  } = props
+const Builder = ({
+  token,
+  template,
+  width,
+  height,
+  shared,
+  sessionId,
+  loaderUrl,
+  bucketDir,
+  id,
+  onLoad,
+  onPreview,
+  onTogglePreview,
+  onSessionStarted,
+  onSessionChange,
+  onReady,
+  onSave,
+  onSaveRow,
+  onError,
+  onAutoSave,
+  onSaveAsTemplate,
+  onStart,
+  onSend,
+  onChange,
+  onRemoteChange,
+  onWarning,
+  onComment,
+  onInfo,
+  onLoadWorkspace,
+  onViewChange,
+  onPreviewChange,
+}: BuilderPropsWithCallbacks) => {
+  const [configRegistry, configRegistryVersion] = useConfigRegistry()
 
-  const config = useMemo(() => ({
-    ...configFromProps,
-    container: configFromProps.container || DEFAULT_ID,
-    onLoad,
-    onPreview,
-    onTogglePreview,
-    onSessionStarted,
-    onSessionChange,
-    onReady,
-    onSave,
-    onSaveRow,
-    onError,
-    onAutoSave,
-    onSaveAsTemplate,
-    onStart,
-    onSend,
-    onChange,
-    onRemoteChange,
-    onWarning,
-    onComment,
-    onInfo,
-    onLoadWorkspace,
-    onViewChange,
-    onPreviewChange,
-  }), [
-    configFromProps,
+  const container = useMemo(() => {
+    if (id) return id
+
+    const registry = getConfigRegistry()
+    const firstConfig = registry.values().next().value
+
+    return firstConfig?.container
+  }, [id, configRegistryVersion])
+
+  const config = useMemo(() => {
+    const registry = getConfigRegistry()
+    const builderConfig = registry.get(container) || {}
+
+    return {
+      container,
+      ...builderConfig,
+      onLoad,
+      onPreview,
+      onTogglePreview,
+      onSessionStarted,
+      onSessionChange,
+      onReady,
+      onSave,
+      onSaveRow,
+      onError,
+      onAutoSave,
+      onSaveAsTemplate,
+      onStart,
+      onSend,
+      onChange,
+      onRemoteChange,
+      onWarning,
+      onComment,
+      onInfo,
+      onLoadWorkspace,
+      onViewChange,
+      onPreviewChange,
+    }
+  }, [
+    configRegistryVersion,
+    container,
+    configRegistry,
     onLoad,
     onPreview,
     onTogglePreview,
@@ -89,47 +108,54 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     onViewChange,
     onPreviewChange,
   ])
-  const container = config.container
+
+  const configRef = useRef(config)
+  configRef.current = config
+
   const [editorReady, setEditorReady] = useState(false)
 
   // instance is created only once for this component
   const instanceRef = useRef<BeefreeSDK>(null)
 
   useEffect(() => {
-    if (editorReady) {
-      instanceRef.current.loadConfig(config)
+    if (editorReady && instanceRef.current) {
+      instanceRef.current.loadConfig(configRef.current)
     }
-  }, [config, editorReady])
+  }, [editorReady, configRegistryVersion])
 
   useEffect(() => {
     if (editorReady) {
-      addBuilderToRegistry(config.container, instanceRef.current)
+      setBuilderInstanceToRegistry(container, instanceRef.current)
     }
     return () => {
-      removeBuilderFromRegistry(config.container)
+      removeBuilderInstanceFromRegistry(container)
     }
-  }, [config.container, editorReady])
+  }, [container, editorReady])
 
-  if (instanceRef.current === null) {
-    if (!token) {
-      throw new Error(`Can't start the builder without a token`)
-    }
-    instanceRef.current = new BeefreeSDK(token, {
-      beePluginUrl: loaderUrl ?? SDK_LOADER_URL,
-    })
-    const beeInstance = instanceRef.current
+  useEffect(() => {
+    // Only initialize if we don't have an instance yet and config has uid
+    if (instanceRef.current === null && (config as IBeeConfig).uid && token) {
+      instanceRef.current = new BeefreeSDK(token, {
+        beePluginUrl: loaderUrl ?? SDK_LOADER_URL,
+      })
+      const beeInstance = instanceRef.current
 
-    if (shared && sessionId) {
-      void beeInstance.join(config, sessionId).then(() => {
-        setEditorReady(true)
-      })
+      if (shared && sessionId) {
+        void beeInstance.join(config, sessionId).then(() => {
+          setEditorReady(true)
+        }).catch((error) => {
+          console.error('Error joining the shared session:', error)
+        })
+      }
+      else {
+        void beeInstance.start(config, template, bucketDir, { shared }).then(() => {
+          setEditorReady(true)
+        }).catch((error) => {
+          console.error('Error starting the builder:', error)
+        })
+      }
     }
-    else {
-      void beeInstance.start(config, template ?? {}, undefined, { shared }).then(() => {
-        setEditorReady(true)
-      })
-    }
-  }
+  }, [config, token, template, shared, sessionId, loaderUrl, bucketDir])
 
   return (
     <div
