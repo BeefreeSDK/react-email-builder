@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import { useBuilderRegistry, setConfigInstanceInRegistry, removeConfigInstanceFromRegistry } from './useRegistry'
+import { BeeTypesInstance } from '..'
 
 export const useBuilder = (initialConfig: IBeeConfig) => {
   const [builderRegistry, builderRegistryVersion] = useBuilderRegistry()
   const startVersion = useRef<number>(builderRegistryVersion)
   const [config, setConfig] = useState<IBeeConfig>(initialConfig)
-  const [instance, setInstance] = useState(builderRegistry.get(config.container))
+  const [instance, setInstance] = useState<BeeTypesInstance | null>(builderRegistry.get(config.container) ?? null)
   const prevConfigRef = useRef(config)
   const isRegistered = useRef(false)
 
@@ -37,7 +38,7 @@ export const useBuilder = (initialConfig: IBeeConfig) => {
   // Listen for changes in the builder registry and update the instance when the builder is registered
   useEffect(() => {
     if (startVersion.current < builderRegistryVersion) {
-      const instanceToRegister = builderRegistry.get(config.container)
+      const instanceToRegister = builderRegistry.get(config.container) ?? null
 
       setInstance((prevInstance) => {
         // Do not re-render hook listeners if the instance didn't change
@@ -50,34 +51,34 @@ export const useBuilder = (initialConfig: IBeeConfig) => {
 
   return {
     config,
-    coeditingSessionId: instance.token.coediting_session_id,
-    token: instance.token,
+    coeditingSessionId: instance?.token.coediting_session_id,
+    token: instance?.token,
     updateConfig,
-    reload: instance.reload,
-    preview: instance.preview,
-    load: instance.load,
-    save: instance.save,
-    saveAsTemplate: instance.saveAsTemplate,
-    send: instance.send,
-    join: instance.join,
-    start: instance.start,
-    loadRows: instance.loadRows,
-    switchPreview: instance.switchPreview,
-    togglePreview: instance.togglePreview,
-    toggleComments: instance.toggleComments,
-    switchTemplateLanguage: instance.switchTemplateLanguage,
-    getTemplateJson: instance.getTemplateJson,
-    loadConfig: instance.loadConfig,
-    showComment: instance.showComment,
-    updateToken: instance.updateToken,
-    toggleMergeTagsPreview: instance.toggleMergeTagsPreview,
-    execCommand: instance.execCommand,
-    getConfig: instance.getConfig,
-    loadStageMode: instance.loadStageMode,
-    toggleStructure: instance.toggleStructure,
-    loadWorkspace: instance.loadWorkspace,
-    startFileManager: instance.startFileManager,
-    executeAction: instance.executeAction,
-    executeGetConfigAction: instance.executeGetConfigAction,
+    reload: instance?.reload,
+    preview: instance?.preview,
+    load: instance?.load,
+    save: instance?.save,
+    saveAsTemplate: instance?.saveAsTemplate,
+    send: instance?.send,
+    join: instance?.join,
+    start: instance?.start,
+    loadRows: instance?.loadRows,
+    switchPreview: instance?.switchPreview,
+    togglePreview: instance?.togglePreview,
+    toggleComments: instance?.toggleComments,
+    switchTemplateLanguage: instance?.switchTemplateLanguage,
+    getTemplateJson: instance?.getTemplateJson,
+    loadConfig: instance?.loadConfig,
+    showComment: instance?.showComment,
+    updateToken: instance?.updateToken,
+    toggleMergeTagsPreview: instance?.toggleMergeTagsPreview,
+    execCommand: instance?.execCommand,
+    getConfig: instance?.getConfig,
+    loadStageMode: instance?.loadStageMode,
+    toggleStructure: instance?.toggleStructure,
+    loadWorkspace: instance?.loadWorkspace,
+    startFileManager: instance?.startFileManager,
+    executeAction: instance?.executeAction,
+    executeGetConfigAction: instance?.executeGetConfigAction,
   }
 }
