@@ -1,3 +1,4 @@
+import React from 'react'
 import { render, waitFor } from '@testing-library/react'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IEntityContentJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
