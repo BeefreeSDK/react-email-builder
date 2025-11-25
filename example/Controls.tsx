@@ -1,9 +1,10 @@
+import { BeeSaveOptions } from '@beefree.io/sdk/dist/types/bee'
 import React, { useEffect, useState } from 'react'
 
 interface ControlsProps {
   id: string
-  save?: () => Promise<any>
-  saveAsTemplate?: () => Promise<any>
+  save?: (options?: BeeSaveOptions | undefined) => any
+  saveAsTemplate?: (() => any)
   updateConfig?: (config: any) => void
 }
 
@@ -17,12 +18,17 @@ export const Controls = ({ id, save, saveAsTemplate, updateConfig }: ControlsPro
   }, [debug, updateConfig])
 
   const handleSaveJson = async () => {
+    if (!saveAsTemplate ) return
+
     const template = await saveAsTemplate()
     console.log(`%c[APP] - Controls - handleSaveJson ->`, `color:${'#00ff00'}`, { template: JSON.parse(template.data.json) })
   }
+
   const handleSaveHtml = async () => {
+    if (!save ) return
+
     const html = await save()
-    console.log(`%c[APP] - Controls - handleSaveHtml ->`, `color:${'#00ff00'}`, { html: html.data.html })
+    console.log(`%c[APP] - Controls - handleSaveHtml ->`, `color:${'#00ff00'}`, { html: html })
   }
 
   return (

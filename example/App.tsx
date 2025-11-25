@@ -92,7 +92,7 @@ export const App = () => {
     return result
   }, [config])
 
-  const { updateConfig } = useBuilder(config1)
+  const { updateConfig, save, saveAsTemplate } = useBuilder(config1)
   const builder2 = useBuilder(config2)
 
   const handleUsers = () => {
@@ -220,8 +220,8 @@ export const App = () => {
               <>
                 <Controls
                   id={config.container}
-                  save={async () => { }}
-                  saveAsTemplate={async () => { }}
+                  save={save}
+                  saveAsTemplate={saveAsTemplate}
                   updateConfig={updateConfig}
                 />
                 <Builder
