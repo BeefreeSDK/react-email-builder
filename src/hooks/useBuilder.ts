@@ -3,6 +3,8 @@ import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import { useBuilderRegistry, setConfigInstanceInRegistry, removeConfigInstanceFromRegistry } from './useRegistry'
 import { BeeTypesInstance } from '..'
 
+type SDKInstance = NonNullable<BeeTypesInstance>
+
 export const useBuilder = (initialConfig: IBeeConfig) => {
   const [builderRegistry, builderRegistryVersion] = useBuilderRegistry()
   const startVersion = useRef<number>(builderRegistryVersion)
@@ -49,36 +51,71 @@ export const useBuilder = (initialConfig: IBeeConfig) => {
     }
   }, [builderRegistry, builderRegistryVersion, config.container])
 
+  // Helper to create stable wrapper functions that safely handle calls before initialization
+  const createMethodWrapper = useCallback(<K extends keyof SDKInstance>(methodName: K) => {
+    return (...args: Parameters<SDKInstance[K]>) => {
+      const method = instance?.[methodName]
+      return typeof method === 'function' ? method(...args) : undefined
+    }
+  }, [instance])
+
+  const reload = useCallback(createMethodWrapper('reload'), [createMethodWrapper])
+  const preview = useCallback(createMethodWrapper('preview'), [createMethodWrapper])
+  const load = useCallback(createMethodWrapper('load'), [createMethodWrapper])
+  const save = useCallback(createMethodWrapper('save'), [createMethodWrapper])
+  const saveAsTemplate = useCallback(createMethodWrapper('saveAsTemplate'), [createMethodWrapper])
+  const send = useCallback(createMethodWrapper('send'), [createMethodWrapper])
+  const join = useCallback(createMethodWrapper('join'), [createMethodWrapper])
+  const start = useCallback(createMethodWrapper('start'), [createMethodWrapper])
+  const loadRows = useCallback(createMethodWrapper('loadRows'), [createMethodWrapper])
+  const switchPreview = useCallback(createMethodWrapper('switchPreview'), [createMethodWrapper])
+  const togglePreview = useCallback(createMethodWrapper('togglePreview'), [createMethodWrapper])
+  const toggleComments = useCallback(createMethodWrapper('toggleComments'), [createMethodWrapper])
+  const switchTemplateLanguage = useCallback(createMethodWrapper('switchTemplateLanguage'), [createMethodWrapper])
+  const getTemplateJson = useCallback(createMethodWrapper('getTemplateJson'), [createMethodWrapper])
+  const loadConfig = useCallback(createMethodWrapper('loadConfig'), [createMethodWrapper])
+  const showComment = useCallback(createMethodWrapper('showComment'), [createMethodWrapper])
+  const updateToken = useCallback(createMethodWrapper('updateToken'), [createMethodWrapper])
+  const toggleMergeTagsPreview = useCallback(createMethodWrapper('toggleMergeTagsPreview'), [createMethodWrapper])
+  const execCommand = useCallback(createMethodWrapper('execCommand'), [createMethodWrapper])
+  const getConfig = useCallback(createMethodWrapper('getConfig'), [createMethodWrapper])
+  const loadStageMode = useCallback(createMethodWrapper('loadStageMode'), [createMethodWrapper])
+  const toggleStructure = useCallback(createMethodWrapper('toggleStructure'), [createMethodWrapper])
+  const loadWorkspace = useCallback(createMethodWrapper('loadWorkspace'), [createMethodWrapper])
+  const startFileManager = useCallback(createMethodWrapper('startFileManager'), [createMethodWrapper])
+  const executeAction = useCallback(createMethodWrapper('executeAction'), [createMethodWrapper])
+  const executeGetConfigAction = useCallback(createMethodWrapper('executeGetConfigAction'), [createMethodWrapper])
+
   return {
     config,
     coeditingSessionId: instance?.token.coediting_session_id,
     token: instance?.token,
     updateConfig,
-    reload: instance?.reload,
-    preview: instance?.preview,
-    load: instance?.load,
-    save: instance?.save,
-    saveAsTemplate: instance?.saveAsTemplate,
-    send: instance?.send,
-    join: instance?.join,
-    start: instance?.start,
-    loadRows: instance?.loadRows,
-    switchPreview: instance?.switchPreview,
-    togglePreview: instance?.togglePreview,
-    toggleComments: instance?.toggleComments,
-    switchTemplateLanguage: instance?.switchTemplateLanguage,
-    getTemplateJson: instance?.getTemplateJson,
-    loadConfig: instance?.loadConfig,
-    showComment: instance?.showComment,
-    updateToken: instance?.updateToken,
-    toggleMergeTagsPreview: instance?.toggleMergeTagsPreview,
-    execCommand: instance?.execCommand,
-    getConfig: instance?.getConfig,
-    loadStageMode: instance?.loadStageMode,
-    toggleStructure: instance?.toggleStructure,
-    loadWorkspace: instance?.loadWorkspace,
-    startFileManager: instance?.startFileManager,
-    executeAction: instance?.executeAction,
-    executeGetConfigAction: instance?.executeGetConfigAction,
+    reload,
+    preview,
+    load,
+    save,
+    saveAsTemplate,
+    send,
+    join,
+    start,
+    loadRows,
+    switchPreview,
+    togglePreview,
+    toggleComments,
+    switchTemplateLanguage,
+    getTemplateJson,
+    loadConfig,
+    showComment,
+    updateToken,
+    toggleMergeTagsPreview,
+    execCommand,
+    getConfig,
+    loadStageMode,
+    toggleStructure,
+    loadWorkspace,
+    startFileManager,
+    executeAction,
+    executeGetConfigAction,
   }
 }
