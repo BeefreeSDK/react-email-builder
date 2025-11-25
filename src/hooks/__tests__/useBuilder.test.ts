@@ -1,8 +1,8 @@
 import { renderHook, act } from '@testing-library/react'
-import { useBuilder } from '../useBuilder'
-import { setBuilderInstanceToRegistry } from '../useRegistry'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
+import { useBuilder } from '../useBuilder'
+import { setBuilderInstanceToRegistry } from '../useRegistry'
 
 describe('useBuilder', () => {
   const mockConfig: IBeeConfig = { container: 'test', uid: 'user-1', username: 'TestUser', language: 'en' }

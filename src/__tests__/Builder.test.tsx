@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react'
-import Builder from '../Builder'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IEntityContentJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
+import Builder from '../Builder'
 import { setConfigInstanceInRegistry } from '../hooks/useRegistry'
 
 describe('Builder Component', () => {
@@ -26,7 +26,7 @@ describe('Builder Component', () => {
         content: {
           style: {
             'font-family': '',
-            color: '',
+            'color': '',
           },
           computedStyle: {
             align: '',
@@ -54,7 +54,7 @@ describe('Builder Component', () => {
 
   it('renders container div with default height and width', () => {
     const { container } = render(
-      <Builder id="test-container" token={mockToken} template={mockTemplate} />
+      <Builder id="test-container" token={mockToken} template={mockTemplate} />,
     )
 
     const div = container.querySelector('#test-container')
@@ -64,7 +64,7 @@ describe('Builder Component', () => {
 
   it('renders container div with custom height and width', () => {
     const { container } = render(
-      <Builder id="test-container" token={mockToken} template={mockTemplate} height="600px" width="80%" />
+      <Builder id="test-container" token={mockToken} template={mockTemplate} height="600px" width="80%" />,
     )
 
     const div = container.querySelector('#test-container')
@@ -97,7 +97,7 @@ describe('Builder Component', () => {
 
     expect(mockJoin).toHaveBeenCalledWith(
       expect.objectContaining({ container: 'test-container' }),
-      'test-session'
+      'test-session',
     )
   })
 

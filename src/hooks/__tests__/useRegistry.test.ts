@@ -1,4 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
+import BeefreeSDK from '@beefree.io/sdk'
+import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import {
   useBuilderRegistry,
   useConfigRegistry,
@@ -7,8 +9,6 @@ import {
   removeBuilderInstanceFromRegistry,
   removeConfigInstanceFromRegistry,
 } from '../useRegistry'
-import BeefreeSDK from '@beefree.io/sdk'
-import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 
 describe('useRegistry', () => {
   const mockInstance = {} as BeefreeSDK
