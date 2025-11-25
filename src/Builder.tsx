@@ -5,7 +5,6 @@ import { SDK_LOADER_URL } from './constants'
 import {
   setBuilderInstanceToRegistry,
   removeBuilderInstanceFromRegistry,
-  useConfigRegistry,
   getConfigRegistry,
 } from './hooks/useRegistry'
 import { BuilderPropsWithCallbacks } from './types'
@@ -42,8 +41,6 @@ const Builder = ({
   onViewChange,
   onPreviewChange,
 }: BuilderPropsWithCallbacks) => {
-  const [configRegistry, configRegistryVersion] = useConfigRegistry()
-
   const container = useMemo(() => {
     if (id) return id
 
@@ -55,7 +52,7 @@ const Builder = ({
     }
 
     return firstConfig.container
-  }, [id, configRegistryVersion])
+  }, [id])
 
   const config = useMemo(() => {
     const registry = getConfigRegistry()
@@ -87,9 +84,7 @@ const Builder = ({
       onPreviewChange,
     }
   }, [
-    configRegistryVersion,
     container,
-    configRegistry,
     onLoad,
     onPreview,
     onTogglePreview,
@@ -126,7 +121,7 @@ const Builder = ({
     if (editorReady && instanceRef.current && !isInitialLoad.current) {
       instanceRef.current.loadConfig(configRef.current)
     }
-  }, [editorReady, configRegistryVersion])
+  }, [editorReady])
 
   useEffect(() => {
     if (editorReady && instanceRef.current) {
