@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import Builder from '../Builder'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IEntityContentJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
@@ -58,7 +58,7 @@ describe('Builder Component', () => {
     )
 
     const div = container.querySelector('#test-container')
-    expect(div?.getAttribute('style')).toContain('height: 800px')
+    expect(div?.getAttribute('style')).toContain('height: 100%')
     expect(div?.getAttribute('style')).toContain('width: 100%')
   })
 
@@ -99,5 +99,37 @@ describe('Builder Component', () => {
       expect.objectContaining({ container: 'test-container' }),
       'test-session'
     )
+  })
+
+  it('does not call loadConfig on initial load', async () => {
+    const mockLoadConfig = jest.fn()
+    const mockStart = jest.fn().mockResolvedValue(undefined);
+    (BeefreeSDK as jest.Mock).mockImplementation(() => ({
+      start: mockStart,
+      loadConfig: mockLoadConfig,
+    }))
+
+    render(<Builder id="test-container" token={mockToken} template={mockTemplate} />)
+
+    await waitFor(() => expect(mockStart).toHaveBeenCalled())
+    expect(mockLoadConfig).not.toHaveBeenCalled()
+  })
+
+  it('calls loadConfig after config registry update', async () => {
+    const mockLoadConfig = jest.fn()
+    const mockStart = jest.fn().mockResolvedValue(undefined);
+    (BeefreeSDK as jest.Mock).mockImplementation(() => ({
+      start: mockStart,
+      loadConfig: mockLoadConfig,
+    }))
+
+    const { rerender } = render(<Builder id="test-container" token={mockToken} template={mockTemplate} />)
+
+    await waitFor(() => expect(mockStart).toHaveBeenCalled())
+
+    setConfigInstanceInRegistry('test-container', { container: 'test-container', uid: 'test-uid', username: 'Updated' })
+    rerender(<Builder id="test-container" token={mockToken} template={mockTemplate} />)
+
+    await waitFor(() => expect(mockLoadConfig).toHaveBeenCalled())
   })
 })
