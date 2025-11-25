@@ -165,7 +165,7 @@ const Builder = ({
     <div
       id={container}
       style={{
-        height: height || '800px',
+        height: height || '100%',
         width: width || '100%',
       }}
     >
