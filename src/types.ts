@@ -23,6 +23,7 @@ export interface BuilderCallbacks {
   onLoadWorkspace?: IBeeConfig['onLoadWorkspace']
   onViewChange?: IBeeConfig['onViewChange']
   onPreviewChange?: IBeeConfig['onPreviewChange']
+  onTemplateLanguageChange?: IBeeConfig['onTemplateLanguageChange']
 }
 
 export interface BuilderProps {

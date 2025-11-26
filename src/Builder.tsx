@@ -40,6 +40,7 @@ const Builder = ({
   onLoadWorkspace,
   onViewChange,
   onPreviewChange,
+  onTemplateLanguageChange,
 }: BuilderPropsWithCallbacks) => {
   const container = useMemo(() => {
     if (id) return id
@@ -76,6 +77,7 @@ const Builder = ({
     onLoadWorkspace,
     onViewChange,
     onPreviewChange,
+    onTemplateLanguageChange,
   })
 
   const config = useMemo(() => {

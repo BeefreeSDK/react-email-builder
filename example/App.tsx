@@ -92,7 +92,7 @@ export const App = () => {
     return result
   }, [config])
 
-  const { updateConfig, save, saveAsTemplate } = useBuilder(config1)
+  const { updateConfig, save, saveAsTemplate, switchTemplateLanguage } = useBuilder(config1)
   const builder2 = useBuilder(config2)
 
   const handleUsers = () => {
@@ -223,6 +223,7 @@ export const App = () => {
                   save={save}
                   saveAsTemplate={saveAsTemplate}
                   updateConfig={updateConfig}
+                  switchTemplateLanguage={switchTemplateLanguage}
                 />
                 <Builder
                   id="test"
@@ -244,6 +245,9 @@ export const App = () => {
                   onWarning={warningHandler}
                   height="800px"
                   loaderUrl="https://pre-bee-loader.getbee.info/v2/api/loader"
+                  onTemplateLanguageChange={(language) => {
+                    console.log(`%c[APP] - onTemplateLanguageChange ->`, `color:${'#ff00ff'}`, language)
+                  }}
                 />
                 {sessionId && (
                   <>
