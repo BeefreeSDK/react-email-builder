@@ -54,37 +54,7 @@ const Builder = ({
     return firstConfig.container
   }, [id])
 
-  const config = useMemo(() => {
-    const registry = getConfigRegistry()
-    const builderConfig = registry.get(container) || {}
-
-    return {
-      container,
-      ...builderConfig,
-      onLoad,
-      onPreview,
-      onTogglePreview,
-      onSessionStarted,
-      onSessionChange,
-      onReady,
-      onSave,
-      onSaveRow,
-      onError,
-      onAutoSave,
-      onSaveAsTemplate,
-      onStart,
-      onSend,
-      onChange,
-      onRemoteChange,
-      onWarning,
-      onComment,
-      onInfo,
-      onLoadWorkspace,
-      onViewChange,
-      onPreviewChange,
-    }
-  }, [
-    container,
+  const callbacksRef = useRef({
     onLoad,
     onPreview,
     onTogglePreview,
@@ -106,22 +76,27 @@ const Builder = ({
     onLoadWorkspace,
     onViewChange,
     onPreviewChange,
-  ])
+  })
+
+  const config = useMemo(() => {
+    const registry = getConfigRegistry()
+    const builderConfig = registry.get(container) || {}
+
+    return {
+      container,
+      ...builderConfig,
+      // Use callbacks from ref to avoid triggering this memo on callback changes
+      ...callbacksRef.current,
+    }
+  }, [container])
 
   const configRef = useRef(config)
   configRef.current = config
 
   const [editorReady, setEditorReady] = useState(false)
-  const isInitialLoad = useRef(true)
 
   // instance is created only once for this component
   const instanceRef = useRef<BeefreeSDK>(null)
-
-  useEffect(() => {
-    if (editorReady && instanceRef.current && !isInitialLoad.current) {
-      instanceRef.current.loadConfig(configRef.current)
-    }
-  }, [editorReady])
 
   useEffect(() => {
     if (editorReady && instanceRef.current) {
@@ -132,8 +107,8 @@ const Builder = ({
     }
   }, [container, editorReady])
 
+  // Creates and starts SDK instance
   useEffect(() => {
-    // Only initialize if we don't have an instance yet and config has uid
     const currentConfig = configRef.current as IBeeConfig
 
     if (instanceRef.current === null && currentConfig.uid && token) {
@@ -145,7 +120,6 @@ const Builder = ({
       if (shared && sessionId) {
         void beeInstance.join(configRef.current, sessionId).then(() => {
           setEditorReady(true)
-          isInitialLoad.current = false
         }).catch((error) => {
           console.error('Error joining the shared session:', error)
         })
@@ -153,7 +127,6 @@ const Builder = ({
       else {
         void beeInstance.start(configRef.current, template, bucketDir, { shared }).then(() => {
           setEditorReady(true)
-          isInitialLoad.current = false
         }).catch((error) => {
           console.error('Error starting the builder:', error)
         })
@@ -165,9 +138,8 @@ const Builder = ({
         instanceRef.current = null
       }
       setEditorReady(false)
-      isInitialLoad.current = true
     }
-  }, [token, template, shared, sessionId, loaderUrl, bucketDir])
+  }, [])
 
   return (
     <div
