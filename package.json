@@ -20,7 +20,7 @@
     "prerelease": "git pull",
     "lint": "eslint ./src --ext ts",
     "test": "yarn pretest && jest --watch",
-    "test:ci": "jest --runInBand --bail",
+    "test:ci": "yarn test --all --watchAll false",
     "release": "standard-version",
     "postrelease": "git push --follow-tags --no-verify",
     "release:alpha": "yarn prerelease && standard-version --prerelease alpha && yarn postrelease",
