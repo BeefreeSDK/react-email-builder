@@ -87,7 +87,6 @@ export const useBuilder = (initialConfig: IBeeConfig) => {
   const executeGetConfigAction = useCallback(createMethodWrapper('executeGetConfigAction'), [createMethodWrapper])
 
   return {
-    config,
     coeditingSessionId: instance?.token.coediting_session_id,
     token: instance?.token,
     updateConfig,
