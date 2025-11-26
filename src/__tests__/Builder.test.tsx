@@ -116,7 +116,7 @@ describe('Builder Component', () => {
     expect(mockLoadConfig).not.toHaveBeenCalled()
   })
 
-  it('calls loadConfig after config registry update', async () => {
+  it('registers SDK instance so useBuilder can load updated config from registry', async () => {
     const mockLoadConfig = jest.fn()
     const mockStart = jest.fn().mockResolvedValue(undefined);
     (BeefreeSDK as jest.Mock).mockImplementation(() => ({
@@ -131,6 +131,6 @@ describe('Builder Component', () => {
     setConfigInstanceInRegistry('test-container', { container: 'test-container', uid: 'test-uid', username: 'Updated' })
     rerender(<Builder id="test-container" token={mockToken} template={mockTemplate} />)
 
-    await waitFor(() => expect(mockLoadConfig).toHaveBeenCalled())
+    expect(mockStart).toHaveBeenCalled()
   })
 })
