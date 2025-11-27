@@ -398,22 +398,6 @@ yarn start
 
 # Run tests
 yarn test
-
-# Build library
-yarn build
-```
-
-### Project Structure
-
-```
-src/
-├── Builder.tsx           # Main Builder component
-├── index.ts            # Public exports
-├── constants.ts        # Configuration constants
-├── hooks/
-│   ├── useBuilder.ts   # Hook for programmatic control
-│   └── useRegistry.ts  # Internal instance registry
-└── __tests__/          # Test files
 ```
 
 ### Building
@@ -434,25 +418,6 @@ Outputs:
 1. Verify token is valid and not expired
 2. Check console for errors
 3. Ensure `container` ID is unique on the page
-
-### TypeScript errors
-
-Make sure you have the SDK types installed:
-
-```bash
-npm install @beefree.io/sdk
-# or
-yarn add @beefree.io/sdk
-```
-
-### Hook not working
-
-Ensure the `container` ID passed to `useBuilder()` matches the one in your config:
-
-```tsx
-const config = { container: 'my-builder' }
-const builder = useBuilder('my-builder') // Must match!
-```
 
 ## License
 
