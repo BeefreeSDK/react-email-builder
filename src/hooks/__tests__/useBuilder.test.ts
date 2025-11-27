@@ -89,6 +89,9 @@ describe('useBuilder', () => {
       setBuilderInstanceToRegistry('test', mockInstance)
     })
 
+    // loadConfig should not be called when instance is first registered since config hasn't changed
+    expect(mockInstance.loadConfig).toHaveBeenCalledTimes(0)
+
     expect(result.current.coeditingSessionId).toBe('session-123')
     expect(result.current.token).toBe(mockInstance.token)
 
