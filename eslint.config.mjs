@@ -7,7 +7,7 @@ import reactPlugin from 'eslint-plugin-react'
 import importPlugin from 'eslint-plugin-import'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
 
-const tsconfigPath = fileURLToPath(new URL('./tsconfig.json', import.meta.url))
+const tsconfigPath = fileURLToPath(new URL('./tsconfig.eslint.json', import.meta.url))
 
 
 const eslintConfig = [{

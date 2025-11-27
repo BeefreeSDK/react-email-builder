@@ -6,12 +6,10 @@ import devServer from 'rollup-plugin-serve'
 import dotenv from "rollup-plugin-dotenv"
 import livereload from "rollup-plugin-livereload";
 import dts from 'rollup-plugin-dts'
-// import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 const production = !process.env.ROLLUP_WATCH;
 
 const commonPlugins = [
-  // peerDepsExternal(), // TODO: commented for now, check if needed
   nodeResolve({
     extensions: ['.js', '.jsx', '.ts', '.tsx']
   }),
@@ -20,7 +18,10 @@ const commonPlugins = [
     babelHelpers: production ? 'runtime' : 'bundled',
     exclude: 'node_modules/**',
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    presets: ['@babel/preset-react', '@babel/preset-typescript'],
+    presets: [
+      ['@babel/preset-react', { runtime: 'automatic' }],
+      '@babel/preset-typescript'
+    ],
     plugins: production ? ["@babel/plugin-transform-runtime"] : []
   }),
   dotenv()
