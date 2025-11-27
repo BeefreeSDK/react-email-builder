@@ -1,11 +1,36 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import { useBuilderRegistry, setConfigInstanceInRegistry, removeConfigInstanceFromRegistry } from './useRegistry'
-import { BeeTypesInstance } from '..'
+import BeeTypesInstance from '@beefree.io/sdk'
+import { SDKInstance, UseBuilderReturnDocs } from '../types'
 
-type SDKInstance = NonNullable<BeeTypesInstance>
-
-export const useBuilder = (initialConfig: IBeeConfig) => {
+/**
+ * Hook for programmatic control of a Beefree SDK builder instance.
+ *
+ * This hook provides methods to interact with the builder and allows
+ * dynamic configuration updates after initialization.
+ *
+ * @param initialConfig - The initial configuration for the builder instance
+ * @returns Object containing builder methods and configuration update function
+ *
+ * @example
+ * ```tsx
+ * const config = {
+ *   container: 'bee-editor',
+ *   uid: 'user-123',
+ *   language: 'en-US'
+ * }
+ *
+ * const { updateConfig, save, getConfig } = useBuilder(config)
+ *
+ * // Update configuration dynamically
+ * updateConfig({ language: 'it-IT' })
+ *
+ * // Save content
+ * const result = await save()
+ * ```
+ */
+export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   const [builderRegistry, builderRegistryVersion] = useBuilderRegistry()
   const startVersion = useRef<number>(builderRegistryVersion)
   const [config, setConfig] = useState<IBeeConfig>(initialConfig)
