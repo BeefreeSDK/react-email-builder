@@ -1,30 +1,55 @@
 import { renderHook, act } from '@testing-library/react'
 import BeefreeSDK from '@beefree.io/sdk'
-import { ExecCommands, IBeeConfig, IBeeConfigFileManager, IEntityContentJson, ILanguage, ILoadStageMode, IToken, LoadWorkspaceOptions } from '@beefree.io/sdk/dist/types/bee'
+import {
+  ExecCommands, IBeeConfig, IBeeConfigFileManager, IEntityContentJson,
+  ILanguage, ILoadStageMode, IToken, LoadWorkspaceOptions,
+} from '@beefree.io/sdk/dist/types/bee'
 import { useBuilder } from '../useBuilder'
-import { setBuilderInstanceToRegistry } from '../useRegistry'
+import { setBuilderInstanceToRegistry, getConfigRegistry } from '../useRegistry'
 
 describe('useBuilder', () => {
-  const mockConfig: IBeeConfig = { container: 'test', uid: 'user-1', username: 'TestUser', language: 'en' }
+  const mockConfig: IBeeConfig = {
+    container: 'test',
+    uid: 'user-1',
+    username: 'TestUser',
+    templateLanguage: {
+      isMain: true,
+      label: 'English (US)',
+      value: 'en-US',
+      twoCharsCode: 'en',
+    },
+    templateLanguages: [
+      { value: 'it-IT', label: 'Italiano', twoCharsCode: 'it', isMain: false },
+    ],
+  }
 
-  it('registers config on mount', () => {
-    const { result } = renderHook(() => useBuilder(mockConfig))
-    expect(result.current.config).toEqual(mockConfig)
+  it('stores config in registry on mount', () => {
+    renderHook(() => useBuilder(mockConfig))
+
+    const registryConfig = getConfigRegistry().get(mockConfig.container)
+
+    expect(registryConfig).toEqual(mockConfig)
   })
 
-  it('updates config', () => {
+  it('updates config (registry reflects changes)', () => {
     const { result } = renderHook(() => useBuilder(mockConfig))
+    let registryConfig = getConfigRegistry().get(mockConfig.container)
 
-    expect(result.current.config.username).toBe('TestUser')
-    expect(result.current.config.language).toBe('en')
+    expect(registryConfig?.username).toBe('TestUser')
+
+    const updateConfigSpy = jest.spyOn(result.current, 'updateConfig')
 
     act(() => {
-      result.current.updateConfig({ username: 'Updated', language: 'fr' })
+      result.current.updateConfig({ username: 'Updated' })
     })
 
-    expect(result.current.config.username).toBe('Updated')
-    expect(result.current.config.language).toBe('fr')
-    expect(result.current.config.container).toBe('test')
+    expect(updateConfigSpy).toHaveBeenCalledTimes(1)
+    expect(updateConfigSpy).toHaveBeenCalledWith({ username: 'Updated' })
+
+    registryConfig = getConfigRegistry().get(mockConfig.container)
+    expect(registryConfig?.username).toBe('Updated')
+
+    updateConfigSpy.mockRestore()
   })
 
   it('returns instance methods when registered', () => {
