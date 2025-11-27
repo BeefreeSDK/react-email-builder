@@ -54,6 +54,15 @@ export const App = () => {
       uid: 'demo-user',
       userHandle: 'test',
       userColor: '#fff',
+      templateLanguage: {
+        isMain: true,
+        label: 'English (US)',
+        value: 'en-US',
+        twoCharsCode: 'en',
+      },
+      templateLanguages: [
+        { value: 'it-IT', label: 'Italiano', twoCharsCode: 'it', isMain: false },
+      ],
       rowsConfiguration: {
         emptyRows: true,
         defaultRows: true,
