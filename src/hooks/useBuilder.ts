@@ -10,7 +10,6 @@ export const useBuilder = (initialConfig: IBeeConfig) => {
   const startVersion = useRef<number>(builderRegistryVersion)
   const [config, setConfig] = useState<IBeeConfig>(initialConfig)
   const [instance, setInstance] = useState<BeeTypesInstance | null>(builderRegistry.get(config.container) ?? null)
-  const prevConfigRef = useRef(config)
   const isRegistered = useRef(false)
 
   // Register config on first render
@@ -23,13 +22,16 @@ export const useBuilder = (initialConfig: IBeeConfig) => {
     setConfig(prevConfig => ({ ...prevConfig, ...partialConfig }))
   }, [])
 
-  // Update registry when config changes via updateConfig
   useEffect(() => {
-    if (prevConfigRef.current !== config) {
-      prevConfigRef.current = config
-      setConfigInstanceInRegistry(config.container, config)
+    setConfigInstanceInRegistry(config.container, config)
+
+    if (instance) {
+      instance.loadConfig?.(config)
     }
-  }, [config, config.container])
+
+    // Instance should not be listed
+    // since loadConfig should run only when config changes
+  }, [config])
 
   useEffect(() => {
     return () => {
