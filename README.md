@@ -61,10 +61,6 @@ function App() {
   return (
     <Builder
       token={token}
-      config={{
-        uid: 'unique-user-id',
-        container: 'bee-container',
-      }}
       template={{
         data: {
           json: {},
@@ -85,8 +81,7 @@ function App() {
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `token` | `IToken` | Yes | Authentication token from Beefree API |
-| `config` | `IBeeConfig` | Yes | Beefree SDK configuration object |
-| `template` | `ITemplateJson` | Yes | Initial template/content to load |
+| `template` | `IEntityContentJson` | Yes | Initial template/content to load |
 | `shared` | `boolean` | No | Enable collaborative editing session |
 | `sessionId` | `string` | No | Session ID to join (for collaborative editing) |
 | `width` | `React.CSSProperties['width']` | No | Container width (default: '100%') |
@@ -97,36 +92,33 @@ function App() {
 #### Basic Configuration
 
 ```tsx
+useBuilder({
+  uid: 'user-123',
+  container: 'bee-container',
+
+  // Customization
+  language: 'en-US',
+  specialLinks: [
+    { type: 'unsubscribe', label: 'Unsubscribe', link: '[unsubscribe]' }
+  ],
+
+  // Content management
+  contentDialog: {
+    saveRow: {
+      label: 'Save Row',
+      handler: (resolve) => resolve({ name: 'My Row' })
+    }
+  }
+})
+
 <Builder
   token={token}
-  config={{
-    uid: 'user-123',
-    container: 'bee-container',
-
-    // Hooks
-    onSave: (jsonFile, htmlFile) => {
-      console.log('Saved:', { jsonFile, htmlFile })
-    },
-
-    // Customization
-    language: 'en-US',
-    specialLinks: [
-      { type: 'unsubscribe', label: 'Unsubscribe', link: '[unsubscribe]' }
-    ],
-
-    // Content management
-    contentDialog: {
-      saveRow: {
-        label: 'Save Row',
-        handler: (resolve) => resolve({ name: 'My Row' })
-      }
-    }
-  }}
   template={{
-    data: {
-      json: {},
-      version: 0
-    }
+    comments: {},
+    page: {},
+  }}
+  onSave={(jsonFile, htmlFile) => {
+    console.log('Saved:', { jsonFile, htmlFile })
   }}
 />
 ```
@@ -149,7 +141,7 @@ function MyComponent() {
     // ...more configs
   }
 
-  const { config, updateConfig, load, save, saveAsTemplate } = useBuilder(initialConfig)
+  const { updateConfig, load, save, saveAsTemplate } = useBuilder(initialConfig)
 
   // Update configuration dynamically
   const changeLanguage = (lang: string) => {
@@ -261,8 +253,8 @@ const config = useMemo(() => ({
 When using multiple builders on the same page, ensure unique `container` IDs:
 
 ```tsx
-<Builder config={{ container: 'builder-1' }} {...props} />
-<Builder config={{ container: 'builder-2' }} {...props} />
+const config1 = useBuilder({ container: 'builder-1', ...otherProperties })
+const config2 = useBuilder({ container: 'builder-2', ...otherProperties})
 ```
 
 ### 🔄 Collaborative Editing
