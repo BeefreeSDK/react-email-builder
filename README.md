@@ -62,10 +62,8 @@ function App() {
     <Builder
       token={token}
       template={{
-        data: {
-          json: {},
-          version: 0,
-        },
+        comments: {},
+        page: {},
       }}
     />
   )
