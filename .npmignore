@@ -1,0 +1,43 @@
+# Source files
+src/
+example/
+
+# Tests
+**/__tests__/
+**/*.test.ts
+**/*.test.tsx
+*.test.ts
+*.test.tsx
+coverage/
+.jest-cache/
+
+# Development
+.husky/
+.github/
+rollup.config.mjs
+jest.config.ts
+eslint.config.mjs
+tsconfig.json
+.commitlintrc.json
+.nvmrc
+.env
+.env.*
+.DS_Store
+
+# Documentation
+CONTRIBUTING.md
+SECURITY.md
+
+# Git
+.git/
+.gitignore
+
+# Yarn
+yarn.lock
+yarn-error.log
+.yalc/
+yalc.lock
+
+# Npm
+npm-debug.log
+node_modules/
