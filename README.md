@@ -1,5 +1,11 @@
 # Beefree SDK React Component
 
+[![npm version](https://badge.fury.io/js/%40beefree.io%2Freact.svg)](https://www.npmjs.com/package/@beefree.io/react)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![CI](https://github.com/BeefreeSDK/npm-react/workflows/CI/badge.svg)](https://github.com/BeefreeSDK/npm-react/actions)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19.1-blue)](https://react.dev/)
+
 A React wrapper component for the [Beefree SDK](https://www.beefree.io/), making it easy to integrate the Beefree email/page builder into your React applications.
 
 ## Table of Contents
