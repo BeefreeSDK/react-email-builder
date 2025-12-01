@@ -33,51 +33,51 @@ export interface UseBuilderReturnDocs {
    * ```
    */
   updateConfig: (partialConfig: Partial<IBeeConfig>) => void
-  /** Reloads the builder instance */
+  /** Reloads a template without showing loading dialog (seamless reload) */
   reload: SDKInstance['reload']
   /** Shows a preview of the content */
   preview: SDKInstance['preview']
-  /** Loads content into the builder */
+  /** Loads a JSON template into the editor */
   load: SDKInstance['load']
-  /** Saves the current content */
+  /** Programmatically triggers the save action */
   save: SDKInstance['save']
-  /** Saves the current content as a template */
+  /** Programmatically triggers save as template action */
   saveAsTemplate: SDKInstance['saveAsTemplate']
-  /** Sends the content */
+  /** Programmatically triggers send action (Email Builder only) */
   send: SDKInstance['send']
   /** Joins a collaborative editing session */
   join: SDKInstance['join']
-  /** Starts the builder instance */
+  /** Initializes and starts the builder with optional template data */
   start: SDKInstance['start']
   /** Loads rows into the builder */
   loadRows: SDKInstance['loadRows']
-  /** Switches the preview mode */
+  /** Gets the HTML preview. It also opens the Preview if it’s closed. */
   switchPreview: SDKInstance['switchPreview']
-  /** Toggles the preview on/off */
+  /** Opens and closes the Preview */
   togglePreview: SDKInstance['togglePreview']
-  /** Toggles comments visibility */
+  /** Toggles comments panel */
   toggleComments: SDKInstance['toggleComments']
-  /** Switches the template language */
+  /** Switches the template language if the specified language exists in the available languages */
   switchTemplateLanguage: SDKInstance['switchTemplateLanguage']
   /** Gets the template JSON */
   getTemplateJson: SDKInstance['getTemplateJson']
-  /** Loads a new configuration */
+  /** Updates editor configuration dynamically */
   loadConfig: SDKInstance['loadConfig']
   /** Shows a specific comment */
   showComment: SDKInstance['showComment']
   /** Updates the authentication token */
   updateToken: SDKInstance['updateToken']
-  /** Toggles merge tags preview */
+  /** Toggles visibility of merge tag sample content */
   toggleMergeTagsPreview: SDKInstance['toggleMergeTagsPreview']
-  /** Executes a command in the builder */
+  /** Executes specific editor commands for highlighting, scrolling, focusing, or selecting elements */
   execCommand: SDKInstance['execCommand']
   /** Gets the current configuration */
   getConfig: SDKInstance['getConfig']
   /** Loads a stage mode */
   loadStageMode: SDKInstance['loadStageMode']
-  /** Toggles structure view */
+  /** Toggles visibility of structure outlines in the editor */
   toggleStructure: SDKInstance['toggleStructure']
-  /** Loads a workspace configuration */
+  /** Loads a specific workspace type */
   loadWorkspace: SDKInstance['loadWorkspace']
   /** Starts the file manager */
   startFileManager: SDKInstance['startFileManager']
