@@ -60,7 +60,7 @@
     "*.ts": "eslint"
   },
   "dependencies": {
-    "@beefree.io/sdk": "9.4.0"
+    "@beefree.io/sdk": "9.5.1"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^20.0.0",
