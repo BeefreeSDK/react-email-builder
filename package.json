@@ -41,7 +41,7 @@
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w",
-    "pretest": "yarn install",
+    "pretest": "yarn prepare && yarn install",
     "clean": "rimraf dist",
     "prepare": "husky install",
     "prebuild": "yarn clean",

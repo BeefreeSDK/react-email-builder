@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
-import { useBuilderRegistry, setConfigInstanceInRegistry, removeConfigInstanceFromRegistry } from './useRegistry'
 import BeeTypesInstance from '@beefree.io/sdk'
+import { useBuilderRegistry, setConfigInstanceInRegistry, removeConfigInstanceFromRegistry } from './useRegistry'
 import { SDKInstance, UseBuilderReturnDocs } from '../types'
 
 /**
@@ -78,40 +78,39 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
     }
   }, [builderRegistry, builderRegistryVersion, config.container])
 
-  // Helper to create stable wrapper functions that safely handle calls before initialization
-  const createMethodWrapper = useCallback(<K extends keyof SDKInstance>(methodName: K) => {
+  const createSafeMethodWrapper = <K extends keyof SDKInstance>(methodName: K) => {
     return (...args: Parameters<SDKInstance[K]>) => {
       const method = instance?.[methodName]
       return typeof method === 'function' ? method(...args) : undefined
     }
-  }, [instance])
+  }
 
-  const reload = useCallback(createMethodWrapper('reload'), [createMethodWrapper])
-  const preview = useCallback(createMethodWrapper('preview'), [createMethodWrapper])
-  const load = useCallback(createMethodWrapper('load'), [createMethodWrapper])
-  const save = useCallback(createMethodWrapper('save'), [createMethodWrapper])
-  const saveAsTemplate = useCallback(createMethodWrapper('saveAsTemplate'), [createMethodWrapper])
-  const send = useCallback(createMethodWrapper('send'), [createMethodWrapper])
-  const join = useCallback(createMethodWrapper('join'), [createMethodWrapper])
-  const start = useCallback(createMethodWrapper('start'), [createMethodWrapper])
-  const loadRows = useCallback(createMethodWrapper('loadRows'), [createMethodWrapper])
-  const switchPreview = useCallback(createMethodWrapper('switchPreview'), [createMethodWrapper])
-  const togglePreview = useCallback(createMethodWrapper('togglePreview'), [createMethodWrapper])
-  const toggleComments = useCallback(createMethodWrapper('toggleComments'), [createMethodWrapper])
-  const switchTemplateLanguage = useCallback(createMethodWrapper('switchTemplateLanguage'), [createMethodWrapper])
-  const getTemplateJson = useCallback(createMethodWrapper('getTemplateJson'), [createMethodWrapper])
-  const loadConfig = useCallback(createMethodWrapper('loadConfig'), [createMethodWrapper])
-  const showComment = useCallback(createMethodWrapper('showComment'), [createMethodWrapper])
-  const updateToken = useCallback(createMethodWrapper('updateToken'), [createMethodWrapper])
-  const toggleMergeTagsPreview = useCallback(createMethodWrapper('toggleMergeTagsPreview'), [createMethodWrapper])
-  const execCommand = useCallback(createMethodWrapper('execCommand'), [createMethodWrapper])
-  const getConfig = useCallback(createMethodWrapper('getConfig'), [createMethodWrapper])
-  const loadStageMode = useCallback(createMethodWrapper('loadStageMode'), [createMethodWrapper])
-  const toggleStructure = useCallback(createMethodWrapper('toggleStructure'), [createMethodWrapper])
-  const loadWorkspace = useCallback(createMethodWrapper('loadWorkspace'), [createMethodWrapper])
-  const startFileManager = useCallback(createMethodWrapper('startFileManager'), [createMethodWrapper])
-  const executeAction = useCallback(createMethodWrapper('executeAction'), [createMethodWrapper])
-  const executeGetConfigAction = useCallback(createMethodWrapper('executeGetConfigAction'), [createMethodWrapper])
+  const reload = useCallback(createSafeMethodWrapper('reload'), [instance])
+  const preview = useCallback(createSafeMethodWrapper('preview'), [instance])
+  const load = useCallback(createSafeMethodWrapper('load'), [instance])
+  const save = useCallback(createSafeMethodWrapper('save'), [instance])
+  const saveAsTemplate = useCallback(createSafeMethodWrapper('saveAsTemplate'), [instance])
+  const send = useCallback(createSafeMethodWrapper('send'), [instance])
+  const join = useCallback(createSafeMethodWrapper('join'), [instance])
+  const start = useCallback(createSafeMethodWrapper('start'), [instance])
+  const loadRows = useCallback(createSafeMethodWrapper('loadRows'), [instance])
+  const switchPreview = useCallback(createSafeMethodWrapper('switchPreview'), [instance])
+  const togglePreview = useCallback(createSafeMethodWrapper('togglePreview'), [instance])
+  const toggleComments = useCallback(createSafeMethodWrapper('toggleComments'), [instance])
+  const switchTemplateLanguage = useCallback(createSafeMethodWrapper('switchTemplateLanguage'), [instance])
+  const getTemplateJson = useCallback(createSafeMethodWrapper('getTemplateJson'), [instance])
+  const loadConfig = useCallback(createSafeMethodWrapper('loadConfig'), [instance])
+  const showComment = useCallback(createSafeMethodWrapper('showComment'), [instance])
+  const updateToken = useCallback(createSafeMethodWrapper('updateToken'), [instance])
+  const toggleMergeTagsPreview = useCallback(createSafeMethodWrapper('toggleMergeTagsPreview'), [instance])
+  const execCommand = useCallback(createSafeMethodWrapper('execCommand'), [instance])
+  const getConfig = useCallback(createSafeMethodWrapper('getConfig'), [instance])
+  const loadStageMode = useCallback(createSafeMethodWrapper('loadStageMode'), [instance])
+  const toggleStructure = useCallback(createSafeMethodWrapper('toggleStructure'), [instance])
+  const loadWorkspace = useCallback(createSafeMethodWrapper('loadWorkspace'), [instance])
+  const startFileManager = useCallback(createSafeMethodWrapper('startFileManager'), [instance])
+  const executeAction = useCallback(createSafeMethodWrapper('executeAction'), [instance])
+  const executeGetConfigAction = useCallback(createSafeMethodWrapper('executeGetConfigAction'), [instance])
 
   return {
     coeditingSessionId: instance?.token.coediting_session_id,

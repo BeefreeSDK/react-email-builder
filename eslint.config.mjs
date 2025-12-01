@@ -41,7 +41,6 @@ const eslintConfig = [{
     ...typescriptEslintPlugin.configs.recommended.rules,
     ...reactPlugin.configs.recommended.rules,
     ...reactHooksPlugin.configs.recommended.rules,
-    // React 17+ JSX transform: React no longer needs to be in scope
     'react/react-in-jsx-scope': 'off',
     'react/jsx-uses-react': 'off',
     'import/order': ['warn', {
