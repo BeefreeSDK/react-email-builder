@@ -13,13 +13,11 @@ describe('useBuilder', () => {
     uid: 'user-1',
     username: 'TestUser',
     templateLanguage: {
-      isMain: true,
       label: 'English (US)',
       value: 'en-US',
-      twoCharsCode: 'en',
     },
     templateLanguages: [
-      { value: 'it-IT', label: 'Italiano', twoCharsCode: 'it', isMain: false },
+      { value: 'it-IT', label: 'Italiano' },
     ],
   }
 
@@ -95,7 +93,6 @@ describe('useBuilder', () => {
     expect(result.current.coeditingSessionId).toBe('session-123')
     expect(result.current.token).toBe(mockInstance.token)
 
-    // Methods are now stable wrapper functions, not direct references
     expect(typeof result.current.reload).toBe('function')
     expect(typeof result.current.preview).toBe('function')
     expect(typeof result.current.load).toBe('function')
@@ -123,7 +120,6 @@ describe('useBuilder', () => {
     expect(typeof result.current.executeAction).toBe('function')
     expect(typeof result.current.executeGetConfigAction).toBe('function')
 
-    // Verify the wrapper functions actually call the underlying instance methods
     act(() => {
       result.current.preview()
       result.current.save()
@@ -213,7 +209,6 @@ describe('useBuilder', () => {
     expect(typeof result.current.executeAction).toBe('function')
     expect(typeof result.current.executeGetConfigAction).toBe('function')
 
-    // Calling them should not throw errors
     expect(() => {
       result.current.preview()
       result.current.save()

@@ -36,6 +36,7 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   const [config, setConfig] = useState<IBeeConfig>(initialConfig)
   const [instance, setInstance] = useState<BeeTypesInstance | null>(builderRegistry.get(config.container) ?? null)
   const isRegistered = useRef(false)
+  const instanceToRegister = builderRegistry.get(config.container) ?? null
 
   // Register config on first render
   if (!isRegistered.current) {
@@ -48,6 +49,7 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   }, [])
 
   useEffect(() => {
+    // Keep registry in sync when config changes
     setConfigInstanceInRegistry(config.container, config)
 
     if (instance) {
@@ -67,10 +69,7 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   // Listen for changes in the builder registry and update the instance when the builder is registered
   useEffect(() => {
     if (startVersion.current < builderRegistryVersion) {
-      const instanceToRegister = builderRegistry.get(config.container) ?? null
-
       setInstance((prevInstance) => {
-        // Do not re-render hook listeners if the instance didn't change
         return prevInstance === instanceToRegister
           ? prevInstance
           : instanceToRegister
