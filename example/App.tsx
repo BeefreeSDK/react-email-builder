@@ -39,8 +39,8 @@ const getToken = async (uid?: string) => {
 }
 
 export const App = () => {
-  const [users, setUsers] = useState<string[]>([names[0]])
-  const [savedRows, setSavedRows] = useState<any>([])
+  const [users, setUsers] = useState<string[]>([...names])
+  const [savedRows, setSavedRows] = useState<IPluginRow[]>([])
   const [token, setToken] = useState<IToken>()
   const [isShared, setIsShared] = useState<boolean>(false)
   const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
@@ -128,6 +128,7 @@ export const App = () => {
     },
   ) => {
     const { handle } = args
+
     switch (handle) {
       case 'saved-rows':
         resolve(savedRows)
@@ -143,7 +144,11 @@ export const App = () => {
             'grid-columns': 12,
             'style': {} as any,
             'uuid': crypto.randomUUID(),
-            'modules': [{ type: 'button', descriptor: {} as any, locked: false, uuid: crypto.randomUUID() }],
+            'modules': [{
+              type: 'mailup-bee-newsletter-modules-button',
+              descriptor: {} as any,
+              locked: false, uuid: crypto.randomUUID()
+            }],
           }],
         }])
         break
@@ -154,12 +159,12 @@ export const App = () => {
 
   const onSaveRowHandler = (savedRow: string): void => {
     console.log(`%c[APP] - onSaveRow ->`, `color:${'#00ff00'}`, savedRow)
-    setSavedRows((prevRows: string[]) => [...prevRows, JSON.parse(savedRow)])
+    setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
   }
 
   const onSaveRowHandlerBis = (savedRow: string) => {
     console.log(`%c[APP] - onSaveRow Bis ->`, `color:${'#00ff00'}`, savedRow)
-    setSavedRows((prevRows: string[]) => [...prevRows, JSON.parse(savedRow)])
+    setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
   }
 
   const saveRowHandler = useCallback(async (resolve: any) => {
@@ -235,7 +240,7 @@ export const App = () => {
                   switchTemplateLanguage={switchTemplateLanguage}
                 />
                 <Builder
-                  id="test"
+                  id={config.container}
                   template={mockTemplate}
                   shared={isShared}
                   onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
@@ -261,13 +266,13 @@ export const App = () => {
                 {sessionId && (
                   <>
                     <Controls
-                      id="bis"
+                      id={config2.container}
                       save={builder2.save}
                       saveAsTemplate={builder2.saveAsTemplate}
                       updateConfig={builder2.updateConfig}
                     />
                     <Builder
-                      id="bis"
+                      id={config2.container}
                       template={mockTemplate}
                       shared={isShared}
                       sessionId={sessionId}
