@@ -111,12 +111,17 @@ const Builder = ({
 
   // Creates and starts SDK instance
   useEffect(() => {
+    if (!token) {
+      throw new Error("Can't start the builder without a token")
+    }
+
     const currentConfig = configRef.current as IBeeConfig
 
     if (instanceRef.current === null && currentConfig.uid && token) {
       instanceRef.current = new BeefreeSDK(token, {
         beePluginUrl: loaderUrl ?? SDK_LOADER_URL,
       })
+
       const beeInstance = instanceRef.current
 
       if (shared && sessionId) {
