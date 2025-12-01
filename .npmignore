@@ -23,6 +23,7 @@ tsconfig.json
 .env
 .env.*
 .DS_Store
+tsconfig.eslint.json
 
 # Documentation
 CONTRIBUTING.md

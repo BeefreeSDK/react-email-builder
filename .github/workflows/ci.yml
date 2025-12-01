@@ -3,17 +3,13 @@ name: CI
 on:
   push:
     branches:
-      - main
-      - develop
-      - "feature/**"
-      - "fix/**"
+      - '*'
     tags:
       - v*
   pull_request:
     branches:
-      - main
-      - develop
-      
+      - '*'
+
 permissions:
   actions: write
   checks: write
@@ -66,7 +62,7 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - uses: actions/cache@v4.2.2
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
