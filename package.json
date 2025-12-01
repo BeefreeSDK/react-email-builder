@@ -43,7 +43,7 @@
     "start": "rollup -c -w",
     "pretest": "yarn prepare && yarn install",
     "clean": "rimraf dist",
-    "prepare": "husky install",
+    "prepare": "husky",
     "prebuild": "yarn clean",
     "prestart": "yarn clean",
     "prerelease": "git pull",
