@@ -42,6 +42,7 @@ const Builder = ({
   onPreviewChange,
   onTemplateLanguageChange,
 }: BuilderPropsWithCallbacks) => {
+
   const container = useMemo(() => {
     if (id) return id
 
@@ -112,7 +113,7 @@ const Builder = ({
   // Creates and starts SDK instance
   useEffect(() => {
     if (!token) {
-      throw new Error("Can't start the builder without a token")
+      throw new Error('Can\'t start the builder without a token')
     }
 
     const currentConfig = configRef.current as IBeeConfig
