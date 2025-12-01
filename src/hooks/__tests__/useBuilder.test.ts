@@ -77,8 +77,6 @@ describe('useBuilder', () => {
       toggleStructure: jest.fn(),
       loadWorkspace: jest.fn(),
       startFileManager: jest.fn(),
-      executeAction: jest.fn(),
-      executeGetConfigAction: jest.fn(),
     } as unknown as BeefreeSDK
 
     const { result } = renderHook(() => useBuilder(mockConfig))
@@ -117,8 +115,6 @@ describe('useBuilder', () => {
     expect(typeof result.current.toggleStructure).toBe('function')
     expect(typeof result.current.loadWorkspace).toBe('function')
     expect(typeof result.current.startFileManager).toBe('function')
-    expect(typeof result.current.executeAction).toBe('function')
-    expect(typeof result.current.executeGetConfigAction).toBe('function')
 
     act(() => {
       result.current.preview()
@@ -132,7 +128,6 @@ describe('useBuilder', () => {
       result.current.getConfig()
       result.current.toggleStructure()
       result.current.loadRows()
-      result.current.executeGetConfigAction()
 
       result.current.reload({} as unknown as IEntityContentJson)
       result.current.load({} as unknown as IEntityContentJson)
@@ -147,7 +142,6 @@ describe('useBuilder', () => {
       result.current.loadStageMode({} as unknown as ILoadStageMode)
       result.current.loadWorkspace({} as unknown as LoadWorkspaceOptions)
       result.current.startFileManager({} as unknown as IBeeConfigFileManager)
-      result.current.executeAction('action')
     })
 
     expect(mockInstance.reload).toHaveBeenCalledTimes(1)
@@ -174,8 +168,6 @@ describe('useBuilder', () => {
     expect(mockInstance.toggleStructure).toHaveBeenCalledTimes(1)
     expect(mockInstance.loadWorkspace).toHaveBeenCalledTimes(1)
     expect(mockInstance.startFileManager).toHaveBeenCalledTimes(1)
-    expect(mockInstance.executeAction).toHaveBeenCalledTimes(1)
-    expect(mockInstance.executeGetConfigAction).toHaveBeenCalledTimes(1)
   })
 
   it('provides stable function references before instance is ready', () => {
@@ -206,8 +198,6 @@ describe('useBuilder', () => {
     expect(typeof result.current.toggleStructure).toBe('function')
     expect(typeof result.current.loadWorkspace).toBe('function')
     expect(typeof result.current.startFileManager).toBe('function')
-    expect(typeof result.current.executeAction).toBe('function')
-    expect(typeof result.current.executeGetConfigAction).toBe('function')
 
     expect(() => {
       result.current.preview()
@@ -221,7 +211,6 @@ describe('useBuilder', () => {
       result.current.getConfig()
       result.current.toggleStructure()
       result.current.loadRows()
-      result.current.executeGetConfigAction()
     }).not.toThrow()
   })
 
@@ -253,8 +242,6 @@ describe('useBuilder', () => {
     const firstToggleStructure = result.current.toggleStructure
     const firstLoadWorkspace = result.current.loadWorkspace
     const firstStartFileManager = result.current.startFileManager
-    const firstExecuteAction = result.current.executeAction
-    const firstExecuteGetConfigAction = result.current.executeGetConfigAction
 
     rerender()
 
@@ -283,7 +270,5 @@ describe('useBuilder', () => {
     expect(result.current.toggleStructure).toBe(firstToggleStructure)
     expect(result.current.loadWorkspace).toBe(firstLoadWorkspace)
     expect(result.current.startFileManager).toBe(firstStartFileManager)
-    expect(result.current.executeAction).toBe(firstExecuteAction)
-    expect(result.current.executeGetConfigAction).toBe(firstExecuteGetConfigAction)
   })
 })

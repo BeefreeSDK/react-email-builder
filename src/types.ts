@@ -81,10 +81,6 @@ export interface UseBuilderReturnDocs {
   loadWorkspace: SDKInstance['loadWorkspace']
   /** Starts the file manager */
   startFileManager: SDKInstance['startFileManager']
-  /** Executes an action */
-  executeAction: SDKInstance['executeAction']
-  /** Executes a get config action */
-  executeGetConfigAction: SDKInstance['executeGetConfigAction']
 }
 
 export interface BuilderCallbacks {

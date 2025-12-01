@@ -108,8 +108,6 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   const toggleStructure = useCallback(createSafeMethodWrapper('toggleStructure'), [instance])
   const loadWorkspace = useCallback(createSafeMethodWrapper('loadWorkspace'), [instance])
   const startFileManager = useCallback(createSafeMethodWrapper('startFileManager'), [instance])
-  const executeAction = useCallback(createSafeMethodWrapper('executeAction'), [instance])
-  const executeGetConfigAction = useCallback(createSafeMethodWrapper('executeGetConfigAction'), [instance])
 
   return {
     coeditingSessionId: instance?.token.coediting_session_id,
@@ -139,7 +137,5 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
     toggleStructure,
     loadWorkspace,
     startFileManager,
-    executeAction,
-    executeGetConfigAction,
   }
 }
