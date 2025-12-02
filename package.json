@@ -57,7 +57,7 @@
     "release:unstable": "yarn prerelease && standard-version --prerelease $(git branch --show-current | sed 's/\\//-/g') && yarn postrelease"
   },
   "lint-staged": {
-    "*.ts": "eslint"
+    "*.{ts,tsx}": "eslint"
   },
   "dependencies": {
     "@beefree.io/sdk": "9.5.1"
