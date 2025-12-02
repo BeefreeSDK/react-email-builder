@@ -12,7 +12,6 @@
   "homepage": "https://github.com/BeefreeSDK/npm-react#readme",
   "author": "Beefree <dev@beefree.io> (https://www.beefree.io)",
   "license": "Apache-2.0",
-  "private": true,
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
