@@ -42,7 +42,6 @@ const Builder = ({
   onPreviewChange,
   onTemplateLanguageChange,
 }: BuilderPropsWithCallbacks) => {
-
   const container = useMemo(() => {
     if (id) return id
 
