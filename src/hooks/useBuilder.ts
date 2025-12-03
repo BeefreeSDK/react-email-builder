@@ -3,6 +3,7 @@ import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import BeeTypesInstance from '@beefree.io/sdk'
 import { useBuilderRegistry, setConfigInstanceInRegistry, removeConfigInstanceFromRegistry } from './useRegistry'
 import { SDKInstance, UseBuilderReturnDocs } from '../types'
+import { deepMerge } from '../utils'
 
 /**
  * Hook for programmatic control of a Beefree SDK builder instance.
@@ -45,7 +46,7 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   }
 
   const updateConfig = useCallback((partialConfig: Partial<IBeeConfig>) => {
-    setConfig(prevConfig => ({ ...prevConfig, ...partialConfig }))
+    setConfig(prevConfig => deepMerge(prevConfig, partialConfig))
   }, [])
 
   useEffect(() => {
