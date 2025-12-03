@@ -130,4 +130,4 @@ jobs:
       - name: Publish package
         run: npm publish --production --access private
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.MAILUP_TEMPORARY_NPM_TOKEN }}
