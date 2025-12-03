@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0-refactor-builder-state.5](https://github.com/BeefreeSDK/npm-react/compare/v1.1.0-refactor-builder-state.4...v1.1.0-refactor-builder-state.5) (2025-12-03)
+
+
+### Bug Fixes
+
+* adds deepmerge ([93fca32](https://github.com/BeefreeSDK/npm-react/commit/93fca322f5a459615b97c66b21777a693343b6df))
+
 ## [1.1.0-refactor-builder-state.4](https://github.com/BeefreeSDK/npm-react/compare/v1.1.0-refactor-builder-state.3...v1.1.0-refactor-builder-state.4) (2025-12-02)
 
 ## [1.1.0-refactor-builder-state.3](https://github.com/BeefreeSDK/npm-react/compare/v1.1.0-refactor-builder-state.2...v1.1.0-refactor-builder-state.3) (2025-12-02)
