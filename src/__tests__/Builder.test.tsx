@@ -1,16 +1,13 @@
 import React from 'react'
 import { render, waitFor } from '@testing-library/react'
 import BeefreeSDK from '@beefree.io/sdk'
-import { IEntityContentJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
+import { IEntityContentJson, IToken } from '@beefree.io/sdk/dist/types/bee'
 import Builder from '../Builder'
 import { setConfigInstanceInRegistry } from '../hooks/useRegistry'
 
 describe('Builder Component', () => {
   const mockToken: IToken = {
     access_token: 'test-token',
-    coediting_session_id: 'session-id',
-    shared: false,
-    status: TokenStatus.OK,
     v2: true,
   }
   const mockTemplate: IEntityContentJson = {

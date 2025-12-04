@@ -59,15 +59,15 @@
     "*.{ts,tsx}": "eslint"
   },
   "dependencies": {
-    "@beefree.io/sdk": "9.5.1"
+    "@beefree.io/sdk": "v10.0.0-fix-itoken-update.0"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^20.0.0",
     "@babel/core": "^7.28.3",
     "@babel/plugin-transform-runtime": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
     "@babel/runtime": "^7.28.3",
+    "@commitlint/config-conventional": "^20.0.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
