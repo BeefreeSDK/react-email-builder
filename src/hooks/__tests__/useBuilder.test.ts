@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react'
 import BeefreeSDK from '@beefree.io/sdk'
 import {
   ExecCommands, IBeeConfig, IBeeConfigFileManager, IEntityContentJson,
-  ILanguage, ILoadStageMode, IToken, LoadWorkspaceOptions,
+  ILanguage, ILoadStageMode, LoadWorkspaceOptions,
 } from '@beefree.io/sdk/dist/types/bee'
 import { useBuilder } from '../useBuilder'
 import { setBuilderInstanceToRegistry, getConfigRegistry } from '../useRegistry'
@@ -88,7 +88,6 @@ describe('useBuilder', () => {
     // loadConfig should not be called when instance is first registered since config hasn't changed
     expect(mockInstance.loadConfig).toHaveBeenCalledTimes(0)
 
-    expect(result.current.coeditingSessionId).toBe('session-123')
     expect(result.current.token).toBe(mockInstance.token)
 
     expect(typeof result.current.reload).toBe('function')
@@ -137,7 +136,7 @@ describe('useBuilder', () => {
       result.current.switchTemplateLanguage({} as unknown as ILanguage)
       result.current.loadConfig({})
       result.current.showComment('comment-id')
-      result.current.updateToken({} as unknown as IToken)
+      result.current.updateToken({ access_token: 'new-token', v2: true })
       result.current.execCommand({} as unknown as ExecCommands)
       result.current.loadStageMode({} as unknown as ILoadStageMode)
       result.current.loadWorkspace({} as unknown as LoadWorkspaceOptions)

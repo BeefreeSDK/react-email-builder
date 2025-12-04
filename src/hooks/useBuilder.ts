@@ -111,7 +111,6 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   const startFileManager = useCallback(createSafeMethodWrapper('startFileManager'), [instance])
 
   return {
-    coeditingSessionId: instance?.token.coediting_session_id,
     token: instance?.token,
     updateConfig,
     reload,

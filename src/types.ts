@@ -8,8 +8,6 @@ export type SDKInstance = NonNullable<BeeTypesInstance>
  * Return type of the useBuilder hook
  */
 export interface UseBuilderReturnDocs {
-  /** The current coediting session ID, if available */
-  coeditingSessionId?: string | null
   /** The current SDK token information */
   token?: SDKInstance['token']
   /**
