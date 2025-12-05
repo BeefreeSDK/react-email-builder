@@ -59,7 +59,7 @@
     "*.{ts,tsx}": "eslint"
   },
   "dependencies": {
-    "@beefree.io/sdk": "v10.0.0-fix-itoken-update.0"
+    "@beefree.io/sdk": "10.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.3",

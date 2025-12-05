@@ -441,10 +441,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@beefree.io/sdk@v10.0.0-fix-itoken-update.0":
-  version "10.0.0-fix-itoken-update.0"
-  resolved "https://registry.yarnpkg.com/@beefree.io/sdk/-/sdk-10.0.0-fix-itoken-update.0.tgz#52283a3d889d3b0fc6d884b5771368717dff8f03"
-  integrity sha512-83B0CH3nXRfYwr6975AAa0cGDzC3n3AqxZ51acMI5yMgK0PKFM1r38SppNDpJoIqsOdHcnpg8E97sV2vEdqX5A==
+"@beefree.io/sdk@10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@beefree.io/sdk/-/sdk-10.0.0.tgz#829ccd5e629a884e2daf6c94206a5eb4f02c2f21"
+  integrity sha512-1X5mPOKysF1wAUmpsqhvIOdRXaPBY+aKdLXvKfaKnl1M6gpKOmkClr8Ew1UzltTdoq1ied7FfRDmEsyuW98iSw==
   dependencies:
     fp-ts "^2.13.1"
     load-script "^2.0.0"

@@ -3,7 +3,6 @@ import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import BeeTypesInstance from '@beefree.io/sdk'
 import { useBuilderRegistry, setConfigInstanceInRegistry, removeConfigInstanceFromRegistry } from './useRegistry'
 import { SDKInstance, UseBuilderReturnDocs } from '../types'
-import { deepMerge } from '../utils'
 
 /**
  * Hook for programmatic control of a Beefree SDK builder instance.
@@ -45,21 +44,14 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
     setConfigInstanceInRegistry(initialConfig.container, initialConfig)
   }
 
-  const updateConfig = useCallback((partialConfig: Partial<IBeeConfig>) => {
-    setConfig(prevConfig => deepMerge(prevConfig, partialConfig))
-  }, [])
-
-  useEffect(() => {
-    // Keep registry in sync when config changes
-    setConfigInstanceInRegistry(config.container, config)
-
+  const updateConfig = useCallback(async (partialConfig: Partial<IBeeConfig>) => {
     if (instance) {
-      instance.loadConfig?.(config)
+      // @ts-expect-error I need to publish another package types version
+      instance.loadConfig(partialConfig).then((configResponse) => {
+        setConfig(configResponse)
+      })
     }
-
-    // Instance should not be listed
-    // since loadConfig should run only when config changes
-  }, [config])
+  }, [instance])
 
   useEffect(() => {
     return () => {
@@ -76,7 +68,7 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
           : instanceToRegister
       })
     }
-  }, [builderRegistry, builderRegistryVersion, config.container])
+  }, [builderRegistryVersion])
 
   const createSafeMethodWrapper = <K extends keyof SDKInstance>(methodName: K) => {
     return (...args: Parameters<SDKInstance[K]>) => {
@@ -111,7 +103,6 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   const startFileManager = useCallback(createSafeMethodWrapper('startFileManager'), [instance])
 
   return {
-    token: instance?.token,
     updateConfig,
     reload,
     preview,
