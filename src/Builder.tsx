@@ -125,7 +125,7 @@ const Builder = ({
       const beeInstance = instanceRef.current
 
       if (shared && sessionId) {
-        void beeInstance.join(configRef.current, sessionId).then(() => {
+        void beeInstance.join(configRef.current, sessionId, bucketDir).then(() => {
           setEditorReady(true)
         }).catch((error) => {
           console.error('Error joining the shared session:', error)
