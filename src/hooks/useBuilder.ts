@@ -33,10 +33,10 @@ import { SDKInstance, UseBuilderReturnDocs } from '../types'
 export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   const [builderRegistry, builderRegistryVersion] = useBuilderRegistry()
   const startVersion = useRef<number>(builderRegistryVersion)
-  const [config, setConfig] = useState<IBeeConfig>(initialConfig)
-  const [instance, setInstance] = useState<BeeTypesInstance | null>(builderRegistry.get(config.container) ?? null)
+  const [config, setConfig] = useState<Partial<IBeeConfig>>(initialConfig)
+  const [instance, setInstance] = useState<BeeTypesInstance | null>(builderRegistry.get(config.container ?? '') ?? null)
   const isRegistered = useRef(false)
-  const instanceToRegister = builderRegistry.get(config.container) ?? null
+  const instanceToRegister = builderRegistry.get(config.container ?? '') ?? null
 
   // Register config on first render
   if (!isRegistered.current) {
@@ -46,7 +46,6 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
 
   const updateConfig = useCallback(async (partialConfig: Partial<IBeeConfig>) => {
     if (instance) {
-      // @ts-expect-error I need to publish another package types version
       instance.loadConfig(partialConfig).then((configResponse) => {
         setConfig(configResponse)
       })

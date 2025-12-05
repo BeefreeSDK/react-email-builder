@@ -55,7 +55,9 @@ export const removeBuilderInstanceFromRegistry = (key: string) => {
   notifyRegistryChanged()
 }
 
-export const removeConfigInstanceFromRegistry = (key: string) => {
-  configRegistry.delete(key)
-  notifyRegistryChanged()
+export const removeConfigInstanceFromRegistry = (key?: string) => {
+  if (key) {
+    configRegistry.delete(key)
+    notifyRegistryChanged()
+  }
 }
