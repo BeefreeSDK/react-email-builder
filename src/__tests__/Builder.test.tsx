@@ -96,6 +96,7 @@ describe('Builder Component', () => {
     expect(mockJoin).toHaveBeenCalledWith(
       expect.objectContaining({ container: 'test-container' }),
       'test-session',
+      undefined,
     )
   })
 

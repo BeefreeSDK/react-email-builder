@@ -4,6 +4,11 @@ import { Builder, IBeeConfig, useBuilder } from '../src/index'
 import { Controls } from './Controls'
 import { mockTemplate } from './mockTemplate'
 
+interface ISaveRowResult {
+  name: string
+  [key: string]: unknown
+}
+
 const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'George', 'Hannah']
 
 interface IMention {
@@ -24,7 +29,7 @@ const getToken = async (uid?: string) => {
    *                                                            *
    * ************************************************************
    */
-  const AUTH_URL = 'https://pre-bee-auth.getbee.info/loginV2'
+  const AUTH_URL = 'https://qa-bee-auth.getbee.io/loginV2'
 
   const response = await fetch(AUTH_URL, {
     method: 'POST',
@@ -54,6 +59,7 @@ export const App = () => {
       uid: 'demo-user',
       userHandle: 'test',
       userColor: '#fff',
+      saveRows: true,
       templateLanguage: {
         isMain: true,
         label: 'English (US)',
@@ -134,23 +140,7 @@ export const App = () => {
         resolve(savedRows)
         break
       case 'custom-rows':
-        resolve([{
-          name: 'One button',
-          container: {} as any,
-          content: {},
-          type: 'four-columns-empty',
-          uuid: crypto.randomUUID(),
-          columns: [{
-            'grid-columns': 12,
-            'style': {} as any,
-            'uuid': crypto.randomUUID(),
-            'modules': [{
-              type: 'mailup-bee-newsletter-modules-button',
-              descriptor: {} as any,
-              locked: false, uuid: crypto.randomUUID()
-            }],
-          }],
-        }])
+        resolve([])
         break
       default:
         reject()
@@ -167,8 +157,13 @@ export const App = () => {
     setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
   }
 
-  const saveRowHandler = useCallback(async (resolve: any) => {
-    resolve({ name: 'row' })
+  const saveRowHandler = useCallback(async (resolve: (result: ISaveRowResult) => void) => {
+    console.log(`%c[APP] - saveRow handler ->`, `color:${'#00ff00'}`)
+    resolve({ name: 'row from config update' })
+  }, [])
+
+  const sendInviteHandler = useCallback((resolve: unknown, reject: unknown, args: unknown) => {
+    console.log(`%c[APP] - sendInvite handler ->`, `color:${'#00ff00'}`, args)
   }, [])
 
   const errorHandler = useCallback((error: BeePluginError) => {
@@ -187,7 +182,7 @@ export const App = () => {
     console.log(`%c[APP] - onWarning Bis ->`, `color:${'#fbda00'}`, warning)
   }, [])
 
-  const onSave2 = useCallback((...args: any) => {
+  const onSave2 = useCallback((args: unknown) => {
     console.log(`%c[APP] - onSave Bis ->`, `color:${'#00ff00'}`, args)
   }, [])
 
@@ -216,9 +211,13 @@ export const App = () => {
           label: 'Save',
           handler: saveRowHandler,
         },
+        getMention: {
+          label: 'Send an invite',
+          handler: sendInviteHandler,
+        },
       },
     })
-  }, [updateConfig])
+  }, [updateConfig, getRowsHandler, saveRowHandler, sendInviteHandler, getMentionsHandler])
 
   return (
     <>
@@ -245,20 +244,20 @@ export const App = () => {
                   shared={isShared}
                   onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
                   token={token}
-                  onSave={(...args: any) => {
+                  onSave={(args: unknown) => {
                     console.log(`%c[APP] - onSave ->`, `color:${'#00ff00'}`, args)
                   }}
-                  onChange={(...args: any) => {
+                  onChange={(args: unknown) => {
                     console.log(`%c[APP] - onChange ->`, `color:${'#aaf7ff'}`, args)
                   }}
-                  onRemoteChange={(...args: any) => {
+                  onRemoteChange={(args: unknown) => {
                     console.log(`%c[APP] - onRemoteChange ->`, `color:${'#fff7aa'}`, args)
                   }}
                   onSaveRow={onSaveRowHandler}
                   onError={errorHandler}
                   onWarning={warningHandler}
                   height="800px"
-                  loaderUrl="https://pre-bee-loader.getbee.info/v2/api/loader"
+                  loaderUrl="https://qa-bee-loader.getbee.io/v2/api/loader"
                   onTemplateLanguageChange={(language) => {
                     console.log(`%c[APP] - onTemplateLanguageChange ->`, `color:${'#ff00ff'}`, language)
                   }}
@@ -288,7 +287,7 @@ export const App = () => {
                       onError={errorHandlerBis}
                       onWarning={warningHandlerBis}
                       height="800px"
-                      loaderUrl="https://pre-bee-loader.getbee.info/v2/api/loader"
+                      loaderUrl="https://qa-bee-loader.getbee.io/v2/api/loader"
                     />
                   </>
                 )}

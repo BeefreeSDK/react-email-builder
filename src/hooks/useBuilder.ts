@@ -44,10 +44,12 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
     setConfigInstanceInRegistry(initialConfig.container, initialConfig)
   }
 
-  const updateConfig = useCallback(async (partialConfig: Partial<IBeeConfig>) => {
+  const updateConfig = useCallback((partialConfig: Partial<IBeeConfig>) => {
     if (instance) {
       instance.loadConfig(partialConfig).then((configResponse) => {
         setConfig(configResponse)
+      }).catch((error) => {
+        console.error('Error updating builder config:', error)
       })
     }
   }, [instance])
