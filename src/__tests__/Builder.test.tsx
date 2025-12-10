@@ -52,7 +52,7 @@ describe('Builder Component', () => {
 
   it('renders container div with default height and width', () => {
     const { container } = render(
-      <Builder id="test-container" token={mockToken} template={mockTemplate} />,
+      <Builder token={mockToken} template={mockTemplate} />,
     )
 
     const div = container.querySelector('#test-container')
@@ -62,7 +62,7 @@ describe('Builder Component', () => {
 
   it('renders container div with custom height and width', () => {
     const { container } = render(
-      <Builder id="test-container" token={mockToken} template={mockTemplate} height="600px" width="80%" />,
+      <Builder token={mockToken} template={mockTemplate} height="600px" width="80%" />,
     )
 
     const div = container.querySelector('#test-container')
@@ -78,7 +78,7 @@ describe('Builder Component', () => {
       loadConfig: jest.fn(),
     }))
 
-    render(<Builder id="test-container" token={mockToken} template={mockTemplate} />)
+    render(<Builder token={mockToken} template={mockTemplate} />)
 
     expect(mockStart).toHaveBeenCalled()
   })
@@ -91,7 +91,7 @@ describe('Builder Component', () => {
       loadConfig: jest.fn(),
     }))
 
-    render(<Builder id="test-container" token={mockToken} template={mockTemplate} shared sessionId="test-session" />)
+    render(<Builder token={mockToken} template={mockTemplate} shared sessionId="test-session" />)
 
     expect(mockJoin).toHaveBeenCalledWith(
       expect.objectContaining({ container: 'test-container' }),
@@ -108,7 +108,7 @@ describe('Builder Component', () => {
       loadConfig: mockLoadConfig,
     }))
 
-    render(<Builder id="test-container" token={mockToken} template={mockTemplate} />)
+    render(<Builder token={mockToken} template={mockTemplate} />)
 
     await waitFor(() => expect(mockStart).toHaveBeenCalled())
     expect(mockLoadConfig).not.toHaveBeenCalled()
@@ -122,12 +122,12 @@ describe('Builder Component', () => {
       loadConfig: mockLoadConfig,
     }))
 
-    const { rerender } = render(<Builder id="test-container" token={mockToken} template={mockTemplate} />)
+    const { rerender } = render(<Builder token={mockToken} template={mockTemplate} />)
 
     await waitFor(() => expect(mockStart).toHaveBeenCalled())
 
     setConfigInstanceInRegistry('test-container', { container: 'test-container', uid: 'test-uid', username: 'Updated' })
-    rerender(<Builder id="test-container" token={mockToken} template={mockTemplate} />)
+    rerender(<Builder token={mockToken} template={mockTemplate} />)
 
     expect(mockStart).toHaveBeenCalled()
   })
