@@ -5,7 +5,7 @@ import {
   ILanguage, ILoadStageMode, LoadWorkspaceOptions,
 } from '@beefree.io/sdk/dist/types/bee'
 import { useBuilder } from '../useBuilder'
-import { setBuilderInstanceToRegistry, getConfigRegistry } from '../useRegistry'
+import { setSDKInstanceToRegistry, getConfigRegistry } from '../useRegistry'
 
 describe('useBuilder', () => {
   const mockConfig: IBeeConfig = {
@@ -82,7 +82,7 @@ describe('useBuilder', () => {
     const { result } = renderHook(() => useBuilder(mockConfig))
 
     act(() => {
-      setBuilderInstanceToRegistry('test', mockInstance)
+      setSDKInstanceToRegistry('test', mockInstance)
     })
 
     // loadConfig should not be called when instance is first registered since config hasn't changed

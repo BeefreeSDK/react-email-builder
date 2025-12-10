@@ -1,9 +1,8 @@
-import React from 'react'
 import { render, waitFor } from '@testing-library/react'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IEntityContentJson, IToken } from '@beefree.io/sdk/dist/types/bee'
 import Builder from '../Builder'
-import { setConfigInstanceInRegistry } from '../hooks/useRegistry'
+import { setConfigInRegistry } from '../hooks/useRegistry'
 
 describe('Builder Component', () => {
   const mockToken: IToken = {
@@ -47,7 +46,7 @@ describe('Builder Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    setConfigInstanceInRegistry('test-container', { container: 'test-container', uid: 'test-uid' })
+    setConfigInRegistry('test-container', { container: 'test-container', uid: 'test-uid' })
   })
 
   it('renders container div with default height and width', () => {
@@ -126,7 +125,7 @@ describe('Builder Component', () => {
 
     await waitFor(() => expect(mockStart).toHaveBeenCalled())
 
-    setConfigInstanceInRegistry('test-container', { container: 'test-container', uid: 'test-uid', username: 'Updated' })
+    setConfigInRegistry('test-container', { container: 'test-container', uid: 'test-uid', username: 'Updated' })
     rerender(<Builder token={mockToken} template={mockTemplate} />)
 
     expect(mockStart).toHaveBeenCalled()

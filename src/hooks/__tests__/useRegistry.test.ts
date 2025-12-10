@@ -2,12 +2,12 @@ import { renderHook, act } from '@testing-library/react'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import {
-  useBuilderRegistry,
+  useSDKInstanceRegistry,
   useConfigRegistry,
-  setBuilderInstanceToRegistry,
-  setConfigInstanceInRegistry,
-  removeBuilderInstanceFromRegistry,
-  removeConfigInstanceFromRegistry,
+  setSDKInstanceToRegistry,
+  setConfigInRegistry,
+  removeSDKInstanceFromRegistry,
+  removeConfigFromRegistry,
 } from '../useRegistry'
 
 describe('useRegistry', () => {
@@ -15,10 +15,10 @@ describe('useRegistry', () => {
   const mockConfig: IBeeConfig = { container: 'test', uid: 'user-1' }
 
   it('registers and retrieves builder instance', () => {
-    const { result } = renderHook(() => useBuilderRegistry())
+    const { result } = renderHook(() => useSDKInstanceRegistry())
 
     act(() => {
-      setBuilderInstanceToRegistry('test', mockInstance)
+      setSDKInstanceToRegistry('test', mockInstance)
     })
 
     const [registry] = result.current
@@ -29,7 +29,7 @@ describe('useRegistry', () => {
     const { result } = renderHook(() => useConfigRegistry())
 
     act(() => {
-      setConfigInstanceInRegistry('test', mockConfig)
+      setConfigInRegistry('test', mockConfig)
     })
 
     const [registry] = result.current
@@ -37,11 +37,11 @@ describe('useRegistry', () => {
   })
 
   it('removes builder instance', () => {
-    const { result } = renderHook(() => useBuilderRegistry())
+    const { result } = renderHook(() => useSDKInstanceRegistry())
 
     act(() => {
-      setBuilderInstanceToRegistry('test', mockInstance)
-      removeBuilderInstanceFromRegistry('test')
+      setSDKInstanceToRegistry('test', mockInstance)
+      removeSDKInstanceFromRegistry('test')
     })
 
     const [registry] = result.current
@@ -52,8 +52,8 @@ describe('useRegistry', () => {
     const { result } = renderHook(() => useConfigRegistry())
 
     act(() => {
-      setConfigInstanceInRegistry('test', mockConfig)
-      removeConfigInstanceFromRegistry('test')
+      setConfigInRegistry('test', mockConfig)
+      removeConfigFromRegistry('test')
     })
 
     const [registry] = result.current
@@ -61,11 +61,11 @@ describe('useRegistry', () => {
   })
 
   it('increments version on registry update', () => {
-    const { result } = renderHook(() => useBuilderRegistry())
+    const { result } = renderHook(() => useSDKInstanceRegistry())
     const initialVersion = result.current[1]
 
     act(() => {
-      setBuilderInstanceToRegistry('test', mockInstance)
+      setSDKInstanceToRegistry('test', mockInstance)
     })
 
     expect(result.current[1]).toBeGreaterThan(initialVersion)

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import BeeTypesInstance from '@beefree.io/sdk'
-import { useBuilderRegistry, setConfigInstanceInRegistry, removeConfigInstanceFromRegistry } from './useRegistry'
+import { useSDKInstanceRegistry, setConfigInRegistry, removeConfigFromRegistry } from './useRegistry'
 import { SDKInstance, UseBuilderReturnDocs } from '../types'
 
 /**
@@ -31,17 +31,17 @@ import { SDKInstance, UseBuilderReturnDocs } from '../types'
  * ```
  */
 export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
-  const [builderRegistry, builderRegistryVersion] = useBuilderRegistry()
-  const startVersion = useRef<number>(builderRegistryVersion)
+  const [sdkInstanceRegistry, sdkInstanceRegistryVersion] = useSDKInstanceRegistry()
+  const startVersion = useRef<number>(sdkInstanceRegistryVersion)
   const [config, setConfig] = useState<Partial<IBeeConfig>>(initialConfig)
-  const [instance, setInstance] = useState<BeeTypesInstance | null>(builderRegistry.get(config.container ?? '') ?? null)
+  const [instance, setInstance] = useState<BeeTypesInstance | null>(sdkInstanceRegistry.get(config.container ?? '') ?? null)
   const isRegistered = useRef(false)
-  const instanceToRegister = builderRegistry.get(config.container ?? '') ?? null
+  const instanceToRegister = sdkInstanceRegistry.get(config.container ?? '') ?? null
 
   // Register config on first render
   if (!isRegistered.current) {
     isRegistered.current = true
-    setConfigInstanceInRegistry(initialConfig.container, initialConfig)
+    setConfigInRegistry(initialConfig.container, initialConfig)
   }
 
   const updateConfig = useCallback((partialConfig: Partial<IBeeConfig>) => {
@@ -56,20 +56,20 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
 
   useEffect(() => {
     return () => {
-      removeConfigInstanceFromRegistry(config.container)
+      removeConfigFromRegistry(config.container)
     }
   }, [config.container])
 
   // Listen for changes in the builder registry and update the instance when the builder is registered
   useEffect(() => {
-    if (startVersion.current < builderRegistryVersion) {
+    if (startVersion.current < sdkInstanceRegistryVersion) {
       setInstance((prevInstance) => {
         return prevInstance === instanceToRegister
           ? prevInstance
           : instanceToRegister
       })
     }
-  }, [builderRegistryVersion])
+  }, [sdkInstanceRegistryVersion])
 
   const createSafeMethodWrapper = <K extends keyof SDKInstance>(methodName: K) => {
     return (...args: Parameters<SDKInstance[K]>) => {
