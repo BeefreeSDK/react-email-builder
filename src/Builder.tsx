@@ -3,9 +3,11 @@ import BeefreeSDK from '@beefree.io/sdk'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import { SDK_LOADER_URL } from './constants'
 import {
-  setBuilderInstanceToRegistry,
-  removeBuilderInstanceFromRegistry,
+  setSDKInstanceToRegistry,
+  removeSDKInstanceFromRegistry,
   getConfigRegistry,
+  useSDKInstanceRegistry,
+  reserveContainer,
 } from './hooks/useRegistry'
 import { BuilderPropsWithCallbacks } from './types'
 
@@ -18,7 +20,6 @@ const Builder = ({
   sessionId,
   loaderUrl,
   bucketDir,
-  id,
   onLoad,
   onPreview,
   onTogglePreview,
@@ -42,18 +43,48 @@ const Builder = ({
   onPreviewChange,
   onTemplateLanguageChange,
 }: BuilderPropsWithCallbacks) => {
-  const container = useMemo(() => {
-    if (id) return id
+  const configRegistry = getConfigRegistry()
+  const containerKeys = Array.from(configRegistry.keys())
+  const [sdkInstanceRegistry] = useSDKInstanceRegistry()
+  const [editorReady, setEditorReady] = useState(false)
+  const instanceRef = useRef<BeefreeSDK>(null)
+  const containerRef = useRef<string | null>(null)
 
-    const registry = getConfigRegistry()
-    const firstConfig = registry.values().next().value
+  if (containerRef.current === null) {
+    const findFirstContainerWithoutInstance = (): string | null => {
+      for (const containerKey of containerKeys) {
+        const hasSdkInstance = sdkInstanceRegistry.has(containerKey)
 
-    if (!firstConfig) {
-      throw new Error('Builder requires at least the container in config to be registered')
+        if (!hasSdkInstance) {
+          return containerKey
+        }
+      }
+      return null
     }
 
-    return firstConfig.container
-  }, [id])
+    const candidate = findFirstContainerWithoutInstance()
+
+    if (candidate) {
+      containerRef.current = candidate
+      // Prevent other instances from using the current container
+      reserveContainer(candidate)
+    }
+    else {
+      const firstConfig = configRegistry.values().next().value
+
+      if (!firstConfig) {
+        throw new Error('Builder requires at least the container in config to be registered')
+      }
+
+      containerRef.current = firstConfig.container
+    }
+  }
+
+  if (!containerRef.current) {
+    throw new Error('Failed to initialize container')
+  }
+
+  const container = containerRef.current
 
   const callbacksRef = useRef({
     onLoad,
@@ -81,8 +112,8 @@ const Builder = ({
   })
 
   const config = useMemo(() => {
-    const registry = getConfigRegistry()
-    const builderConfig = registry.get(container) || {}
+    const configRegistry = getConfigRegistry()
+    const builderConfig = configRegistry.get(container) || {}
 
     return {
       container,
@@ -95,17 +126,12 @@ const Builder = ({
   const configRef = useRef(config)
   configRef.current = config
 
-  const [editorReady, setEditorReady] = useState(false)
-
-  // instance is created only once for this component
-  const instanceRef = useRef<BeefreeSDK>(null)
-
   useEffect(() => {
     if (editorReady && instanceRef.current) {
-      setBuilderInstanceToRegistry(container, instanceRef.current)
+      setSDKInstanceToRegistry(container, instanceRef.current)
     }
     return () => {
-      removeBuilderInstanceFromRegistry(container)
+      removeSDKInstanceFromRegistry(container)
     }
   }, [container, editorReady])
 

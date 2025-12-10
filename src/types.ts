@@ -114,7 +114,6 @@ export interface BuilderProps {
   sessionId?: string
   loaderUrl?: string
   bucketDir?: string
-  id?: string
 }
 
 export interface BuilderPropsWithCallbacks extends BuilderProps, BuilderCallbacks {}
