@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0-refactor-builder-state.11](https://github.com/BeefreeSDK/npm-react/compare/v1.1.0-refactor-builder-state.10...v1.1.0-refactor-builder-state.11) (2025-12-10)
+
 ## [1.1.0-refactor-builder-state.10](https://github.com/BeefreeSDK/npm-react/compare/v1.1.0-refactor-builder-state.9...v1.1.0-refactor-builder-state.10) (2025-12-10)
 
 ## [1.1.0-refactor-builder-state.9](https://github.com/BeefreeSDK/npm-react/compare/v1.1.0-refactor-builder-state.8...v1.1.0-refactor-builder-state.9) (2025-12-09)
