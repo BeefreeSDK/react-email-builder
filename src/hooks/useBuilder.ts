@@ -49,7 +49,7 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
       instance.loadConfig(partialConfig).then((configResponse) => {
         setConfig(configResponse)
       }).catch((error) => {
-        console.error('Error updating builder config:', error)
+        console.warn('Warning updating builder config:', error)
       })
     }
   }, [instance])
