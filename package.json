@@ -45,7 +45,7 @@
     "prepare": "husky",
     "prebuild": "yarn clean",
     "prestart": "yarn clean",
-    "prerelease": "git pull",
+    "prerelease": "git pull && yarn prebuild && yarn test:ci && yarn build",
     "lint": "eslint ./src --ext ts",
     "test": "yarn pretest && jest --watch",
     "test:ci": "jest --runInBand --bail",
