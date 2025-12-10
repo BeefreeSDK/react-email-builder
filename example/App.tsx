@@ -239,7 +239,6 @@ export const App = () => {
                   switchTemplateLanguage={switchTemplateLanguage}
                 />
                 <Builder
-                  id={config.container}
                   template={mockTemplate}
                   shared={isShared}
                   onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
@@ -271,7 +270,6 @@ export const App = () => {
                       updateConfig={builder2.updateConfig}
                     />
                     <Builder
-                      id={config2.container}
                       template={mockTemplate}
                       shared={isShared}
                       sessionId={sessionId}
