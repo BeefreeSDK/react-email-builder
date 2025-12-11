@@ -49,7 +49,13 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
       instance.loadConfig(partialConfig).then((configResponse) => {
         setConfig(configResponse)
       }).catch((error) => {
-        console.warn('Warning updating builder config:', error)
+        // debounce warning but handled by the loader
+        if (error.code === 3001) {
+          console.warn('Warning updating builder config:', error)
+        }
+        else {
+          console.error('Error updating builder config:', error)
+        }
       })
     }
   }, [instance])
