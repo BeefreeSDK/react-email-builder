@@ -29,27 +29,6 @@ describe('useBuilder', () => {
     expect(registryConfig).toEqual(mockConfig)
   })
 
-  /*  it('updates config (registry reflects changes)', async () => {
-    const { result } = renderHook(() => useBuilder(mockConfig))
-    let registryConfig = getConfigRegistry().get(mockConfig.container)
-
-    expect(registryConfig?.username).toBe('TestUser')
-
-    const updateConfigSpy = jest.spyOn(result.current, 'updateConfig')
-
-    await waitFor(() => {
-      result.current.updateConfig({ username: 'Updated' })
-    })
-
-    expect(updateConfigSpy).toHaveBeenCalledTimes(1)
-    expect(updateConfigSpy).toHaveBeenCalledWith({ username: 'Updated' })
-
-    registryConfig = getConfigRegistry().get(mockConfig.container)
-    expect(registryConfig?.username).toBe('Updated')
-
-    updateConfigSpy.mockRestore()
-  }) */
-
   it('returns instance methods when registered', () => {
     const mockInstance = {
       token: { coediting_session_id: 'session-123' },
