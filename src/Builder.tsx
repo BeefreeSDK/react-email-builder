@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
-import { SDK_LOADER_URL } from './constants'
 import {
   setSDKInstanceToRegistry,
   removeSDKInstanceFromRegistry,
@@ -11,38 +10,40 @@ import {
 } from './hooks/useRegistry'
 import { BuilderPropsWithCallbacks } from './types'
 
-const Builder = ({
-  token,
-  template,
-  width,
-  height,
-  shared,
-  sessionId,
-  loaderUrl,
-  bucketDir,
-  onLoad,
-  onPreview,
-  onTogglePreview,
-  onSessionStarted,
-  onSessionChange,
-  onReady,
-  onSave,
-  onSaveRow,
-  onError,
-  onAutoSave,
-  onSaveAsTemplate,
-  onStart,
-  onSend,
-  onChange,
-  onRemoteChange,
-  onWarning,
-  onComment,
-  onInfo,
-  onLoadWorkspace,
-  onViewChange,
-  onPreviewChange,
-  onTemplateLanguageChange,
-}: BuilderPropsWithCallbacks) => {
+const Builder = (props: BuilderPropsWithCallbacks) => {
+  const {
+    token,
+    template,
+    width,
+    height,
+    shared,
+    sessionId,
+    loaderUrl,
+    bucketDir,
+    onLoad,
+    onPreview,
+    onTogglePreview,
+    onSessionStarted,
+    onSessionChange,
+    onReady,
+    onSave,
+    onSaveRow,
+    onError,
+    onAutoSave,
+    onSaveAsTemplate,
+    onStart,
+    onSend,
+    onChange,
+    onRemoteChange,
+    onWarning,
+    onComment,
+    onInfo,
+    onLoadWorkspace,
+    onViewChange,
+    onPreviewChange,
+    onTemplateLanguageChange,
+  } = props
+
   const configRegistry = getConfigRegistry()
   const containerKeys = Array.from(configRegistry.keys())
   const [sdkInstanceRegistry] = useSDKInstanceRegistry()
@@ -145,7 +146,7 @@ const Builder = ({
 
     if (instanceRef.current === null && currentConfig.uid && token) {
       instanceRef.current = new BeefreeSDK(token, {
-        beePluginUrl: loaderUrl ?? SDK_LOADER_URL,
+        beePluginUrl: loaderUrl,
       })
 
       const beeInstance = instanceRef.current

@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react'
-import { BeePluginError, IPluginRow, IToken } from '@beefree.io/sdk/dist/types/bee'
-import { Builder, IBeeConfig, useBuilder } from '../src/index'
+import { useCallback, useEffect, useState } from 'react'
+import { Builder, useBuilder } from '../dist/index.es'
+import type { IToken, IBeeConfig, BeePluginError, IPluginRow, ILanguage } from '../dist/index.d.ts'
 import { Controls } from './Controls'
 import { mockTemplate } from './mockTemplate'
 
@@ -43,69 +43,60 @@ const getToken = async (uid?: string) => {
   return response.json()
 }
 
+const config: IBeeConfig = {
+  container: 'test',
+  username: 'Tester',
+  uid: 'demo-user',
+  userHandle: 'test',
+  userColor: '#fff',
+  saveRows: true,
+  templateLanguage: {
+    label: 'English (US)',
+    value: 'en-US',
+  },
+  templateLanguages: [
+    { value: 'it-IT', label: 'Italiano' },
+  ],
+  rowsConfiguration: {
+    emptyRows: true,
+    defaultRows: true,
+    externalContentURLs: [
+      {
+        name: 'Saved rows',
+        handle: 'saved-rows',
+        isLocal: true,
+      },
+      {
+        name: 'Custom rows',
+        handle: 'custom-rows',
+        isLocal: true,
+        behaviors: {
+          canEdit: false,
+          canDelete: false,
+        },
+      },
+    ],
+  },
+}
+
+const config1 = ({ ...config })
+const config2 = {
+  ...config,
+  username: 'User 2',
+  container: 'bis',
+  userColor: '#000',
+  userHandle: 'bis',
+}
+
 export const App = () => {
-  const [users, setUsers] = useState<string[]>([...names])
+  const [users, setUsers] = useState<string[]>(names)
   const [savedRows, setSavedRows] = useState<IPluginRow[]>([])
   const [token, setToken] = useState<IToken>()
   const [isShared, setIsShared] = useState<boolean>(false)
   const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
   const [sessionId, setSessionId] = useState<string | null>(null)
 
-  const config: IBeeConfig = useMemo(() => {
-    console.log(`%c[APP] - config ->`, `color:${'#a100ff'}`, 'config object re-created')
-    return ({
-      container: 'test',
-      username: 'Tester',
-      uid: 'demo-user',
-      userHandle: 'test',
-      userColor: '#fff',
-      saveRows: true,
-      templateLanguage: {
-        isMain: true,
-        label: 'English (US)',
-        value: 'en-US',
-        twoCharsCode: 'en',
-      },
-      templateLanguages: [
-        { value: 'it-IT', label: 'Italiano', twoCharsCode: 'it', isMain: false },
-      ],
-      rowsConfiguration: {
-        emptyRows: true,
-        defaultRows: true,
-        externalContentURLs: [
-          {
-            name: 'Saved rows',
-            handle: 'saved-rows',
-            isLocal: true,
-          },
-          {
-            name: 'Custom rows',
-            handle: 'custom-rows',
-            isLocal: true,
-            behaviors: {
-              canEdit: false,
-              canDelete: false,
-            },
-          },
-        ],
-      },
-    })
-  }, [])
-
   console.log(`%csf: App - App ->`, `color:${'#00ff00'}`, { sessionId })
-
-  const config1 = useMemo(() => ({ ...config }), [config])
-  const config2 = useMemo(() => {
-    const result = {
-      ...config,
-      username: 'User 2',
-      container: 'bis',
-      userColor: '#000',
-      userHandle: 'bis',
-    }
-    console.log('[APP] config2 created:', result.username, result.userHandle, result.userColor, result.container)
-    return result
-  }, [config])
 
   const { updateConfig, save, saveAsTemplate, switchTemplateLanguage } = useBuilder(config1)
   const builder2 = useBuilder(config2)
@@ -203,7 +194,7 @@ export const App = () => {
       contentDialog: {
         addOn: {
           label: 'addOns',
-          handler: async (resolve) => {
+          handler: async (resolve: (content: Record<string, unknown>) => void) => {
             resolve({ type: 'image', value: { alt: '', dynamicSrc: '', href: '', src: '' } })
           },
         },
@@ -241,7 +232,7 @@ export const App = () => {
                 <Builder
                   template={mockTemplate}
                   shared={isShared}
-                  onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
+                  onSessionStarted={(sessionId: string) => setSessionId(sessionId)}
                   token={token}
                   onSave={(args: unknown) => {
                     console.log(`%c[APP] - onSave ->`, `color:${'#00ff00'}`, args)
@@ -257,7 +248,7 @@ export const App = () => {
                   onWarning={warningHandler}
                   height="800px"
                   loaderUrl="https://qa-bee-loader.getbee.io/v2/api/loader"
-                  onTemplateLanguageChange={(language) => {
+                  onTemplateLanguageChange={(language: ILanguage) => {
                     console.log(`%c[APP] - onTemplateLanguageChange ->`, `color:${'#ff00ff'}`, language)
                   }}
                 />
