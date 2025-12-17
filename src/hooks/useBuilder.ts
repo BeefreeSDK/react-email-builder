@@ -77,63 +77,38 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
     }
   }, [sdkInstanceRegistryVersion])
 
-  const createSafeMethodWrapper = <K extends keyof SDKInstance>(methodName: K) => {
+  const bindMethodToInstance = useCallback(<K extends keyof SDKInstance>(methodName: K) => {
     return (...args: Parameters<SDKInstance[K]>) => {
       const method = instance?.[methodName]
       return typeof method === 'function' ? method(...args) : undefined
     }
-  }
-
-  const reload = useCallback(createSafeMethodWrapper('reload'), [instance])
-  const preview = useCallback(createSafeMethodWrapper('preview'), [instance])
-  const load = useCallback(createSafeMethodWrapper('load'), [instance])
-  const save = useCallback(createSafeMethodWrapper('save'), [instance])
-  const saveAsTemplate = useCallback(createSafeMethodWrapper('saveAsTemplate'), [instance])
-  const send = useCallback(createSafeMethodWrapper('send'), [instance])
-  const join = useCallback(createSafeMethodWrapper('join'), [instance])
-  const start = useCallback(createSafeMethodWrapper('start'), [instance])
-  const loadRows = useCallback(createSafeMethodWrapper('loadRows'), [instance])
-  const switchPreview = useCallback(createSafeMethodWrapper('switchPreview'), [instance])
-  const togglePreview = useCallback(createSafeMethodWrapper('togglePreview'), [instance])
-  const toggleComments = useCallback(createSafeMethodWrapper('toggleComments'), [instance])
-  const switchTemplateLanguage = useCallback(createSafeMethodWrapper('switchTemplateLanguage'), [instance])
-  const getTemplateJson = useCallback(createSafeMethodWrapper('getTemplateJson'), [instance])
-  const loadConfig = useCallback(createSafeMethodWrapper('loadConfig'), [instance])
-  const showComment = useCallback(createSafeMethodWrapper('showComment'), [instance])
-  const updateToken = useCallback(createSafeMethodWrapper('updateToken'), [instance])
-  const toggleMergeTagsPreview = useCallback(createSafeMethodWrapper('toggleMergeTagsPreview'), [instance])
-  const execCommand = useCallback(createSafeMethodWrapper('execCommand'), [instance])
-  const getConfig = useCallback(createSafeMethodWrapper('getConfig'), [instance])
-  const loadStageMode = useCallback(createSafeMethodWrapper('loadStageMode'), [instance])
-  const toggleStructure = useCallback(createSafeMethodWrapper('toggleStructure'), [instance])
-  const loadWorkspace = useCallback(createSafeMethodWrapper('loadWorkspace'), [instance])
-  const startFileManager = useCallback(createSafeMethodWrapper('startFileManager'), [instance])
+  }, [instance])
 
   return {
     updateConfig,
-    reload,
-    preview,
-    load,
-    save,
-    saveAsTemplate,
-    send,
-    join,
-    start,
-    loadRows,
-    switchPreview,
-    togglePreview,
-    toggleComments,
-    switchTemplateLanguage,
-    getTemplateJson,
-    loadConfig,
-    showComment,
-    updateToken,
-    toggleMergeTagsPreview,
-    execCommand,
-    getConfig,
-    loadStageMode,
-    toggleStructure,
-    loadWorkspace,
-    startFileManager,
+    reload: bindMethodToInstance('reload'),
+    preview: bindMethodToInstance('preview'),
+    load: bindMethodToInstance('load'),
+    save: bindMethodToInstance('save'),
+    saveAsTemplate: bindMethodToInstance('saveAsTemplate'),
+    send: bindMethodToInstance('send'),
+    join: bindMethodToInstance('join'),
+    start: bindMethodToInstance('start'),
+    loadRows: bindMethodToInstance('loadRows'),
+    switchPreview: bindMethodToInstance('switchPreview'),
+    togglePreview: bindMethodToInstance('togglePreview'),
+    toggleComments: bindMethodToInstance('toggleComments'),
+    switchTemplateLanguage: bindMethodToInstance('switchTemplateLanguage'),
+    getTemplateJson: bindMethodToInstance('getTemplateJson'),
+    loadConfig: bindMethodToInstance('loadConfig'),
+    showComment: bindMethodToInstance('showComment'),
+    updateToken: bindMethodToInstance('updateToken'),
+    toggleMergeTagsPreview: bindMethodToInstance('toggleMergeTagsPreview'),
+    execCommand: bindMethodToInstance('execCommand'),
+    getConfig: bindMethodToInstance('getConfig'),
+    loadStageMode: bindMethodToInstance('loadStageMode'),
+    toggleStructure: bindMethodToInstance('toggleStructure'),
+    loadWorkspace: bindMethodToInstance('loadWorkspace'),
+    startFileManager: bindMethodToInstance('startFileManager'),
   }
 }
