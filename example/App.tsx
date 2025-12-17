@@ -130,23 +130,10 @@ export const App = () => {
       case 'saved-rows':
         resolve(savedRows)
         break
-      case 'custom-rows':
-        resolve([])
-        break
       default:
         reject()
     }
   }, [savedRows])
-
-  const onSaveRowHandler = (savedRow: string): void => {
-    console.log(`%c[APP] - onSaveRow ->`, `color:${'#00ff00'}`, savedRow)
-    setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
-  }
-
-  const onSaveRowHandlerBis = (savedRow: string) => {
-    console.log(`%c[APP] - onSaveRow Bis ->`, `color:${'#00ff00'}`, savedRow)
-    setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
-  }
 
   const saveRowHandler = useCallback(async (resolve: (result: ISaveRowResult) => void) => {
     console.log(`%c[APP] - saveRow handler ->`, `color:${'#00ff00'}`)
@@ -155,26 +142,6 @@ export const App = () => {
 
   const sendInviteHandler = useCallback((resolve: unknown, reject: unknown, args: unknown) => {
     console.log(`%c[APP] - sendInvite handler ->`, `color:${'#00ff00'}`, args)
-  }, [])
-
-  const errorHandler = useCallback((error: BeePluginError) => {
-    console.log(`%c[APP] - onError ->`, `color:${'#ff0000'}`, error)
-  }, [])
-
-  const errorHandlerBis = useCallback((error: BeePluginError) => {
-    console.log(`%c[APP] - onError Bis ->`, `color:${'#ff0000'}`, error)
-  }, [])
-
-  const warningHandler = useCallback((warning: BeePluginError) => {
-    console.log(`%c[APP] - onWarning ->`, `color:${'#fbda00'}`, warning)
-  }, [])
-
-  const warningHandlerBis = useCallback((warning: BeePluginError) => {
-    console.log(`%c[APP] - onWarning Bis ->`, `color:${'#fbda00'}`, warning)
-  }, [])
-
-  const onSave2 = useCallback((args: unknown) => {
-    console.log(`%c[APP] - onSave Bis ->`, `color:${'#00ff00'}`, args)
   }, [])
 
   useEffect(() => {
@@ -235,17 +202,24 @@ export const App = () => {
                   onSessionStarted={({ sessionId }: { sessionId: string }) => setSessionId(sessionId)}
                   token={token}
                   onSave={(args: unknown) => {
-                    console.log(`%c[APP] - onSave ->`, `color:${'#00ff00'}`, args)
+                    console.log(`%c[APP] - onSave Builder 1 ->`, `color:${'#00ff00'}`, args)
                   }}
                   onChange={(args: unknown) => {
-                    console.log(`%c[APP] - onChange ->`, `color:${'#aaf7ff'}`, args)
+                    console.log(`%c[APP] - onChange Builder 1 ->`, `color:${'#aaf7ff'}`, args)
                   }}
                   onRemoteChange={(args: unknown) => {
-                    console.log(`%c[APP] - onRemoteChange ->`, `color:${'#fff7aa'}`, args)
+                    console.log(`%c[APP] - onRemoteChange Builder 1 ->`, `color:${'#fff7aa'}`, args)
                   }}
-                  onSaveRow={onSaveRowHandler}
-                  onError={errorHandler}
-                  onWarning={warningHandler}
+                  onSaveRow={(savedRow: string): void => {
+                    console.log(`%c[APP] - onSaveRow Builder 1 ->`, `color:${'#00ff00'}`, savedRow)
+                    setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
+                  }}
+                  onError={(error: BeePluginError) => {
+                    console.log(`%c[APP] - onError Builder 1 ->`, `color:${'#ff0000'}`, error)
+                  }}
+                  onWarning={(warning: BeePluginError) => {
+                    console.log(`%c[APP] - onWarning Builder 1 ->`, `color:${'#fbda00'}`, warning)
+                  }}
                   height="800px"
                   loaderUrl="https://qa-bee-loader.getbee.io/v2/api/loader"
                   onTemplateLanguageChange={(language: ILanguage) => {
@@ -259,22 +233,32 @@ export const App = () => {
                       save={builder2.save}
                       saveAsTemplate={builder2.saveAsTemplate}
                       updateConfig={builder2.updateConfig}
+                      switchTemplateLanguage={builder2.switchTemplateLanguage}
                     />
                     <Builder
                       template={mockTemplate}
                       shared={isShared}
                       sessionId={sessionId}
                       token={token}
-                      onChange={(json: string) => {
-                        console.log(`%c[APP] Bis - onChange ->`, `color:${'#aaf7ff'}`, json)
+                      onSave={(args: unknown) => {
+                        console.log(`%c[APP] - onSave Builder 2 ->`, `color:${'#00ff00'}`, args)
                       }}
-                      onRemoteChange={(json: string) => {
-                        console.log(`%c[APP] Bis - onRemoteChange ->`, `color:${'#fff7aa'}`, json)
+                      onChange={(args: unknown) => {
+                        console.log(`%c[APP] - onChange Builder 2 ->`, `color:${'#aaf7ff'}`, args)
                       }}
-                      onSave={onSave2}
-                      onSaveRow={onSaveRowHandlerBis}
-                      onError={errorHandlerBis}
-                      onWarning={warningHandlerBis}
+                      onRemoteChange={(args: unknown) => {
+                        console.log(`%c[APP] - onRemoteChange Builder 2 ->`, `color:${'#fff7aa'}`, args)
+                      }}
+                      onSaveRow={(savedRow: string) => {
+                        console.log(`%c[APP] - onSaveRow Builder 2 ->`, `color:${'#00ff00'}`, savedRow)
+                        setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
+                      }}
+                      onError={(error: BeePluginError) => {
+                        console.log(`%c[APP] - onError Builder 2 ->`, `color:${'#ff0000'}`, error)
+                      }}
+                      onWarning={(warning: BeePluginError) => {
+                        console.log(`%c[APP] - onWarning Builder 2 ->`, `color:${'#fbda00'}`, warning)
+                      }}
                       height="800px"
                       loaderUrl="https://qa-bee-loader.getbee.io/v2/api/loader"
                     />
