@@ -45,13 +45,14 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
   } = props
 
   const configRegistry = getConfigRegistry()
-  const containerKeys = Array.from(configRegistry.keys())
   const [sdkInstanceRegistry] = useSDKInstanceRegistry()
   const [editorReady, setEditorReady] = useState(false)
   const instanceRef = useRef<BeefreeSDK>(null)
-  const containerRef = useRef<string | null>(null)
 
-  if (containerRef.current === null) {
+  // Select and reserve container on mount to prevent race conditions between instances
+  const [container] = useState(() => {
+    const containerKeys = Array.from(configRegistry.keys())
+
     const findFirstContainerWithoutInstance = (): string | null => {
       for (const containerKey of containerKeys) {
         const hasSdkInstance = sdkInstanceRegistry.has(containerKey)
@@ -66,26 +67,24 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     const candidate = findFirstContainerWithoutInstance()
 
     if (candidate) {
-      containerRef.current = candidate
-      // Prevent other instances from using the current container
-      reserveContainer(candidate)
+      // Reserve synchronously by directly updating the registry Map (no notification yet)
+      sdkInstanceRegistry.set(candidate, null)
+      return candidate
     }
-    else {
-      const firstConfig = configRegistry.values().next().value
 
-      if (!firstConfig) {
-        throw new Error('Builder requires at least the container in config to be registered')
-      }
+    const firstConfig = configRegistry.values().next().value
 
-      containerRef.current = firstConfig.container
+    if (!firstConfig) {
+      throw new Error('Builder requires at least the container in config to be registered')
     }
-  }
 
-  if (!containerRef.current) {
-    throw new Error('Failed to initialize container')
-  }
+    return firstConfig.container
+  })
 
-  const container = containerRef.current
+  // Notify registry change in effect to avoid state updates during render
+  useEffect(() => {
+    reserveContainer(container)
+  }, [container])
 
   const callbacksRef = useRef({
     onLoad,
