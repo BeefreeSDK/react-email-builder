@@ -232,7 +232,7 @@ export const App = () => {
                 <Builder
                   template={mockTemplate}
                   shared={isShared}
-                  onSessionStarted={(sessionId: string) => setSessionId(sessionId)}
+                  onSessionStarted={({ sessionId }: { sessionId: string }) => setSessionId(sessionId)}
                   token={token}
                   onSave={(args: unknown) => {
                     console.log(`%c[APP] - onSave ->`, `color:${'#00ff00'}`, args)
