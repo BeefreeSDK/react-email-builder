@@ -1,15 +1,17 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
-import { SDK_LOADER_URL, DEFAULT_ID } from './constants'
+import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import {
-  addBuilderToRegistry,
-  removeBuilderFromRegistry,
+  setSDKInstanceToRegistry,
+  removeSDKInstanceFromRegistry,
+  getConfigRegistry,
+  useSDKInstanceRegistry,
+  reserveContainer,
 } from './hooks/useRegistry'
 import { BuilderPropsWithCallbacks } from './types'
 
 const Builder = (props: BuilderPropsWithCallbacks) => {
   const {
-    config: configFromProps,
     token,
     template,
     width,
@@ -17,125 +19,166 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     shared,
     sessionId,
     loaderUrl,
-    // Callbacks
-    onLoad = configFromProps.onLoad,
-    onPreview = configFromProps.onPreview,
-    onTogglePreview = configFromProps.onTogglePreview,
-    onSessionStarted = configFromProps.onSessionStarted,
-    onSessionChange = configFromProps.onSessionChange,
-    onReady = configFromProps.onReady,
-    onSave = configFromProps.onSave,
-    onSaveRow = configFromProps.onSaveRow,
-    onError = configFromProps.onError,
-    onAutoSave = configFromProps.onAutoSave,
-    onSaveAsTemplate = configFromProps.onSaveAsTemplate,
-    onStart = configFromProps.onStart,
-    onSend = configFromProps.onSend,
-    onChange = configFromProps.onChange,
-    onRemoteChange = configFromProps.onRemoteChange,
-    onWarning = configFromProps.onWarning,
-    onComment = configFromProps.onComment,
-    onInfo = configFromProps.onInfo,
-    onLoadWorkspace = configFromProps.onLoadWorkspace,
-    onViewChange = configFromProps.onViewChange,
-    onPreviewChange = configFromProps.onPreviewChange,
+    bucketDir,
+    onLoad,
+    onPreview,
+    onTogglePreview,
+    onSessionStarted,
+    onSessionChange,
+    onReady,
+    onSave,
+    onSaveRow,
+    onError,
+    onAutoSave,
+    onSaveAsTemplate,
+    onStart,
+    onSend,
+    onChange,
+    onRemoteChange,
+    onWarning,
+    onComment,
+    onInfo,
+    onLoadWorkspace,
+    onViewChange,
+    onPreviewChange,
+    onTemplateLanguageChange,
   } = props
 
-  const config = useMemo(() => ({
-    ...configFromProps,
-    container: configFromProps.container || DEFAULT_ID,
-    onLoad,
-    onPreview,
-    onTogglePreview,
-    onSessionStarted,
-    onSessionChange,
-    onReady,
-    onSave,
-    onSaveRow,
-    onError,
-    onAutoSave,
-    onSaveAsTemplate,
-    onStart,
-    onSend,
-    onChange,
-    onRemoteChange,
-    onWarning,
-    onComment,
-    onInfo,
-    onLoadWorkspace,
-    onViewChange,
-    onPreviewChange,
-  }), [
-    configFromProps,
-    onLoad,
-    onPreview,
-    onTogglePreview,
-    onSessionStarted,
-    onSessionChange,
-    onReady,
-    onSave,
-    onSaveRow,
-    onError,
-    onAutoSave,
-    onSaveAsTemplate,
-    onStart,
-    onSend,
-    onChange,
-    onRemoteChange,
-    onWarning,
-    onComment,
-    onInfo,
-    onLoadWorkspace,
-    onViewChange,
-    onPreviewChange,
-  ])
-  const container = config.container
+  const configRegistry = getConfigRegistry()
+  const [sdkInstanceRegistry] = useSDKInstanceRegistry()
   const [editorReady, setEditorReady] = useState(false)
-
-  // instance is created only once for this component
   const instanceRef = useRef<BeefreeSDK>(null)
 
-  useEffect(() => {
-    if (editorReady) {
-      instanceRef.current.loadConfig(config)
+  // Select and reserve container on mount to prevent race conditions between instances
+  const [container] = useState(() => {
+    const containerKeys = Array.from(configRegistry.keys())
+
+    const findFirstContainerWithoutInstance = (): string | null => {
+      for (const containerKey of containerKeys) {
+        const hasSdkInstance = sdkInstanceRegistry.has(containerKey)
+
+        if (!hasSdkInstance) {
+          return containerKey
+        }
+      }
+      return null
     }
-  }, [config, editorReady])
+
+    const candidate = findFirstContainerWithoutInstance()
+
+    if (candidate) {
+      // Reserve synchronously by directly updating the registry Map (no notification yet)
+      sdkInstanceRegistry.set(candidate, null)
+      return candidate
+    }
+
+    const firstConfig = configRegistry.values().next().value
+
+    if (!firstConfig) {
+      throw new Error('Builder requires at least the container in config to be registered')
+    }
+
+    return firstConfig.container
+  })
+
+  // Notify registry change in effect to avoid state updates during render
+  useEffect(() => {
+    reserveContainer(container)
+  }, [container])
+
+  const callbacksRef = useRef({
+    onLoad,
+    onPreview,
+    onTogglePreview,
+    onSessionStarted,
+    onSessionChange,
+    onReady,
+    onSave,
+    onSaveRow,
+    onError,
+    onAutoSave,
+    onSaveAsTemplate,
+    onStart,
+    onSend,
+    onChange,
+    onRemoteChange,
+    onWarning,
+    onComment,
+    onInfo,
+    onLoadWorkspace,
+    onViewChange,
+    onPreviewChange,
+    onTemplateLanguageChange,
+  })
+
+  const config = useMemo(() => {
+    const configRegistry = getConfigRegistry()
+    const builderConfig = configRegistry.get(container) || {}
+
+    return {
+      container,
+      ...builderConfig,
+      // Use callbacks from ref to avoid triggering this memo on callback changes
+      ...callbacksRef.current,
+    }
+  }, [container])
+
+  const configRef = useRef(config)
+  configRef.current = config
 
   useEffect(() => {
-    if (editorReady) {
-      addBuilderToRegistry(config.container, instanceRef.current)
+    if (editorReady && instanceRef.current) {
+      setSDKInstanceToRegistry(container, instanceRef.current)
     }
     return () => {
-      removeBuilderFromRegistry(config.container)
+      removeSDKInstanceFromRegistry(container)
     }
-  }, [config.container, editorReady])
+  }, [container, editorReady])
 
-  if (instanceRef.current === null) {
+  // Creates and starts SDK instance
+  useEffect(() => {
     if (!token) {
-      throw new Error(`Can't start the builder without a token`)
+      throw new Error('Can\'t start the builder without a token')
     }
-    instanceRef.current = new BeefreeSDK(token, {
-      beePluginUrl: loaderUrl ?? SDK_LOADER_URL,
-    })
-    const beeInstance = instanceRef.current
 
-    if (shared && sessionId) {
-      void beeInstance.join(config, sessionId).then(() => {
-        setEditorReady(true)
+    const currentConfig = configRef.current as IBeeConfig
+
+    if (instanceRef.current === null && currentConfig.uid && token) {
+      instanceRef.current = new BeefreeSDK(token, {
+        beePluginUrl: loaderUrl,
       })
+
+      const beeInstance = instanceRef.current
+
+      if (shared && sessionId) {
+        void beeInstance.join(configRef.current, sessionId, bucketDir).then(() => {
+          setEditorReady(true)
+        }).catch((error) => {
+          console.error('Error joining the shared session:', error)
+        })
+      }
+      else {
+        void beeInstance.start(configRef.current, template, bucketDir, { shared }).then(() => {
+          setEditorReady(true)
+        }).catch((error) => {
+          console.error('Error starting the builder:', error)
+        })
+      }
     }
-    else {
-      void beeInstance.start(config, template ?? {}, undefined, { shared }).then(() => {
-        setEditorReady(true)
-      })
+
+    return () => {
+      if (instanceRef.current) {
+        instanceRef.current = null
+      }
+      setEditorReady(false)
     }
-  }
+  }, [])
 
   return (
     <div
       id={container}
       style={{
-        height: height || '800px',
+        height: height || '100%',
         width: width || '100%',
       }}
     >

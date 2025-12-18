@@ -1,16 +1,19 @@
 import BeefreeSDK from '@beefree.io/sdk'
+import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import { useSyncExternalStore } from 'react'
 
-type SDKRegistry = Map<string, BeefreeSDK>
+type SDKRegistry = Map<string, BeefreeSDK | null>
+type ConfigRegistry = Map<string, IBeeConfig>
 
-// Global registry for the builder; accessed only internally
-const builderRegistry: SDKRegistry = new Map()
+// Global registries for the builder; accessed only internally
+const sdkInstanceRegistry: SDKRegistry = new Map()
+const configRegistry: ConfigRegistry = new Map()
 
 // Listeners and version to keep React Hooks updated when the registry changes
 const listeners = new Set<() => void>()
 let version = 0
 
-// Function to notify the listeners and updating version snapshot
+// Notifies the listeners and updates version snapshot
 const notifyRegistryChanged = () => {
   version += 1
   listeners.forEach(fn => fn())
@@ -25,19 +28,42 @@ const subscribe = (callback: () => void) => {
 
 const getSnapshot = () => version
 
-export function useRegistry(): [SDKRegistry, number] {
+export function useSDKInstanceRegistry(): [SDKRegistry, number] {
   const version = useSyncExternalStore(subscribe, getSnapshot)
-  return [builderRegistry, version]
+  return [sdkInstanceRegistry, version]
 }
 
-// Called by the Builder component to set builder instances to the registry
-export const addBuilderToRegistry = (key: string, instance: BeefreeSDK) => {
-  builderRegistry.set(key, instance)
+export function useConfigRegistry(): [ConfigRegistry, number] {
+  const version = useSyncExternalStore(subscribe, getSnapshot)
+  return [configRegistry, version]
+}
+
+export const getConfigRegistry = () => configRegistry
+
+// Reserve container with a placeholder to prevent other instances from using it
+export const reserveContainer = (key: string) => {
+  sdkInstanceRegistry.set(key, null)
   notifyRegistryChanged()
 }
 
-// Called by the Builder component to remove builder instances from the registry
-export const removeBuilderFromRegistry = (key: string) => {
-  builderRegistry.delete(key)
+export const setConfigInRegistry = (key: string, config: IBeeConfig) => {
+  configRegistry.set(key, config)
+  notifyRegistryChanged()
+}
+
+export const removeConfigFromRegistry = (key?: string) => {
+  if (key) {
+    configRegistry.delete(key)
+    notifyRegistryChanged()
+  }
+}
+
+export const setSDKInstanceToRegistry = (key: string, instance: BeefreeSDK | null) => {
+  sdkInstanceRegistry.set(key, instance)
+  notifyRegistryChanged()
+}
+
+export const removeSDKInstanceFromRegistry = (key: string) => {
+  sdkInstanceRegistry.delete(key)
   notifyRegistryChanged()
 }

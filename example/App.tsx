@@ -1,8 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { IToken, Builder, IBeeConfig } from '../dist/index.es'
+import { useCallback, useEffect, useState } from 'react'
+import { Builder, useBuilder } from '../dist/index.es'
+import type { IToken, IBeeConfig, BeePluginError, IPluginRow, ILanguage } from '../dist/index.d.ts'
 import { Controls } from './Controls'
+import { mockTemplate } from './mockTemplate'
 
-const names = ['pippo', 'pluto', 'paperino', 'topolino', 'minnie', 'qui', 'quo', 'qua']
+interface ISaveRowResult {
+  name: string
+  [key: string]: unknown
+}
+
+const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'George', 'Hannah']
+
+interface IMention {
+  userColor: string
+  username: string
+  value: string
+  uid: string
+}
 
 const getToken = async (uid?: string) => {
   /**
@@ -15,7 +29,7 @@ const getToken = async (uid?: string) => {
    *                                                            *
    * ************************************************************
    */
-  const AUTH_URL = 'https://pre-bee-auth.getbee.info/loginV2'
+  const AUTH_URL = 'https://qa-bee-auth.getbee.io/loginV2'
 
   const response = await fetch(AUTH_URL, {
     method: 'POST',
@@ -29,9 +43,54 @@ const getToken = async (uid?: string) => {
   return response.json()
 }
 
+const config: IBeeConfig = {
+  container: 'test',
+  username: 'Tester',
+  uid: 'demo-user',
+  userHandle: 'test',
+  userColor: '#fff',
+  saveRows: true,
+  templateLanguage: {
+    label: 'English (US)',
+    value: 'en-US',
+  },
+  templateLanguages: [
+    { value: 'it-IT', label: 'Italiano' },
+  ],
+  rowsConfiguration: {
+    emptyRows: true,
+    defaultRows: true,
+    externalContentURLs: [
+      {
+        name: 'Saved rows',
+        handle: 'saved-rows',
+        isLocal: true,
+      },
+      {
+        name: 'Custom rows',
+        handle: 'custom-rows',
+        isLocal: true,
+        behaviors: {
+          canEdit: false,
+          canDelete: false,
+        },
+      },
+    ],
+  },
+}
+
+const config1 = ({ ...config })
+const config2 = {
+  ...config,
+  username: 'User 2',
+  container: 'bis',
+  userColor: '#000',
+  userHandle: 'bis',
+}
+
 export const App = () => {
-  const [users, setUsers] = useState<string[]>([names[0]])
-  const [savedRows, setSavedRows] = useState([])
+  const [users, setUsers] = useState<string[]>(names)
+  const [savedRows, setSavedRows] = useState<IPluginRow[]>([])
   const [token, setToken] = useState<IToken>()
   const [isShared, setIsShared] = useState<boolean>(false)
   const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
@@ -39,63 +98,58 @@ export const App = () => {
 
   console.log(`%csf: App - App ->`, `color:${'#00ff00'}`, { sessionId })
 
-  useEffect(() => {
-    getToken().then(token => setToken(token))
-  }, [])
+  const { updateConfig, save, saveAsTemplate, switchTemplateLanguage } = useBuilder(config1)
+  const builder2 = useBuilder(config2)
 
   const handleUsers = () => {
     if (users.length < names.length) setUsers(prevUsers => [...prevUsers, names[prevUsers.length]])
   }
 
-  const getMentionsHandler = useCallback(async (resolve) => {
+  const getMentionsHandler = useCallback(async (
+    resolve: (mentions: IMention[]) => void,
+  ) => {
     resolve(users.map(user => ({
       userColor: '#ff0000',
       username: user,
       value: user,
       uid: user,
-    })),
-    )
+    })))
   }, [users])
 
-  const getRowsHandler = useCallback(async (resolve, reject, args) => {
+  const getRowsHandler = useCallback(async (
+    resolve: (data: IPluginRow[], options?: Record<string, unknown> | undefined) => void,
+    reject: () => void,
+    args: {
+      handle: string
+      value: string
+    },
+  ) => {
     const { handle } = args
+
     switch (handle) {
       case 'saved-rows':
         resolve(savedRows)
         break
-      case 'custom-rows':
-        resolve([{ name: 'One button', columns: [{ weight: 12, modules: [{ type: 'button' }] }] }])
-        break
       default:
-        reject(`${handle} not handled`)
+        reject()
     }
   }, [savedRows])
 
-  const onSaveRowHandler = (savedRow) => {
-    console.log(`%c[APP] - onSaveRow ->`, `color:${'#00ff00'}`, savedRow)
-    setSavedRows(prevRows => [...prevRows, JSON.parse(savedRow)])
-  }
-
-  const saveRowHandler = useCallback(async (resolve) => {
-    resolve({ name: 'row' })
+  const saveRowHandler = useCallback(async (resolve: (result: ISaveRowResult) => void) => {
+    console.log(`%c[APP] - saveRow handler ->`, `color:${'#00ff00'}`)
+    resolve({ name: 'row from config update' })
   }, [])
 
-  const errorHandler = useCallback((error) => {
-    console.log(`%c[APP] - onError ->`, `color:${'#ff0000'}`, error)
+  const sendInviteHandler = useCallback((resolve: unknown, reject: unknown, args: unknown) => {
+    console.log(`%c[APP] - sendInvite handler ->`, `color:${'#00ff00'}`, args)
   }, [])
 
-  const warningHandler = useCallback((warning) => {
-    console.log(`%c[APP] - onWarning ->`, `color:${'#fbda00'}`, warning)
+  useEffect(() => {
+    getToken().then(token => setToken(token))
   }, [])
 
-  const onSave2 = useCallback((...args) => {
-    console.log(`%c[APP] - onSave BIS ->`, `color:${'#00ff00'}`, args)
-  }, [])
-
-  const config: IBeeConfig = useMemo(() => {
-    console.log(`%c[APP] - config ->`, `color:${'#a100ff'}`, 'config object re-created')
-    return ({
-      id: 'test',
+  useEffect(() => {
+    updateConfig({
       hooks: {
         getMentions: {
           handler: getMentionsHandler,
@@ -107,51 +161,21 @@ export const App = () => {
       contentDialog: {
         addOn: {
           label: 'addOns',
-          // FIXME: purposely made it to be recreated at every render to test the new loader
-          handler: (resolve) => {
-            resolve({ type: 'button', value: { text: 'Button' } })
+          handler: async (resolve: (content: Record<string, unknown>) => void) => {
+            resolve({ type: 'image', value: { alt: '', dynamicSrc: '', href: '', src: '' } })
           },
         },
         saveRow: {
           label: 'Save',
           handler: saveRowHandler,
         },
+        getMention: {
+          label: 'Send an invite',
+          handler: sendInviteHandler,
+        },
       },
-      onSave: (...args) => {
-        console.log(`%c[APP] - onSave ->`, `color:${'#00ff00'}`, args)
-      },
-      onChange: (...args) => {
-        console.log(`%c[APP] - onChange ->`, `color:${'#aaf7ff'}`, args)
-      },
-      onRemoteChange: (...args) => {
-        console.log(`%c[APP] - onRemoteChange ->`, `color:${'#fff7aa'}`, args)
-      },
-      onSaveRow: onSaveRowHandler,
-      onError: errorHandler,
-      onWarning: warningHandler,
-      rowsConfiguration: {
-        emptyRows: true,
-        defaultRows: true,
-        externalContentURLs: [
-          {
-            name: 'Saved rows',
-            handle: 'saved-rows',
-            isLocal: true,
-          },
-          {
-            name: 'Custom rows',
-            handle: 'custom-rows',
-            isLocal: true,
-            behaviors: {
-              canEdit: false,
-              canDelete: false,
-            },
-          },
-        ],
-      },
-      username: 'Tester',
     })
-  }, [getMentionsHandler, getRowsHandler, saveRowHandler, errorHandler, warningHandler])
+  }, [updateConfig, getRowsHandler, saveRowHandler, sendInviteHandler, getMentionsHandler])
 
   return (
     <>
@@ -164,34 +188,84 @@ export const App = () => {
       <div id="email-builder">
         {token && isEditorStarted
           ? (
-            <>
-              <Controls />
-              <Builder
-                config={config}
-                template={{
-                  data: {
-                    json: {},
-                    version: 0,
-                  },
-                }}
-                shared={isShared}
-                onSessionStarted={({ sessionId }) => setSessionId(sessionId)}
-                token={token}
-              />
-              {sessionId && (
-                <>
-                  <Controls id="bis" />
-                  <Builder
-                    config={{ ...config, container: 'bis', id: 'bis', userHandle: 'bis', onSave: () => console.log(`this won't trigger`) }}
-                    shared={isShared}
-                    sessionId={sessionId}
-                    token={token}
-                    onSave={onSave2}
-                  />
-                </>
-              )}
-            </>
-          )
+              <>
+                <Controls
+                  id={config.container}
+                  save={save}
+                  saveAsTemplate={saveAsTemplate}
+                  updateConfig={updateConfig}
+                  switchTemplateLanguage={switchTemplateLanguage}
+                />
+                <Builder
+                  template={mockTemplate}
+                  shared={isShared}
+                  onSessionStarted={({ sessionId }: { sessionId: string }) => setSessionId(sessionId)}
+                  token={token}
+                  onSave={(args: unknown) => {
+                    console.log(`%c[APP] - onSave Builder 1 ->`, `color:${'#00ff00'}`, args)
+                  }}
+                  onChange={(args: unknown) => {
+                    console.log(`%c[APP] - onChange Builder 1 ->`, `color:${'#aaf7ff'}`, args)
+                  }}
+                  onRemoteChange={(args: unknown) => {
+                    console.log(`%c[APP] - onRemoteChange Builder 1 ->`, `color:${'#fff7aa'}`, args)
+                  }}
+                  onSaveRow={(savedRow: string): void => {
+                    console.log(`%c[APP] - onSaveRow Builder 1 ->`, `color:${'#00ff00'}`, savedRow)
+                    setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
+                  }}
+                  onError={(error: BeePluginError) => {
+                    console.log(`%c[APP] - onError Builder 1 ->`, `color:${'#ff0000'}`, error)
+                  }}
+                  onWarning={(warning: BeePluginError) => {
+                    console.log(`%c[APP] - onWarning Builder 1 ->`, `color:${'#fbda00'}`, warning)
+                  }}
+                  height="800px"
+                  loaderUrl="https://qa-bee-loader.getbee.io/v2/api/loader"
+                  onTemplateLanguageChange={(language: ILanguage) => {
+                    console.log(`%c[APP] - onTemplateLanguageChange ->`, `color:${'#ff00ff'}`, language)
+                  }}
+                />
+                {sessionId && (
+                  <>
+                    <Controls
+                      id={config2.container}
+                      save={builder2.save}
+                      saveAsTemplate={builder2.saveAsTemplate}
+                      updateConfig={builder2.updateConfig}
+                      switchTemplateLanguage={builder2.switchTemplateLanguage}
+                    />
+                    <Builder
+                      template={mockTemplate}
+                      shared={isShared}
+                      sessionId={sessionId}
+                      token={token}
+                      onSave={(args: unknown) => {
+                        console.log(`%c[APP] - onSave Builder 2 ->`, `color:${'#00ff00'}`, args)
+                      }}
+                      onChange={(args: unknown) => {
+                        console.log(`%c[APP] - onChange Builder 2 ->`, `color:${'#aaf7ff'}`, args)
+                      }}
+                      onRemoteChange={(args: unknown) => {
+                        console.log(`%c[APP] - onRemoteChange Builder 2 ->`, `color:${'#fff7aa'}`, args)
+                      }}
+                      onSaveRow={(savedRow: string) => {
+                        console.log(`%c[APP] - onSaveRow Builder 2 ->`, `color:${'#00ff00'}`, savedRow)
+                        setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
+                      }}
+                      onError={(error: BeePluginError) => {
+                        console.log(`%c[APP] - onError Builder 2 ->`, `color:${'#ff0000'}`, error)
+                      }}
+                      onWarning={(warning: BeePluginError) => {
+                        console.log(`%c[APP] - onWarning Builder 2 ->`, `color:${'#fbda00'}`, warning)
+                      }}
+                      height="800px"
+                      loaderUrl="https://qa-bee-loader.getbee.io/v2/api/loader"
+                    />
+                  </>
+                )}
+              </>
+            )
           : <></>}
       </div>
     </>

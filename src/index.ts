@@ -1,6 +1,6 @@
+import BeeTypesInstance from '@beefree.io/sdk'
 import Builder from './Builder'
 import { useBuilder } from './hooks/useBuilder'
-import BeeTypesInstance from '@beefree.io/sdk'
 
 export * from '@beefree.io/sdk/dist/types/bee'
 export { Builder, useBuilder, BeeTypesInstance }

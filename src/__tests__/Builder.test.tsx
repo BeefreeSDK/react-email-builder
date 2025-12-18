@@ -1,91 +1,72 @@
-import { render } from '@testing-library/react'
-import Builder from '../Builder'
+import { render, waitFor } from '@testing-library/react'
 import BeefreeSDK from '@beefree.io/sdk'
-import { IBeeConfig, ITemplateJson, IToken, TokenStatus } from '@beefree.io/sdk/dist/types/bee'
-import { DEFAULT_ID } from '../constants'
+import { IEntityContentJson, IToken } from '@beefree.io/sdk/dist/types/bee'
+import Builder from '../Builder'
+import { setConfigInRegistry } from '../hooks/useRegistry'
 
 describe('Builder Component', () => {
   const mockToken: IToken = {
     access_token: 'test-token',
-    coediting_session_id: 'session-id',
-    shared: false,
-    status: TokenStatus.OK,
     v2: true,
   }
-  const mockTemplate: ITemplateJson = {
-    data: {
-      json: {
-        comments: {},
-        page: {
-          body: {
-            type: '',
-            webFonts: [],
-            container: {
-              style: {
-                'background-color': '',
-              },
-            },
-            content: {
-              style: {
-                'font-family': '',
-                color: '',
-              },
-              computedStyle: {
-                align: '',
-                linkColor: '',
-                messageBackgroundColor: '',
-                messageWidth: '',
-              },
-            },
+  const mockTemplate: IEntityContentJson = {
+    comments: {},
+    page: {
+      body: {
+        type: '',
+        webFonts: [],
+        container: {
+          style: {
+            'background-color': '',
           },
-          description: '',
-          rows: [],
-          template: {
-            name: '',
-            type: '',
-            version: '',
+        },
+        content: {
+          style: {
+            'font-family': '',
+            'color': '',
           },
-          title: 'a title',
+          computedStyle: {
+            align: '',
+            linkColor: '',
+            messageBackgroundColor: '',
+            messageWidth: '',
+          },
         },
       },
-      version: 0
-    }
-  }
-  const mockConfig: IBeeConfig = {
-    uid: 'test-uid',
-    container: 'test-container',
+      description: '',
+      rows: [],
+      template: {
+        name: '',
+        type: '',
+        version: '',
+      },
+      title: 'a title',
+    },
   }
 
   beforeEach(() => {
     jest.clearAllMocks()
+    setConfigInRegistry('test-container', { container: 'test-container', uid: 'test-uid' })
   })
 
   it('renders container div with default height and width', () => {
     const { container } = render(
-      <Builder config={mockConfig} token={mockToken} template={mockTemplate} />
+      <Builder token={mockToken} template={mockTemplate} />,
     )
 
     const div = container.querySelector('#test-container')
-    expect(div?.getAttribute('style')).toContain('height: 800px')
+    expect(div?.getAttribute('style')).toContain('height: 100%')
     expect(div?.getAttribute('style')).toContain('width: 100%')
   })
 
   it('renders container div with custom height and width', () => {
     const { container } = render(
-      <Builder config={mockConfig} token={mockToken} template={mockTemplate} height="600px" width="80%" />
+      <Builder token={mockToken} template={mockTemplate} height="600px" width="80%" />,
     )
 
     const div = container.querySelector('#test-container')
     expect(div?.getAttribute('style')).toContain('height: 600px')
     expect(div?.getAttribute('style')).toContain('width: 80%')
-  })
-
-  it('uses default container id when not provided', () => {
-    const { container } = render(
-      <Builder config={{ uid: 'test-uid', container: '' }} token={mockToken} template={mockTemplate} />
-    )
-
-    expect(container.querySelector(`#${DEFAULT_ID}`)).toBeTruthy()
   })
 
   it('calls start when no sessionId', () => {
@@ -96,7 +77,7 @@ describe('Builder Component', () => {
       loadConfig: jest.fn(),
     }))
 
-    render(<Builder config={mockConfig} token={mockToken} template={mockTemplate} />)
+    render(<Builder token={mockToken} template={mockTemplate} />)
 
     expect(mockStart).toHaveBeenCalled()
   })
@@ -109,17 +90,44 @@ describe('Builder Component', () => {
       loadConfig: jest.fn(),
     }))
 
-    render(<Builder config={mockConfig} token={mockToken} template={mockTemplate} shared sessionId="test-session" />)
+    render(<Builder token={mockToken} template={mockTemplate} shared sessionId="test-session" />)
 
     expect(mockJoin).toHaveBeenCalledWith(
       expect.objectContaining({ container: 'test-container' }),
-      'test-session'
+      'test-session',
+      undefined,
     )
   })
 
-  it('throws error when no token provided', () => {
-    expect(() => {
-      render(<Builder config={mockConfig} token={null} template={mockTemplate} />)
-    }).toThrow("Can't start the builder without a token")
+  it('does not call loadConfig on initial load', async () => {
+    const mockLoadConfig = jest.fn()
+    const mockStart = jest.fn().mockResolvedValue(undefined);
+    (BeefreeSDK as jest.Mock).mockImplementation(() => ({
+      start: mockStart,
+      loadConfig: mockLoadConfig,
+    }))
+
+    render(<Builder token={mockToken} template={mockTemplate} />)
+
+    await waitFor(() => expect(mockStart).toHaveBeenCalled())
+    expect(mockLoadConfig).not.toHaveBeenCalled()
+  })
+
+  it('registers SDK instance so useBuilder can load updated config from registry', async () => {
+    const mockLoadConfig = jest.fn()
+    const mockStart = jest.fn().mockResolvedValue(undefined);
+    (BeefreeSDK as jest.Mock).mockImplementation(() => ({
+      start: mockStart,
+      loadConfig: mockLoadConfig,
+    }))
+
+    const { rerender } = render(<Builder token={mockToken} template={mockTemplate} />)
+
+    await waitFor(() => expect(mockStart).toHaveBeenCalled())
+
+    setConfigInRegistry('test-container', { container: 'test-container', uid: 'test-uid', username: 'Updated' })
+    rerender(<Builder token={mockToken} template={mockTemplate} />)
+
+    expect(mockStart).toHaveBeenCalled()
   })
 })

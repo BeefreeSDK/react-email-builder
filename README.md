@@ -1,5 +1,11 @@
 # Beefree SDK React Component
 
+[![npm version](https://badge.fury.io/js/%40beefree.io%2Freact.svg)](https://www.npmjs.com/package/@beefree.io/react)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![CI](https://github.com/BeefreeSDK/npm-react/workflows/CI/badge.svg)](https://github.com/BeefreeSDK/npm-react/actions)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19.1-blue)](https://react.dev/)
+
 A React wrapper component for the [Beefree SDK](https://www.beefree.io/), making it easy to integrate the Beefree email/page builder into your React applications.
 
 ## Table of Contents
@@ -55,15 +61,9 @@ function App() {
   return (
     <Builder
       token={token}
-      config={{
-        uid: 'unique-user-id',
-        container: 'bee-container',
-      }}
       template={{
-        data: {
-          json: {},
-          version: 0,
-        },
+        comments: {},
+        page: {},
       }}
     />
   )
@@ -79,8 +79,7 @@ function App() {
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `token` | `IToken` | Yes | Authentication token from Beefree API |
-| `config` | `IBeeConfig` | Yes | Beefree SDK configuration object |
-| `template` | `ITemplateJson` | Yes | Initial template/content to load |
+| `template` | `IEntityContentJson` | Yes | Initial template/content to load |
 | `shared` | `boolean` | No | Enable collaborative editing session |
 | `sessionId` | `string` | No | Session ID to join (for collaborative editing) |
 | `width` | `React.CSSProperties['width']` | No | Container width (default: '100%') |
@@ -91,36 +90,33 @@ function App() {
 #### Basic Configuration
 
 ```tsx
+useBuilder({
+  uid: 'user-123',
+  container: 'bee-container',
+
+  // Customization
+  language: 'en-US',
+  specialLinks: [
+    { type: 'unsubscribe', label: 'Unsubscribe', link: '[unsubscribe]' }
+  ],
+
+  // Content management
+  contentDialog: {
+    saveRow: {
+      label: 'Save Row',
+      handler: (resolve) => resolve({ name: 'My Row' })
+    }
+  }
+})
+
 <Builder
   token={token}
-  config={{
-    uid: 'user-123',
-    container: 'bee-container',
-
-    // Hooks
-    onSave: (jsonFile, htmlFile) => {
-      console.log('Saved:', { jsonFile, htmlFile })
-    },
-
-    // Customization
-    language: 'en-US',
-    specialLinks: [
-      { type: 'unsubscribe', label: 'Unsubscribe', link: '[unsubscribe]' }
-    ],
-
-    // Content management
-    contentDialog: {
-      saveRow: {
-        label: 'Save Row',
-        handler: (resolve) => resolve({ name: 'My Row' })
-      }
-    }
-  }}
   template={{
-    data: {
-      json: {},
-      version: 0
-    }
+    comments: {},
+    page: {},
+  }}
+  onSave={(jsonFile, htmlFile) => {
+    console.log('Saved:', { jsonFile, htmlFile })
   }}
 />
 ```
@@ -129,40 +125,60 @@ function App() {
 
 ### `useBuilder`
 
-Access builder instance methods to programmatically control the builder.
+The `useBuilder` hook provides programmatic control over the builder instance and allows you to dynamically update configuration properties (non-callback properties like `uid`, `language`, etc.).
 
 ```tsx
-import { useBuilder } from '@beefree.io/react'
+import { Builder, useBuilder } from '@beefree.io/react'
 
 function MyComponent() {
-  const { save, load, saveAsTemplate, loadConfig } = useBuilder('bee-container')
+  // Initialize useBuilder with config including container ID
+  const initialConfig = {
+    container: 'bee-editor', // This is the ID that links hook and component
+    uid: 'user-123',
+    language: 'en-US',
+    // ...more configs
+  }
+
+  const { updateConfig, load, save, saveAsTemplate } = useBuilder(initialConfig)
+
+  // Update configuration dynamically
+  const changeLanguage = (lang: string) => {
+    updateConfig({ language: lang })
+  }
+
+  const changeUser = (userId: string) => {
+    updateConfig({ uid: userId })
+  }
 
   const handleSave = async () => {
     const result = await save()
     console.log('Saved:', result)
   }
 
-  const handleLoad = async () => {
-    await load(newTemplate)
-  }
-
   return (
     <div>
+      <button onClick={() => changeLanguage('it-IT')}>Switch to Italian</button>
+      <button onClick={() => changeUser('user-456')}>Change User</button>
       <button onClick={handleSave}>Save</button>
-      <button onClick={handleLoad}>Load New Template</button>
+      
+      <Builder
+        token={token}
+        template={template}
+        // Define callbacks directly in the component
+        onSave={(json, html) => {
+          console.log('Content saved:', json, html)
+        }}
+        onChange={(json, metadata) => {
+          console.log('Content changed')
+        }}
+        onReady={() => {
+          console.log('Builder is ready!')
+        }}
+      />
     </div>
   )
 }
 ```
-
-#### Hook Methods
-
-- `save()` - Save current content and get JSON/HTML
-- `load(template)` - Load a new template
-- `saveAsTemplate()` - Save current content as a template
-- `loadConfig(config)` - Update builder configuration
-
-**Note:** Pass the same `container` ID to `useBuilder()` as specified in your `config.container` prop, or use the default if not specified.
 
 ## Best Practices
 
@@ -235,8 +251,8 @@ const config = useMemo(() => ({
 When using multiple builders on the same page, ensure unique `container` IDs:
 
 ```tsx
-<Builder config={{ container: 'builder-1' }} {...props} />
-<Builder config={{ container: 'builder-2' }} {...props} />
+const config1 = useBuilder({ container: 'builder-1', ...otherProperties })
+const config2 = useBuilder({ container: 'builder-2', ...otherProperties})
 ```
 
 ### 🔄 Collaborative Editing
@@ -372,22 +388,6 @@ yarn start
 
 # Run tests
 yarn test
-
-# Build library
-yarn build
-```
-
-### Project Structure
-
-```
-src/
-├── Builder.tsx           # Main Builder component
-├── index.ts            # Public exports
-├── constants.ts        # Configuration constants
-├── hooks/
-│   ├── useBuilder.ts   # Hook for programmatic control
-│   └── useRegistry.ts  # Internal instance registry
-└── __tests__/          # Test files
 ```
 
 ### Building
@@ -408,25 +408,6 @@ Outputs:
 1. Verify token is valid and not expired
 2. Check console for errors
 3. Ensure `container` ID is unique on the page
-
-### TypeScript errors
-
-Make sure you have the SDK types installed:
-
-```bash
-npm install @beefree.io/sdk
-# or
-yarn add @beefree.io/sdk
-```
-
-### Hook not working
-
-Ensure the `container` ID passed to `useBuilder()` matches the one in your config:
-
-```tsx
-const config = { container: 'my-builder' }
-const builder = useBuilder('my-builder') // Must match!
-```
 
 ## License
 

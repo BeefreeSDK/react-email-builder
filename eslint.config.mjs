@@ -7,7 +7,7 @@ import reactPlugin from 'eslint-plugin-react'
 import importPlugin from 'eslint-plugin-import'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
 
-const tsconfigPath = fileURLToPath(new URL('./tsconfig.json', import.meta.url))
+const tsconfigPath = fileURLToPath(new URL('./tsconfig.eslint.json', import.meta.url))
 
 
 const eslintConfig = [{
@@ -41,6 +41,8 @@ const eslintConfig = [{
     ...typescriptEslintPlugin.configs.recommended.rules,
     ...reactPlugin.configs.recommended.rules,
     ...reactHooksPlugin.configs.recommended.rules,
+    'react/react-in-jsx-scope': 'off',
+    'react/jsx-uses-react': 'off',
     'import/order': ['warn', {
       groups: [
         'builtin',
@@ -51,6 +53,11 @@ const eslintConfig = [{
         'unknown',
       ],
       warnOnUnassignedImports: true,
+    }],
+    '@typescript-eslint/no-unused-vars': ['error', {
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+      caughtErrorsIgnorePattern: '^_',
     }],
   },
 }]
