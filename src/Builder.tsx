@@ -111,6 +111,32 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     onTemplateLanguageChange,
   })
 
+  // Sync callbacks ref on every render to ensure SDK always has latest callbacks
+  callbacksRef.current = {
+    onLoad,
+    onPreview,
+    onTogglePreview,
+    onSessionStarted,
+    onSessionChange,
+    onReady,
+    onSave,
+    onSaveRow,
+    onError,
+    onAutoSave,
+    onSaveAsTemplate,
+    onStart,
+    onSend,
+    onChange,
+    onRemoteChange,
+    onWarning,
+    onComment,
+    onInfo,
+    onLoadWorkspace,
+    onViewChange,
+    onPreviewChange,
+    onTemplateLanguageChange,
+  }
+
   const config = useMemo(() => {
     const configRegistry = getConfigRegistry()
     const builderConfig = configRegistry.get(container) || {}
@@ -138,7 +164,10 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
   // Creates and starts SDK instance
   useEffect(() => {
     if (!token) {
-      throw new Error('Can\'t start the builder without a token')
+      callbacksRef.current.onError?.({
+        message: 'Can\'t start the builder without a token',
+      })
+      return
     }
 
     const currentConfig = configRef.current as IBeeConfig
@@ -154,19 +183,30 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
         void beeInstance.join(configRef.current, sessionId, bucketDir).then(() => {
           setEditorReady(true)
         }).catch((error) => {
-          console.error('Error joining the shared session:', error)
+          callbacksRef.current.onError?.({
+            message: `Error joining the shared session: ${error}`,
+          })
         })
       }
       else {
         void beeInstance.start(configRef.current, template, bucketDir, { shared }).then(() => {
           setEditorReady(true)
         }).catch((error) => {
-          console.error('Error starting the builder:', error)
+          callbacksRef.current.onError?.({
+            message: `Error starting the builder: ${error}`,
+          })
         })
       }
     }
 
     return () => {
+      // SDK doesn't provide a destroy/dispose method, so we manually clean up
+      // by clearing the container's content (removes iframe and event listeners)
+      const containerElement = document.getElementById(container)
+      if (containerElement) {
+        containerElement.innerHTML = ''
+      }
+
       if (instanceRef.current) {
         instanceRef.current = null
       }

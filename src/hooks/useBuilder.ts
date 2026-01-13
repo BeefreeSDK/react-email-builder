@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import BeeTypesInstance from '@beefree.io/sdk'
 import { useSDKInstanceRegistry, setConfigInRegistry, removeConfigFromRegistry } from './useRegistry'
@@ -75,40 +75,43 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
           : instanceToRegister
       })
     }
-  }, [sdkInstanceRegistryVersion])
+  }, [sdkInstanceRegistryVersion, instanceToRegister])
 
-  const bindMethodToInstance = useCallback(<K extends keyof SDKInstance>(methodName: K) => {
-    return (...args: Parameters<SDKInstance[K]>) => {
-      const method = instance?.[methodName]
-      return typeof method === 'function' ? method(...args) : undefined
+  // Memoize all SDK methods to provide stable references across renders
+  return useMemo(() => {
+    const bindMethod = <K extends keyof SDKInstance>(methodName: K) => {
+      return (...args: Parameters<SDKInstance[K]>) => {
+        const method = instance?.[methodName]
+        return typeof method === 'function' ? method(...args) : undefined
+      }
     }
-  }, [instance])
 
-  return {
-    updateConfig,
-    reload: bindMethodToInstance('reload'),
-    preview: bindMethodToInstance('preview'),
-    load: bindMethodToInstance('load'),
-    save: bindMethodToInstance('save'),
-    saveAsTemplate: bindMethodToInstance('saveAsTemplate'),
-    send: bindMethodToInstance('send'),
-    join: bindMethodToInstance('join'),
-    start: bindMethodToInstance('start'),
-    loadRows: bindMethodToInstance('loadRows'),
-    switchPreview: bindMethodToInstance('switchPreview'),
-    togglePreview: bindMethodToInstance('togglePreview'),
-    toggleComments: bindMethodToInstance('toggleComments'),
-    switchTemplateLanguage: bindMethodToInstance('switchTemplateLanguage'),
-    getTemplateJson: bindMethodToInstance('getTemplateJson'),
-    loadConfig: bindMethodToInstance('loadConfig'),
-    showComment: bindMethodToInstance('showComment'),
-    updateToken: bindMethodToInstance('updateToken'),
-    toggleMergeTagsPreview: bindMethodToInstance('toggleMergeTagsPreview'),
-    execCommand: bindMethodToInstance('execCommand'),
-    getConfig: bindMethodToInstance('getConfig'),
-    loadStageMode: bindMethodToInstance('loadStageMode'),
-    toggleStructure: bindMethodToInstance('toggleStructure'),
-    loadWorkspace: bindMethodToInstance('loadWorkspace'),
-    startFileManager: bindMethodToInstance('startFileManager'),
-  }
+    return {
+      updateConfig,
+      reload: bindMethod('reload'),
+      preview: bindMethod('preview'),
+      load: bindMethod('load'),
+      save: bindMethod('save'),
+      saveAsTemplate: bindMethod('saveAsTemplate'),
+      send: bindMethod('send'),
+      join: bindMethod('join'),
+      start: bindMethod('start'),
+      loadRows: bindMethod('loadRows'),
+      switchPreview: bindMethod('switchPreview'),
+      togglePreview: bindMethod('togglePreview'),
+      toggleComments: bindMethod('toggleComments'),
+      switchTemplateLanguage: bindMethod('switchTemplateLanguage'),
+      getTemplateJson: bindMethod('getTemplateJson'),
+      loadConfig: bindMethod('loadConfig'),
+      showComment: bindMethod('showComment'),
+      updateToken: bindMethod('updateToken'),
+      toggleMergeTagsPreview: bindMethod('toggleMergeTagsPreview'),
+      execCommand: bindMethod('execCommand'),
+      getConfig: bindMethod('getConfig'),
+      loadStageMode: bindMethod('loadStageMode'),
+      toggleStructure: bindMethod('toggleStructure'),
+      loadWorkspace: bindMethod('loadWorkspace'),
+      startFileManager: bindMethod('startFileManager'),
+    }
+  }, [instance, updateConfig])
 }
