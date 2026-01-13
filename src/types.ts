@@ -108,7 +108,6 @@ export interface BuilderProps {
   template: IEntityContentJson
   token: IToken
   shared?: boolean
-  type?: string // potentially used with no-auth-sdk-editor
   width?: React.CSSProperties['width']
   height?: React.CSSProperties['height']
   sessionId?: string
