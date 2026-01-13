@@ -1,3 +1,9 @@
+import { resetRegistry } from '../hooks/useRegistry'
+
+beforeEach(() => {
+  resetRegistry()
+})
+
 jest.mock('@beefree.io/sdk', () => {
   const mockInstance = {
     start: jest.fn().mockResolvedValue(undefined),

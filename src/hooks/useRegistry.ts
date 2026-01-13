@@ -67,3 +67,10 @@ export const removeSDKInstanceFromRegistry = (key: string) => {
   sdkInstanceRegistry.delete(key)
   notifyRegistryChanged()
 }
+
+export const resetRegistry = () => {
+  sdkInstanceRegistry.clear()
+  configRegistry.clear()
+  listeners.clear()
+  version = 0
+}
