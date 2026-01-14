@@ -138,7 +138,6 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
   }
 
   const config = useMemo(() => {
-    const configRegistry = getConfigRegistry()
     const builderConfig = configRegistry.get(container) || {}
 
     return {

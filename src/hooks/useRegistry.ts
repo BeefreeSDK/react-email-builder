@@ -33,11 +33,6 @@ export function useSDKInstanceRegistry(): [SDKRegistry, number] {
   return [sdkInstanceRegistry, version]
 }
 
-export function useConfigRegistry(): [ConfigRegistry, number] {
-  const version = useSyncExternalStore(subscribe, getSnapshot)
-  return [configRegistry, version]
-}
-
 export const getConfigRegistry = () => configRegistry
 
 // Reserve container with a placeholder to prevent other instances from using it
