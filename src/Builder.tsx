@@ -5,13 +5,13 @@ import {
   setSDKInstanceToRegistry,
   removeSDKInstanceFromRegistry,
   getConfigRegistry,
-  useSDKInstanceRegistry,
   reserveContainer,
 } from './hooks/useRegistry'
 import { BuilderPropsWithCallbacks } from './types'
 
 const Builder = (props: BuilderPropsWithCallbacks) => {
   const {
+    id: container,
     token,
     template,
     width,
@@ -20,136 +20,35 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     sessionId,
     loaderUrl,
     bucketDir,
-    onLoad,
-    onPreview,
-    onTogglePreview,
-    onSessionStarted,
-    onSessionChange,
-    onReady,
-    onSave,
-    onSaveRow,
-    onError,
-    onAutoSave,
-    onSaveAsTemplate,
-    onStart,
-    onSend,
-    onChange,
-    onRemoteChange,
-    onWarning,
-    onComment,
-    onInfo,
-    onLoadWorkspace,
-    onViewChange,
-    onPreviewChange,
-    onTemplateLanguageChange,
+    ...callbacks
   } = props
 
+  const callbacksRef = useRef(callbacks)
+
   const configRegistry = getConfigRegistry()
-  const [sdkInstanceRegistry] = useSDKInstanceRegistry()
   const [editorReady, setEditorReady] = useState(false)
   const instanceRef = useRef<BeefreeSDK>(null)
-
-  // Select and reserve container on mount to prevent race conditions between instances
-  const [container] = useState(() => {
-    const containerKeys = Array.from(configRegistry.keys())
-
-    const findFirstContainerWithoutInstance = (): string | null => {
-      for (const containerKey of containerKeys) {
-        const hasSdkInstance = sdkInstanceRegistry.has(containerKey)
-
-        if (!hasSdkInstance) {
-          return containerKey
-        }
-      }
-      return null
-    }
-
-    const candidate = findFirstContainerWithoutInstance()
-
-    if (candidate) {
-      // Reserve synchronously by directly updating the registry Map (no notification yet)
-      sdkInstanceRegistry.set(candidate, null)
-      return candidate
-    }
-
-    const firstConfig = configRegistry.values().next().value
-
-    if (!firstConfig) {
-      throw new Error('Builder requires at least the container in config to be registered')
-    }
-
-    return firstConfig.container
-  })
-
   // Notify registry change in effect to avoid state updates during render
   useEffect(() => {
     reserveContainer(container)
   }, [container])
 
-  const callbacksRef = useRef({
-    onLoad,
-    onPreview,
-    onTogglePreview,
-    onSessionStarted,
-    onSessionChange,
-    onReady,
-    onSave,
-    onSaveRow,
-    onError,
-    onAutoSave,
-    onSaveAsTemplate,
-    onStart,
-    onSend,
-    onChange,
-    onRemoteChange,
-    onWarning,
-    onComment,
-    onInfo,
-    onLoadWorkspace,
-    onViewChange,
-    onPreviewChange,
-    onTemplateLanguageChange,
-  })
-
-  // Sync callbacks ref on every render to ensure SDK always has latest callbacks
-  callbacksRef.current = {
-    onLoad,
-    onPreview,
-    onTogglePreview,
-    onSessionStarted,
-    onSessionChange,
-    onReady,
-    onSave,
-    onSaveRow,
-    onError,
-    onAutoSave,
-    onSaveAsTemplate,
-    onStart,
-    onSend,
-    onChange,
-    onRemoteChange,
-    onWarning,
-    onComment,
-    onInfo,
-    onLoadWorkspace,
-    onViewChange,
-    onPreviewChange,
-    onTemplateLanguageChange,
-  }
-
   const config = useMemo(() => {
     const builderConfig = configRegistry.get(container) || {}
-
-    return {
+    const nextConfig: IBeeConfig = {
       container,
       ...builderConfig,
-      // Use callbacks from ref to avoid triggering this memo on callback changes
-      ...callbacksRef.current,
+      ...callbacks,
     }
-  }, [container])
 
-  const configRef = useRef(config)
-  configRef.current = config
+    return nextConfig
+  }, [configRegistry, container, callbacks])
+
+  useEffect(() => {
+    if (editorReady) {
+      instanceRef.current?.loadConfig?.(callbacks)
+    }
+  }, [callbacks, editorReady])
 
   useEffect(() => {
     if (editorReady && instanceRef.current) {
@@ -160,18 +59,22 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     }
   }, [container, editorReady])
 
-  // Creates and starts SDK instance
+  useEffect(() => {
+    callbacksRef.current = callbacks
+  }, [callbacks])
+
   useEffect(() => {
     if (!token) {
       callbacksRef.current.onError?.({
         message: 'Can\'t start the builder without a token',
       })
-      return
     }
+  }, [token])
 
-    const currentConfig = configRef.current as IBeeConfig
-
-    if (instanceRef.current === null && currentConfig.uid && token) {
+  // Creates and starts SDK instance
+  if (instanceRef.current === null && token) {
+    const currentConfig = config as IBeeConfig
+    if (currentConfig.uid) {
       instanceRef.current = new BeefreeSDK(token, {
         beePluginUrl: loaderUrl,
       })
@@ -179,25 +82,27 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
       const beeInstance = instanceRef.current
 
       if (shared && sessionId) {
-        void beeInstance.join(configRef.current, sessionId, bucketDir).then(() => {
+        void beeInstance.join(config, sessionId, bucketDir).then(() => {
           setEditorReady(true)
         }).catch((error) => {
-          callbacksRef.current.onError?.({
+          config.onError?.({
             message: `Error joining the shared session: ${error}`,
           })
         })
       }
       else {
-        void beeInstance.start(configRef.current, template, bucketDir, { shared }).then(() => {
+        void beeInstance.start(config, template, bucketDir, { shared }).then(() => {
           setEditorReady(true)
         }).catch((error) => {
-          callbacksRef.current.onError?.({
+          config.onError?.({
             message: `Error starting the builder: ${error}`,
           })
         })
       }
     }
+  }
 
+  useEffect(() => {
     return () => {
       // SDK doesn't provide a destroy/dispose method, so we manually clean up
       // by clearing the container's content (removes iframe and event listeners)
@@ -211,7 +116,7 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
       }
       setEditorReady(false)
     }
-  }, [])
+  }, [container])
 
   return (
     <div

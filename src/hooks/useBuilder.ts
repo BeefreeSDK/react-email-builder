@@ -33,10 +33,10 @@ import { SDKInstance, UseBuilderReturnDocs } from '../types'
 export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   const [sdkInstanceRegistry, sdkInstanceRegistryVersion] = useSDKInstanceRegistry()
   const startVersion = useRef<number>(sdkInstanceRegistryVersion)
-  const [config, setConfig] = useState<Partial<IBeeConfig>>(initialConfig)
-  const [instance, setInstance] = useState<BeeTypesInstance | null>(sdkInstanceRegistry.get(config.container ?? '') ?? null)
+  const configRef = useRef<Partial<IBeeConfig>>(initialConfig)
+  const [instance, setInstance] = useState<BeeTypesInstance | null>(sdkInstanceRegistry.get(initialConfig.container ?? '') ?? null)
   const isRegistered = useRef(false)
-  const instanceToRegister = sdkInstanceRegistry.get(config.container ?? '') ?? null
+  const instanceToRegister = sdkInstanceRegistry.get(initialConfig.container ?? '') ?? null
 
   // Register config on first render
   if (!isRegistered.current) {
@@ -44,27 +44,29 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
     setConfigInRegistry(initialConfig.container, initialConfig)
   }
 
-  const updateConfig = useCallback((partialConfig: Partial<IBeeConfig>) => {
-    if (instance) {
-      instance.loadConfig(partialConfig).then((configResponse) => {
-        setConfig(configResponse)
+  const updateConfig = useCallback((partialConfig: Partial<IBeeConfig>) => (
+    new Promise<IBeeConfig>((resolve, reject) => {
+      instance?.loadConfig(partialConfig).then((configResponse) => {
+        configRef.current = configResponse
+        resolve(configResponse)
       }).catch((error) => {
         // debounce warning but handled by the loader
         if (error.code === 3001) {
-          console.warn('Warning updating builder config:', error)
+          configRef.current.onWarning?.(error)
         }
         else {
-          console.error('Error updating builder config:', error)
+          configRef.current.onError?.({ code: 1000, message: `Error updating builder config: ${error}` })
         }
+        reject(error)
       })
-    }
-  }, [instance])
+    })
+  ), [instance])
 
   useEffect(() => {
     return () => {
-      removeConfigFromRegistry(config.container)
+      removeConfigFromRegistry(initialConfig.container)
     }
-  }, [config.container])
+  }, [initialConfig.container])
 
   // Listen for changes in the builder registry and update the instance when the builder is registered
   useEffect(() => {

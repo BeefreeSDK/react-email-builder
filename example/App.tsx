@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Builder, useBuilder } from '../dist/index.es'
-import type { IToken, IBeeConfig, BeePluginError, IPluginRow, ILanguage } from '../dist/index.d.ts'
+import { Builder, useBuilder } from '../src'
 import { Controls } from './Controls'
 import { mockTemplate } from './mockTemplate'
+import { useBuilderConfig } from '../src/hooks/useBuilderConfig'
+import type { IToken, IBeeConfig, BeePluginError, IPluginRow, ILanguage } from '../dist/index.d.ts'
 
 interface ISaveRowResult {
   name: string
@@ -44,6 +45,7 @@ const getToken = async (uid?: string) => {
 }
 
 const config: IBeeConfig = {
+  logLevel: 0,
   container: 'test',
   username: 'Tester',
   uid: 'demo-user',
@@ -89,7 +91,7 @@ const config2 = {
 }
 
 export const App = () => {
-  const [users, setUsers] = useState<string[]>(names)
+  const [users, setUsers] = useState<string[]>([names[0]])
   const [savedRows, setSavedRows] = useState<IPluginRow[]>([])
   const [token, setToken] = useState<IToken>()
   const [isShared, setIsShared] = useState<boolean>(false)
@@ -98,9 +100,10 @@ export const App = () => {
 
   console.log(`%csf: App - App ->`, `color:${'#00ff00'}`, { sessionId })
 
-  const { updateConfig, save, saveAsTemplate, switchTemplateLanguage } = useBuilder(config1)
+  const { updateConfig, save, saveAsTemplate, switchTemplateLanguage, togglePreview, updateToken } = useBuilder(config1)
   const builder2 = useBuilder(config2)
 
+  const [config] = useBuilderConfig(config1)
   const handleUsers = () => {
     if (users.length < names.length) setUsers(prevUsers => [...prevUsers, names[prevUsers.length]])
   }
@@ -140,7 +143,7 @@ export const App = () => {
     resolve({ name: 'row from config update' })
   }, [])
 
-  const sendInviteHandler = useCallback((resolve: unknown, reject: unknown, args: unknown) => {
+  const sendInviteHandler = useCallback((_resolve: unknown, _reject: unknown, args: unknown) => {
     console.log(`%c[APP] - sendInvite handler ->`, `color:${'#00ff00'}`, args)
   }, [])
 
@@ -177,6 +180,18 @@ export const App = () => {
     })
   }, [updateConfig, getRowsHandler, saveRowHandler, sendInviteHandler, getMentionsHandler])
 
+  // const loaderUrl = 'http://localhost:8088/BeeLoader.js'
+  const loaderUrl = 'https://qa-bee-loader.getbee.io/v2/api/loader'
+
+  const refreshToken = useCallback(async () => {
+    const updatedToken = await getToken()
+    setToken(updatedToken)
+  }, [])
+
+  useEffect(() => {
+    if (token) updateToken(token)
+  }, [updateToken, token])
+
   return (
     <>
       <h1>Beefree SDK React Demo</h1>
@@ -195,8 +210,10 @@ export const App = () => {
                   saveAsTemplate={saveAsTemplate}
                   updateConfig={updateConfig}
                   switchTemplateLanguage={switchTemplateLanguage}
+                  togglePreview={togglePreview}
                 />
                 <Builder
+                  id={config.container}
                   template={mockTemplate}
                   shared={isShared}
                   onSessionStarted={({ sessionId }: { sessionId: string }) => setSessionId(sessionId)}
@@ -216,12 +233,15 @@ export const App = () => {
                   }}
                   onError={(error: BeePluginError) => {
                     console.log(`%c[APP] - onError Builder 1 ->`, `color:${'#ff0000'}`, error)
+                    if (error?.code === 5101) {
+                      void refreshToken()
+                    }
                   }}
                   onWarning={(warning: BeePluginError) => {
                     console.log(`%c[APP] - onWarning Builder 1 ->`, `color:${'#fbda00'}`, warning)
                   }}
                   height="800px"
-                  loaderUrl="https://qa-bee-loader.getbee.io/v2/api/loader"
+                  loaderUrl={loaderUrl}
                   onTemplateLanguageChange={(language: ILanguage) => {
                     console.log(`%c[APP] - onTemplateLanguageChange ->`, `color:${'#ff00ff'}`, language)
                   }}
@@ -236,6 +256,7 @@ export const App = () => {
                       switchTemplateLanguage={builder2.switchTemplateLanguage}
                     />
                     <Builder
+                      id={config2.container}
                       template={mockTemplate}
                       shared={isShared}
                       sessionId={sessionId}
@@ -260,7 +281,7 @@ export const App = () => {
                         console.log(`%c[APP] - onWarning Builder 2 ->`, `color:${'#fbda00'}`, warning)
                       }}
                       height="800px"
-                      loaderUrl="https://qa-bee-loader.getbee.io/v2/api/loader"
+                      loaderUrl={loaderUrl}
                     />
                   </>
                 )}

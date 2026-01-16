@@ -28,7 +28,7 @@ export interface UseBuilderReturnDocs {
    * })
    * ```
    */
-  updateConfig: (partialConfig: Partial<IBeeConfig>) => void
+  updateConfig: (partialConfig: Partial<IBeeConfig>) => Promise<IBeeConfig>
   /** Reloads a template without showing loading dialog (seamless reload) */
   reload: SDKInstance['reload']
   /** Shows a preview of the content */
@@ -105,6 +105,7 @@ export interface BuilderCallbacks {
 }
 
 export interface BuilderProps {
+  id: string
   template: IEntityContentJson
   token: IToken
   shared?: boolean

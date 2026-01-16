@@ -59,7 +59,7 @@
     "*.{ts,tsx}": "eslint"
   },
   "dependencies": {
-    "@beefree.io/sdk": "10.1.0-feat-load-config-async.0"
+    "@beefree.io/sdk": "10.1.0-feat-load-config-async.2"
   },
   "devDependencies": {
     "@babel/core": "^7.28.3",
