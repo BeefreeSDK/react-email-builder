@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import BeeTypesInstance from '@beefree.io/sdk'
-import { useSDKInstanceRegistry, setConfigInRegistry, removeConfigFromRegistry } from './useRegistry'
+import { useSDKInstanceRegistry, setConfigInRegistry, removeConfigFromRegistry, getConfigRegistry } from './useRegistry'
 import { SDKInstance, UseBuilderReturnDocs } from '../types'
 
 /**
@@ -35,12 +35,11 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
   const startVersion = useRef<number>(sdkInstanceRegistryVersion)
   const configRef = useRef<Partial<IBeeConfig>>(initialConfig)
   const [instance, setInstance] = useState<BeeTypesInstance | null>(sdkInstanceRegistry.get(initialConfig.container ?? '') ?? null)
-  const isRegistered = useRef(false)
   const instanceToRegister = sdkInstanceRegistry.get(initialConfig.container ?? '') ?? null
 
-  // Register config on first render
-  if (!isRegistered.current) {
-    isRegistered.current = true
+  // Register config the first time the hook is used for a specific container
+  const configRegistry = getConfigRegistry()
+  if (!configRegistry.has(initialConfig.container)) {
     setConfigInRegistry(initialConfig.container, initialConfig)
   }
 

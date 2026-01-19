@@ -98,12 +98,10 @@ export const App = () => {
   const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
   const [sessionId, setSessionId] = useState<string | null>(null)
 
-  console.log(`%csf: App - App ->`, `color:${'#00ff00'}`, { sessionId })
-
-  const { updateConfig, save, saveAsTemplate, switchTemplateLanguage, togglePreview, updateToken } = useBuilder(config1)
+  const { save, saveAsTemplate, switchTemplateLanguage, togglePreview, updateToken } = useBuilder(config1)
   const builder2 = useBuilder(config2)
 
-  const [config] = useBuilderConfig(config1)
+  const [config, updateConfig] = useBuilderConfig(config1)
   const handleUsers = () => {
     if (users.length < names.length) setUsers(prevUsers => [...prevUsers, names[prevUsers.length]])
   }
@@ -223,6 +221,7 @@ export const App = () => {
                   }}
                   onChange={(args: unknown) => {
                     console.log(`%c[APP] - onChange Builder 1 ->`, `color:${'#aaf7ff'}`, args)
+                    console.log(`%csf: App - ->`, `color:${'#00ff00'}`, { users })
                   }}
                   onRemoteChange={(args: unknown) => {
                     console.log(`%c[APP] - onRemoteChange Builder 1 ->`, `color:${'#fff7aa'}`, args)

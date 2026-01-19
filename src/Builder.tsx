@@ -5,7 +5,6 @@ import {
   setSDKInstanceToRegistry,
   removeSDKInstanceFromRegistry,
   getConfigRegistry,
-  reserveContainer,
 } from './hooks/useRegistry'
 import { BuilderPropsWithCallbacks } from './types'
 
@@ -28,10 +27,6 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
   const configRegistry = getConfigRegistry()
   const [editorReady, setEditorReady] = useState(false)
   const instanceRef = useRef<BeefreeSDK>(null)
-  // Notify registry change in effect to avoid state updates during render
-  useEffect(() => {
-    reserveContainer(container)
-  }, [container])
 
   const config = useMemo(() => {
     const builderConfig = configRegistry.get(container) || {}

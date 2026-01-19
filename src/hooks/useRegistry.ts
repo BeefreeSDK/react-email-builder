@@ -35,12 +35,6 @@ export function useSDKInstanceRegistry(): [SDKRegistry, number] {
 
 export const getConfigRegistry = () => configRegistry
 
-// Reserve container with a placeholder to prevent other instances from using it
-export const reserveContainer = (key: string) => {
-  sdkInstanceRegistry.set(key, null)
-  notifyRegistryChanged()
-}
-
 export const setConfigInRegistry = (key: string, config: IBeeConfig) => {
   configRegistry.set(key, config)
   notifyRegistryChanged()
