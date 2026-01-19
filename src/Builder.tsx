@@ -28,15 +28,13 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
   const [editorReady, setEditorReady] = useState(false)
   const instanceRef = useRef<BeefreeSDK>(null)
 
-  const config = useMemo(() => {
+  const config = useMemo<IBeeConfig>(() => {
     const builderConfig = configRegistry.get(container) || {}
-    const nextConfig: IBeeConfig = {
+    return {
       container,
       ...builderConfig,
       ...callbacks,
     }
-
-    return nextConfig
   }, [configRegistry, container, callbacks])
 
   useEffect(() => {
