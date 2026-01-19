@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react'
 import BeefreeSDK from '@beefree.io/sdk'
-import { IEntityContentJson, IToken } from '@beefree.io/sdk/dist/types/bee'
+import { IBeeConfig, IEntityContentJson, IToken } from '@beefree.io/sdk/dist/types/bee'
 import Builder from '../Builder'
 import { setConfigInRegistry } from '../hooks/useRegistry'
 
@@ -9,6 +9,8 @@ describe('Builder Component', () => {
     access_token: 'test-token',
     v2: true,
   }
+
+  const config: IBeeConfig = { container: 'test-container', uid: 'test-uid' }
   const mockTemplate: IEntityContentJson = {
     comments: {},
     page: {
@@ -46,12 +48,12 @@ describe('Builder Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    setConfigInRegistry('test-container', { container: 'test-container', uid: 'test-uid' })
+    setConfigInRegistry('test-container', config)
   })
 
   it('renders container div with default height and width', () => {
     const { container } = render(
-      <Builder token={mockToken} template={mockTemplate} />,
+      <Builder id={config.container} token={mockToken} template={mockTemplate} />,
     )
 
     const div = container.querySelector('#test-container')
@@ -61,7 +63,7 @@ describe('Builder Component', () => {
 
   it('renders container div with custom height and width', () => {
     const { container } = render(
-      <Builder token={mockToken} template={mockTemplate} height="600px" width="80%" />,
+      <Builder id={config.container} token={mockToken} template={mockTemplate} height="600px" width="80%" />,
     )
 
     const div = container.querySelector('#test-container')
@@ -77,7 +79,7 @@ describe('Builder Component', () => {
       loadConfig: jest.fn(),
     }))
 
-    render(<Builder token={mockToken} template={mockTemplate} />)
+    render(<Builder id={config.container} token={mockToken} template={mockTemplate} />)
 
     expect(mockStart).toHaveBeenCalled()
   })
@@ -90,7 +92,7 @@ describe('Builder Component', () => {
       loadConfig: jest.fn(),
     }))
 
-    render(<Builder token={mockToken} template={mockTemplate} shared sessionId="test-session" />)
+    render(<Builder id={config.container} token={mockToken} template={mockTemplate} shared sessionId="test-session" />)
 
     expect(mockJoin).toHaveBeenCalledWith(
       expect.objectContaining({ container: 'test-container' }),
@@ -102,7 +104,7 @@ describe('Builder Component', () => {
   it('calls onError when token is missing', () => {
     const onError = jest.fn()
     // @ts-expect-error - intentionally passing undefined token to test error handling
-    render(<Builder template={mockTemplate} token={undefined} onError={onError} />)
+    render(<Builder id={config.container} template={mockTemplate} token={undefined} onError={onError} />)
 
     expect(onError).toHaveBeenCalledWith(
       expect.objectContaining({ message: expect.stringContaining('token') }),
@@ -117,7 +119,7 @@ describe('Builder Component', () => {
       join: jest.fn(),
     }))
 
-    render(<Builder token={mockToken} template={mockTemplate} onError={onError} />)
+    render(<Builder id={config.container} token={mockToken} template={mockTemplate} onError={onError} />)
 
     await waitFor(() => expect(onError).toHaveBeenCalled())
   })
@@ -132,6 +134,7 @@ describe('Builder Component', () => {
 
     render(
       <Builder
+        id={config.container}
         token={mockToken}
         template={mockTemplate}
         shared
@@ -156,7 +159,7 @@ describe('Builder Component', () => {
     document.body.appendChild(externalContainer)
     externalContainer.innerHTML = '<iframe>SDK Content</iframe>'
 
-    const { unmount } = render(<Builder token={mockToken} template={mockTemplate} />)
+    const { unmount } = render(<Builder id={config.container} token={mockToken} template={mockTemplate} />)
 
     await waitFor(() => expect(mockStart).toHaveBeenCalled())
 
