@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { Builder, useBuilder } from '../src'
 import { Controls } from './Controls'
 import { mockTemplate } from './mockTemplate'
-import { useBuilderConfig } from '../src/hooks/useBuilderConfig'
 import type { IToken, IBeeConfig, BeePluginError, IPluginRow, ILanguage } from '../dist/index.d.ts'
 
 interface ISaveRowResult {
@@ -98,10 +97,9 @@ export const App = () => {
   const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
   const [sessionId, setSessionId] = useState<string | null>(null)
 
-  const { save, saveAsTemplate, switchTemplateLanguage, togglePreview, updateToken } = useBuilder(config1)
+  const { id, updateConfig, save, saveAsTemplate, switchTemplateLanguage, togglePreview, updateToken } = useBuilder(config1)
   const builder2 = useBuilder(config2)
 
-  const [config, updateConfig] = useBuilderConfig(config1)
   const handleUsers = () => {
     if (users.length < names.length) setUsers(prevUsers => [...prevUsers, names[prevUsers.length]])
   }
@@ -150,7 +148,7 @@ export const App = () => {
   }, [])
 
   useEffect(() => {
-    updateConfig({
+    void updateConfig({
       hooks: {
         getMentions: {
           handler: getMentionsHandler,
@@ -255,7 +253,7 @@ export const App = () => {
                       switchTemplateLanguage={builder2.switchTemplateLanguage}
                     />
                     <Builder
-                      id={config2.container}
+                      id={id}
                       template={mockTemplate}
                       shared={isShared}
                       sessionId={sessionId}

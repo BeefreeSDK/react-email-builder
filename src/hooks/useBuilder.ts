@@ -88,6 +88,7 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
     }
 
     return {
+      id: initialConfig.container,
       updateConfig,
       reload: bindMethod('reload'),
       preview: bindMethod('preview'),
