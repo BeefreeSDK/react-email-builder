@@ -1,6 +1,6 @@
 {
   "name": "@mailupinc/react",
-  "version": "1.1.0-refactor-builder-state.13",
+  "version": "1.1.0-refactor-improvements.0",
   "description": "React wrapper for the Beefree SDK – A framework-specific package that provides React components and hooks to integrate the Beefree SDK (Email Builder, Page Builder, File Manager, Popup Builder) into React applications",
   "repository": {
     "type": "git",
@@ -59,7 +59,7 @@
     "*.{ts,tsx}": "eslint"
   },
   "dependencies": {
-    "@beefree.io/sdk": "10.1.0-feat-load-config-async.0"
+    "@beefree.io/sdk": "10.1.0-feat-load-config-async.2"
   },
   "devDependencies": {
     "@babel/core": "^7.28.3",
@@ -100,7 +100,6 @@
     "standard-version": "^9.5.0",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
-    "tslint": "^6.1.3",
     "typescript": "^5.9.2"
   },
   "peerDependencies": {

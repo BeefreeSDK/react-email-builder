@@ -33,18 +33,7 @@ export function useSDKInstanceRegistry(): [SDKRegistry, number] {
   return [sdkInstanceRegistry, version]
 }
 
-export function useConfigRegistry(): [ConfigRegistry, number] {
-  const version = useSyncExternalStore(subscribe, getSnapshot)
-  return [configRegistry, version]
-}
-
 export const getConfigRegistry = () => configRegistry
-
-// Reserve container with a placeholder to prevent other instances from using it
-export const reserveContainer = (key: string) => {
-  sdkInstanceRegistry.set(key, null)
-  notifyRegistryChanged()
-}
 
 export const setConfigInRegistry = (key: string, config: IBeeConfig) => {
   configRegistry.set(key, config)
@@ -66,4 +55,11 @@ export const setSDKInstanceToRegistry = (key: string, instance: BeefreeSDK | nul
 export const removeSDKInstanceFromRegistry = (key: string) => {
   sdkInstanceRegistry.delete(key)
   notifyRegistryChanged()
+}
+
+export const resetRegistry = () => {
+  sdkInstanceRegistry.clear()
+  configRegistry.clear()
+  listeners.clear()
+  version = 0
 }

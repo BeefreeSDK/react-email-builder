@@ -28,7 +28,9 @@ export interface UseBuilderReturnDocs {
    * })
    * ```
    */
-  updateConfig: (partialConfig: Partial<IBeeConfig>) => void
+  updateConfig: (partialConfig: Partial<IBeeConfig>) => Promise<IBeeConfig>
+  /** The unique identifier of the builder instance */
+  id: string
   /** Reloads a template without showing loading dialog (seamless reload) */
   reload: SDKInstance['reload']
   /** Shows a preview of the content */
@@ -105,10 +107,11 @@ export interface BuilderCallbacks {
 }
 
 export interface BuilderProps {
+  /** `id` coming from `useBuilder` hook */
+  id: string
   template: IEntityContentJson
   token: IToken
   shared?: boolean
-  type?: string // potentially used with no-auth-sdk-editor
   width?: React.CSSProperties['width']
   height?: React.CSSProperties['height']
   sessionId?: string
