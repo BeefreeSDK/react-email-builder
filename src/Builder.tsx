@@ -79,6 +79,14 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
     if (config.uid) {
       instanceRef.current = new BeefreeSDK(token, {
         beePluginUrl: loaderUrl,
+        ...(process.env.NPM_PACKAGE_NAME && process.env.NPM_PACKAGE_VERSION
+          ? {
+              wrapperInfo: {
+                packageName: process.env.NPM_PACKAGE_NAME,
+                packageVersion: process.env.NPM_PACKAGE_VERSION,
+              },
+            }
+          : {}),
       })
 
       const beeInstance = instanceRef.current
