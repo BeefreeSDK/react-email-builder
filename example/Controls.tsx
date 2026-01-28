@@ -1,16 +1,16 @@
 import {
-  IBeeConfig,
   ILanguage,
 } from '@beefree.io/sdk/dist/types/bee'
 import { useEffect, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
+import { UseBuilder } from '../dist/index'
 
 interface ControlsProps {
   id: string
   save?: BeefreeSDK['save']
   saveAsTemplate?: BeefreeSDK['saveAsTemplate']
   switchTemplateLanguage?: (language: ILanguage) => void
-  updateConfig?: (config: Partial<IBeeConfig>) => void
+  updateConfig?: UseBuilder['updateConfig']
   togglePreview?: () => void
 }
 
@@ -26,7 +26,7 @@ export const Controls = ({
 
   useEffect(() => {
     if (updateConfig) {
-      updateConfig({ debug: { all: debug } })
+      void updateConfig({ debug: { all: debug } })
     }
   }, [debug, updateConfig])
 

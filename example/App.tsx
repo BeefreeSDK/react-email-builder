@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Builder, useBuilder } from '../src'
 import { Controls } from './Controls'
 import { mockTemplate } from './mockTemplate'
-import type { IToken, IBeeConfig, BeePluginError, IPluginRow, ILanguage } from '../dist/index.d.ts'
+import { BeePluginError, Builder, IBeeConfig, ILanguage, IPluginRow, IToken, useBuilder } from '../dist/index'
 
 interface ISaveRowResult {
   name: string
+
   [key: string]: unknown
 }
 
@@ -96,8 +96,17 @@ export const App = () => {
   const [isShared, setIsShared] = useState<boolean>(false)
   const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
   const [sessionId, setSessionId] = useState<string | null>(null)
+  const [ready, setReady] = useState<boolean>(false)
 
-  const { id, updateConfig, save, saveAsTemplate, switchTemplateLanguage, togglePreview, updateToken } = useBuilder(config1)
+  const {
+    id,
+    updateConfig,
+    save,
+    saveAsTemplate,
+    switchTemplateLanguage,
+    togglePreview,
+    updateToken,
+  } = useBuilder(config1)
   const builder2 = useBuilder(config2)
 
   const handleUsers = () => {
@@ -148,33 +157,35 @@ export const App = () => {
   }, [])
 
   useEffect(() => {
-    void updateConfig({
-      hooks: {
-        getMentions: {
-          handler: getMentionsHandler,
-        },
-        getRows: {
-          handler: getRowsHandler,
-        },
-      },
-      contentDialog: {
-        addOn: {
-          label: 'addOns',
-          handler: async (resolve: (content: Record<string, unknown>) => void) => {
-            resolve({ type: 'image', value: { alt: '', dynamicSrc: '', href: '', src: '' } })
+    if (ready) {
+      void updateConfig({
+        hooks: {
+          getMentions: {
+            handler: getMentionsHandler,
+          },
+          getRows: {
+            handler: getRowsHandler,
           },
         },
-        saveRow: {
-          label: 'Save',
-          handler: saveRowHandler,
+        contentDialog: {
+          addOn: {
+            label: 'addOns',
+            handler: async (resolve: (content: Record<string, unknown>) => void) => {
+              resolve({ type: 'image', value: { alt: '', dynamicSrc: '', href: '', src: '' } })
+            },
+          },
+          saveRow: {
+            label: 'Save',
+            handler: saveRowHandler,
+          },
+          getMention: {
+            label: 'Send an invite',
+            handler: sendInviteHandler,
+          },
         },
-        getMention: {
-          label: 'Send an invite',
-          handler: sendInviteHandler,
-        },
-      },
-    })
-  }, [updateConfig, getRowsHandler, saveRowHandler, sendInviteHandler, getMentionsHandler])
+      })
+    }
+  }, [ready, updateConfig, getRowsHandler, saveRowHandler, sendInviteHandler, getMentionsHandler])
 
   // const loaderUrl = 'http://localhost:8088/BeeLoader.js'
   const loaderUrl = 'https://qa-bee-loader.getbee.io/v2/api/loader'
@@ -200,14 +211,16 @@ export const App = () => {
         {token && isEditorStarted
           ? (
               <>
-                <Controls
-                  id={config.container}
-                  save={save}
-                  saveAsTemplate={saveAsTemplate}
-                  updateConfig={updateConfig}
-                  switchTemplateLanguage={switchTemplateLanguage}
-                  togglePreview={togglePreview}
-                />
+                {ready && (
+                  <Controls
+                    id={config.container}
+                    save={save}
+                    saveAsTemplate={saveAsTemplate}
+                    updateConfig={updateConfig}
+                    switchTemplateLanguage={switchTemplateLanguage}
+                    togglePreview={togglePreview}
+                  />
+                )}
                 <Builder
                   id={config.container}
                   template={mockTemplate}
@@ -236,6 +249,10 @@ export const App = () => {
                   }}
                   onWarning={(warning: BeePluginError) => {
                     console.log(`%c[APP] - onWarning Builder 1 ->`, `color:${'#fbda00'}`, warning)
+                  }}
+                  onReady={() => {
+                    console.log(`%c[APP] - builder is ready ->`, `color:${'#00ff00'}`)
+                    setReady(true)
                   }}
                   height="800px"
                   loaderUrl={loaderUrl}

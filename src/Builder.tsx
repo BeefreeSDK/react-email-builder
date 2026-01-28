@@ -2,9 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import BeefreeSDK from '@beefree.io/sdk'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
 import {
-  setSDKInstanceToRegistry,
-  removeSDKInstanceFromRegistry,
   getConfigRegistry,
+  removeSDKInstanceFromRegistry,
+  setConfigInRegistry,
+  setSDKInstanceToRegistry,
 } from './hooks/useRegistry'
 import { BuilderPropsWithCallbacks } from './types'
 
@@ -29,19 +30,28 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
   const instanceRef = useRef<BeefreeSDK>(null)
 
   const config = useMemo<IBeeConfig>(() => {
-    const builderConfig = configRegistry.get(container) || {}
-    return {
+    const configFromRegistry = configRegistry.get(container) || {}
+    const builderConfig = {
       container,
-      ...builderConfig,
+      ...configFromRegistry,
       ...callbacks,
     }
+    setConfigInRegistry(container, builderConfig)
+    return builderConfig
   }, [configRegistry, container, callbacks])
 
   useEffect(() => {
     if (editorReady) {
-      instanceRef.current?.loadConfig?.(callbacks)
+      instanceRef.current?.loadConfig?.(callbacks).catch((error) => {
+        if (error.code === 3001) {
+          callbacksRef.current.onWarning?.(error)
+        }
+        else {
+          callbacksRef.current.onError?.({ code: 1000, message: `Error updating builder config: ${error}` })
+        }
+      })
     }
-  }, [callbacks, editorReady])
+  }, [callbacks, container, editorReady])
 
   useEffect(() => {
     if (editorReady && instanceRef.current) {
@@ -59,15 +69,14 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
   useEffect(() => {
     if (!token) {
       callbacksRef.current.onError?.({
-        message: 'Can\'t start the builder without a token',
+        message: `Can't start the builder without a token`,
       })
     }
   }, [token])
 
   // Creates and starts SDK instance
   if (instanceRef.current === null && token) {
-    const currentConfig = config as IBeeConfig
-    if (currentConfig.uid) {
+    if (config.uid) {
       instanceRef.current = new BeefreeSDK(token, {
         beePluginUrl: loaderUrl,
       })

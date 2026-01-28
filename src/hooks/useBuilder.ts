@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
-import BeeTypesInstance from '@beefree.io/sdk'
-import { useSDKInstanceRegistry, setConfigInRegistry, removeConfigFromRegistry, getConfigRegistry } from './useRegistry'
-import { SDKInstance, UseBuilderReturnDocs } from '../types'
+import {
+  useSDKInstanceRegistry,
+  setConfigInRegistry,
+  removeConfigFromRegistry,
+  getConfigRegistry,
+} from './useRegistry'
+import { SDKInstance, UseBuilder } from '../types'
 
 /**
  * Hook for programmatic control of a Beefree SDK builder instance.
@@ -30,11 +34,11 @@ import { SDKInstance, UseBuilderReturnDocs } from '../types'
  * const result = await save()
  * ```
  */
-export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
+export const useBuilder = (initialConfig: IBeeConfig): UseBuilder => {
   const [sdkInstanceRegistry, sdkInstanceRegistryVersion] = useSDKInstanceRegistry()
   const startVersion = useRef<number>(sdkInstanceRegistryVersion)
-  const configRef = useRef<Partial<IBeeConfig>>(initialConfig)
-  const [instance, setInstance] = useState<BeeTypesInstance | null>(sdkInstanceRegistry.get(initialConfig.container ?? '') ?? null)
+  const configRef = useRef<IBeeConfig>(initialConfig)
+  const [instance, setInstance] = useState<SDKInstance | null>(sdkInstanceRegistry.get(initialConfig.container ?? '') ?? null)
   const instanceToRegister = sdkInstanceRegistry.get(initialConfig.container ?? '') ?? null
 
   // Register config the first time the hook is used for a specific container
@@ -52,6 +56,7 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
         // debounce warning but handled by the loader
         if (error.code === 3001) {
           configRef.current.onWarning?.(error)
+          resolve(configRef.current)
         }
         else {
           configRef.current.onError?.({ code: 1000, message: `Error updating builder config: ${error}` })
@@ -77,6 +82,16 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
       })
     }
   }, [sdkInstanceRegistryVersion, instanceToRegister])
+
+  // Listen for changes in the builder registry and update the instance when the builder is registered
+  useEffect(() => {
+    if (startVersion.current < sdkInstanceRegistryVersion) {
+      const updatedConfig = configRegistry.get(configRef.current.container ?? '')
+      if (updatedConfig) {
+        configRef.current = updatedConfig
+      }
+    }
+  }, [sdkInstanceRegistryVersion, configRegistry])
 
   // Memoize all SDK methods to provide stable references across renders
   return useMemo(() => {
@@ -115,5 +130,5 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
       loadWorkspace: bindMethod('loadWorkspace'),
       startFileManager: bindMethod('startFileManager'),
     }
-  }, [instance, updateConfig])
+  }, [initialConfig.container, instance, updateConfig])
 }

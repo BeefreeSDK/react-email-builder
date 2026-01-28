@@ -45,11 +45,12 @@ yarn add @beefree.io/react
 ## Quick Start
 
 ```tsx
-import React, { useState, useEffect } from 'react'
-import { Builder, IToken } from '@beefree.io/react'
+import React, {useState, useEffect} from 'react'
+import {Builder, IToken, useBuilder} from '@beefree.io/react'
 
 function App() {
   const [token, setToken] = useState<IToken | null>(null)
+  const {id} = useBuilder({ container: 'bee-container' })
 
   useEffect(() => {
     // Fetch token from YOUR backend server
@@ -60,6 +61,7 @@ function App() {
 
   return (
     <Builder
+      id={id}
       token={token}
       template={{
         comments: {},
@@ -76,16 +78,17 @@ function App() {
 
 #### Props
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `token` | `IToken` | Yes | Authentication token from Beefree API |
-| `template` | `IEntityContentJson` | Yes | Initial template/content to load |
-| `shared` | `boolean` | No | Enable collaborative editing session |
-| `sessionId` | `string` | No | Session ID to join (for collaborative editing) |
-| `width` | `React.CSSProperties['width']` | No | Container width (default: '100%') |
-| `height` | `React.CSSProperties['height']` | No | Container height (default: '800px') |
-| `onError` | `(error: Error) => void` | No | Error callback handler |
-| `onSessionStarted` | `(data: { sessionId: string }) => void` | No | Callback when collaborative session starts |
+| Prop               | Type                                   | Required | Description                                                  |
+|--------------------|----------------------------------------|----------|--------------------------------------------------------------|
+| `id`               | `string`                               | Yes | The identifier of the builder (comes from `useBuilder` hook) |
+| `token`            | `IToken`                               | Yes | Authentication token from Beefree API                        |
+| `template`         | `IEntityContentJson`                   | Yes | Initial template/content to load                             |
+| `shared`           | `boolean`                              | No | Enable collaborative editing session                         |
+| `sessionId`        | `string`                               | No | Session ID to join (for collaborative editing)               |
+| `width`            | `React.CSSProperties['width']`         | No | Container width (default: '100%')                            |
+| `height`           | `React.CSSProperties['height']`        | No | Container height (default: '800px')                          |
+| `onError`          | `(error: Error) => void`               | No | Error callback handler                                       |
+| `onSessionStarted` | `(data: { sessionId: string }) => void` | No | Callback when collaborative session starts                   |
 
 #### Basic Configuration
 
