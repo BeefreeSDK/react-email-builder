@@ -250,7 +250,7 @@ export const App = () => {
                   onWarning={(warning: BeePluginError) => {
                     console.log(`%c[APP] - onWarning Builder 1 ->`, `color:${'#fbda00'}`, warning)
                   }}
-                  onReady={() => {
+                  onLoad={() => {
                     console.log(`%c[APP] - builder is ready ->`, `color:${'#00ff00'}`)
                     setReady(true)
                   }}
