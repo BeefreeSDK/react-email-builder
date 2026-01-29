@@ -614,13 +614,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@beefree.io/sdk@file:.yalc/@beefree.io/sdk::locator=%40mailupinc%2Freact%40workspace%3A.":
+"@beefree.io/sdk@npm:10.1.0-feat-load-config-async.2":
   version: 10.1.0-feat-load-config-async.2
-  resolution: "@beefree.io/sdk@file:.yalc/@beefree.io/sdk#.yalc/@beefree.io/sdk::hash=398852&locator=%40mailupinc%2Freact%40workspace%3A."
+  resolution: "@beefree.io/sdk@npm:10.1.0-feat-load-config-async.2"
   dependencies:
     fp-ts: "npm:^2.13.1"
     load-script: "npm:^2.0.0"
-  checksum: 10c0/ff8814240fd8cff07f5339069bd4e1b8b2cf241737a627a1e28cf7e6e9d2f346c8a8894b63c91acd08b1aa7d830614edde09d83828413e20d3e47fb1317d7cfc
+  checksum: 10c0/9b55d6b8f5344ed286476feb5d1b4ab763708010b096c3d219c1464ca9763592a1d7307b8083b0aee38efbb871c50b05e199f43f0f4e01b1c5df450990411e7c
   languageName: node
   linkType: hard
 
@@ -1301,7 +1301,7 @@ __metadata:
     "@babel/preset-react": "npm:^7.27.1"
     "@babel/preset-typescript": "npm:^7.27.1"
     "@babel/runtime": "npm:^7.28.3"
-    "@beefree.io/sdk": "file:.yalc/@beefree.io/sdk"
+    "@beefree.io/sdk": "npm:10.1.0-feat-load-config-async.2"
     "@commitlint/config-conventional": "npm:^20.0.0"
     "@rollup/plugin-babel": "npm:^6.0.4"
     "@rollup/plugin-commonjs": "npm:^28.0.6"
