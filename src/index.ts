@@ -8,6 +8,7 @@ export type {
   BuilderCallbacks,
   BuilderProps,
   BuilderPropsWithCallbacks,
+  UseBuilder,
 } from './types'
 
 // Re-export runtime values from SDK to ensure they're available in ESM bundle

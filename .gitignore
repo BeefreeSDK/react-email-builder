@@ -36,3 +36,6 @@ venv.bak/
 
 #except
 !.env.sample
+
+# Yarn v2
+.yarn/
