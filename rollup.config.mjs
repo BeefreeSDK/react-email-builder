@@ -6,10 +6,15 @@ import devServer from 'rollup-plugin-serve'
 import dotenv from "rollup-plugin-dotenv"
 import livereload from "rollup-plugin-livereload";
 import dts from 'rollup-plugin-dts'
+import pkg from './package.json' with { type: 'json' }
 
 const production = !process.env.ROLLUP_WATCH;
 
 const commonPlugins = [
+  replace({
+    'process.env.NPM_PACKAGE_NAME': `'${pkg.name}'`,
+    'process.env.NPM_PACKAGE_VERSION': `'${pkg.version}'`,
+  }),
   nodeResolve({
     extensions: ['.js', '.jsx', '.ts', '.tsx']
   }),
@@ -24,7 +29,6 @@ const commonPlugins = [
     ],
     plugins: production ? ["@babel/plugin-transform-runtime"] : []
   }),
-  dotenv()
 ]
 
 const distConfig = {
@@ -41,7 +45,7 @@ const distConfig = {
     format: 'es',
   }],
   external: [/@babel\/runtime/, 'react', 'react/jsx-runtime', '@beefree.io/sdk'],
-  plugins: [...commonPlugins, ]
+  plugins: commonPlugins,
 }
 
 const typesConfig = {
@@ -62,13 +66,11 @@ const exampleConfig = {
     format: 'iife',
   },
   plugins: [
-    ...commonPlugins,
+    dotenv(),
     replace({
       'process.env.NODE_ENV': JSON.stringify('development'),
-      'process.env.SDK_CLIENT_ID': JSON.stringify(process.env.SDK_CLIENT_ID || ''),
-      'process.env.SDK_CLIENT_SECRET': JSON.stringify(process.env.SDK_CLIENT_SECRET || ''),
-      preventAssignment: true
     }),
+    ...commonPlugins,
     ...(!production ? [
       devServer({
         open: false,
