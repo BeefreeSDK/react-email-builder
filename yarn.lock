@@ -614,13 +614,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@beefree.io/sdk@npm:10.1.0-feat-wrapper-tracking.0":
-  version: 10.1.0-feat-wrapper-tracking.0
-  resolution: "@beefree.io/sdk@npm:10.1.0-feat-wrapper-tracking.0"
+"@beefree.io/sdk@npm:11.2.1":
+  version: 11.2.1
+  resolution: "@beefree.io/sdk@npm:11.2.1"
   dependencies:
     fp-ts: "npm:^2.13.1"
     load-script: "npm:^2.0.0"
-  checksum: 10c0/9daae36c1fed912c43f8824685b96dc4d9cf38f8d4aaff16a467987c038c31bd15b74cd839ee932a9f0ff7ad2b92f0b7168dafbb154ffc95f5c1333aa9044517
+  checksum: 10c0/b0ef3bc0dba94beae338afd3dc61b63e6062e1ec166fcc068eba7d256a93c4569e4d18cb4bdc9fe8c58471445e1dd89fa7e155f863f02d03087b5e06a2707d8b
   languageName: node
   linkType: hard
 
@@ -1301,7 +1301,7 @@ __metadata:
     "@babel/preset-react": "npm:^7.27.1"
     "@babel/preset-typescript": "npm:^7.27.1"
     "@babel/runtime": "npm:^7.28.3"
-    "@beefree.io/sdk": "npm:10.1.0-feat-wrapper-tracking.0"
+    "@beefree.io/sdk": "npm:11.2.1"
     "@commitlint/config-conventional": "npm:^20.0.0"
     "@rollup/plugin-babel": "npm:^6.0.4"
     "@rollup/plugin-commonjs": "npm:^28.0.6"
