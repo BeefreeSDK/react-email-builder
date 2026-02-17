@@ -83,7 +83,7 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilder => {
     }
   }, [sdkInstanceRegistryVersion, instanceToRegister])
 
-  // Listen for changes in the builder registry and update the instance when the builder is registered
+  // Listen for changes in the builder registry and update config ref
   useEffect(() => {
     if (startVersion.current < sdkInstanceRegistryVersion) {
       const updatedConfig = configRegistry.get(configRef.current.container ?? '')
