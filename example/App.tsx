@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Controls } from './Controls'
 import { mockTemplate } from './mockTemplate'
-import { BeePluginError, Builder, IBeeConfig, ILanguage, IPluginRow, IToken, useBuilder } from '../dist/index'
+import { BeePluginError, Builder, IBeeConfig, IPluginRow, IToken, useBuilder } from '../dist/index'
 
 interface ISaveRowResult {
   name: string
@@ -170,7 +170,7 @@ export const App = () => {
         contentDialog: {
           addOn: {
             label: 'addOns',
-            handler: async (resolve: (content: Record<string, unknown>) => void) => {
+            handler: async (resolve) => {
               resolve({ type: 'image', value: { alt: '', dynamicSrc: '', href: '', src: '' } })
             },
           },
@@ -255,7 +255,7 @@ export const App = () => {
                   }}
                   height="800px"
                   loaderUrl={loaderUrl}
-                  onTemplateLanguageChange={(language: ILanguage) => {
+                  onTemplateLanguageChange={(language) => {
                     console.log(`%c[APP] - onTemplateLanguageChange ->`, `color:${'#ff00ff'}`, language)
                   }}
                 />
@@ -300,7 +300,7 @@ export const App = () => {
                 )}
               </>
             )
-          : <></>}
+          : null}
       </div>
     </>
   )
