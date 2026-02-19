@@ -1,12 +1,17 @@
-import { BeeSaveOptions, ILanguage } from '@beefree.io/sdk/dist/types/bee'
-import React, { useEffect, useState } from 'react'
+import {
+  ILanguage,
+} from '@beefree.io/sdk/dist/types/bee'
+import { useEffect, useState } from 'react'
+import BeefreeSDK from '@beefree.io/sdk'
+import { UseBuilder } from '../dist/index'
 
 interface ControlsProps {
   id: string
-  save?: (options?: BeeSaveOptions | undefined) => any
-  saveAsTemplate?: (() => any)
+  save?: BeefreeSDK['save']
+  saveAsTemplate?: BeefreeSDK['saveAsTemplate']
   switchTemplateLanguage?: (language: ILanguage) => void
-  updateConfig?: (config: any) => void
+  updateConfig?: UseBuilder['updateConfig']
+  togglePreview?: () => void
 }
 
 export const Controls = ({
@@ -15,12 +20,13 @@ export const Controls = ({
   saveAsTemplate,
   updateConfig,
   switchTemplateLanguage,
+  togglePreview,
 }: ControlsProps) => {
   const [debug, setDebug] = useState<boolean>(false)
 
   useEffect(() => {
     if (updateConfig) {
-      updateConfig({ debug: { all: debug } })
+      void updateConfig({ debug: { all: debug } })
     }
   }, [debug, updateConfig])
 
@@ -47,6 +53,7 @@ export const Controls = ({
 
   return (
     <div style={{ marginTop: 20, padding: 10, backgroundColor: '#ccc' }}>
+      <button onClick={togglePreview}>Preview</button>
       <button onClick={handleSaveJson}>Save JSON</button>
       <button onClick={handleSaveHtml}>Save HTML</button>
       <button onClick={() => handleSwitchLang('en-US')}>Lang En</button>

@@ -1,13 +1,14 @@
 import { IBeeConfig, IEntityContentJson, IToken } from '@beefree.io/sdk/dist/types/bee'
 export type * from '@beefree.io/sdk'
 import BeeTypesInstance from '@beefree.io/sdk'
+import { CSSProperties } from 'react'
 
 export type SDKInstance = NonNullable<BeeTypesInstance>
 
 /**
  * Return type of the useBuilder hook
  */
-export interface UseBuilderReturnDocs {
+export interface UseBuilder {
   /**
    * Updates the builder configuration dynamically.
    *
@@ -28,7 +29,9 @@ export interface UseBuilderReturnDocs {
    * })
    * ```
    */
-  updateConfig: (partialConfig: Partial<IBeeConfig>) => void
+  updateConfig: (partialConfig: Partial<IBeeConfig>) => Promise<IBeeConfig>
+  /** The unique identifier of the builder instance */
+  id: string
   /** Reloads a template without showing loading dialog (seamless reload) */
   reload: SDKInstance['reload']
   /** Shows a preview of the content */
@@ -80,40 +83,40 @@ export interface UseBuilderReturnDocs {
 }
 
 export interface BuilderCallbacks {
-  onLoad?: IBeeConfig['onLoad']
-  onPreview?: IBeeConfig['onPreview']
-  onTogglePreview?: IBeeConfig['onTogglePreview']
-  onSessionStarted?: IBeeConfig['onSessionStarted']
-  onSessionChange?: IBeeConfig['onSessionChange']
-  onReady?: IBeeConfig['onReady']
-  onSave?: IBeeConfig['onSave']
-  onSaveRow?: IBeeConfig['onSaveRow']
-  onError?: IBeeConfig['onError']
   onAutoSave?: IBeeConfig['onAutoSave']
-  onSaveAsTemplate?: IBeeConfig['onSaveAsTemplate']
-  onStart?: IBeeConfig['onStart']
-  onSend?: IBeeConfig['onSend']
   onChange?: IBeeConfig['onChange']
-  onRemoteChange?: IBeeConfig['onRemoteChange']
-  onWarning?: IBeeConfig['onWarning']
   onComment?: IBeeConfig['onComment']
+  onError?: IBeeConfig['onError']
   onInfo?: IBeeConfig['onInfo']
+  onLoad?: IBeeConfig['onLoad']
   onLoadWorkspace?: IBeeConfig['onLoadWorkspace']
-  onViewChange?: IBeeConfig['onViewChange']
+  onPreview?: IBeeConfig['onPreview']
   onPreviewChange?: IBeeConfig['onPreviewChange']
+  onRemoteChange?: IBeeConfig['onRemoteChange']
+  onSave?: IBeeConfig['onSave']
+  onSaveAsTemplate?: IBeeConfig['onSaveAsTemplate']
+  onSaveRow?: IBeeConfig['onSaveRow']
+  onSend?: IBeeConfig['onSend']
+  onSessionChange?: IBeeConfig['onSessionChange']
+  onSessionStarted?: IBeeConfig['onSessionStarted']
+  onStart?: IBeeConfig['onStart']
   onTemplateLanguageChange?: IBeeConfig['onTemplateLanguageChange']
+  onTogglePreview?: IBeeConfig['onTogglePreview']
+  onViewChange?: IBeeConfig['onViewChange']
+  onWarning?: IBeeConfig['onWarning']
 }
 
 export interface BuilderProps {
+  /** `id` coming from `useBuilder` hook */
+  bucketDir?: string
+  height?: CSSProperties['height']
+  id: string
+  loaderUrl?: string
+  sessionId?: string
+  shared?: boolean
   template: IEntityContentJson
   token: IToken
-  shared?: boolean
-  type?: string // potentially used with no-auth-sdk-editor
-  width?: React.CSSProperties['width']
-  height?: React.CSSProperties['height']
-  sessionId?: string
-  loaderUrl?: string
-  bucketDir?: string
+  width?: CSSProperties['width']
 }
 
 export interface BuilderPropsWithCallbacks extends BuilderProps, BuilderCallbacks {}

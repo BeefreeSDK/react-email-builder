@@ -1,8 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { IBeeConfig } from '@beefree.io/sdk/dist/types/bee'
-import BeeTypesInstance from '@beefree.io/sdk'
-import { useSDKInstanceRegistry, setConfigInRegistry, removeConfigFromRegistry } from './useRegistry'
-import { SDKInstance, UseBuilderReturnDocs } from '../types'
+import {
+  useSDKInstanceRegistry,
+  setConfigInRegistry,
+  removeConfigFromRegistry,
+  getConfigRegistry,
+} from './useRegistry'
+import { SDKInstance, UseBuilder } from '../types'
 
 /**
  * Hook for programmatic control of a Beefree SDK builder instance.
@@ -30,41 +34,43 @@ import { SDKInstance, UseBuilderReturnDocs } from '../types'
  * const result = await save()
  * ```
  */
-export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
+export const useBuilder = (initialConfig: IBeeConfig): UseBuilder => {
   const [sdkInstanceRegistry, sdkInstanceRegistryVersion] = useSDKInstanceRegistry()
   const startVersion = useRef<number>(sdkInstanceRegistryVersion)
-  const [config, setConfig] = useState<Partial<IBeeConfig>>(initialConfig)
-  const [instance, setInstance] = useState<BeeTypesInstance | null>(sdkInstanceRegistry.get(config.container ?? '') ?? null)
-  const isRegistered = useRef(false)
-  const instanceToRegister = sdkInstanceRegistry.get(config.container ?? '') ?? null
+  const configRef = useRef<IBeeConfig>(initialConfig)
+  const [instance, setInstance] = useState<SDKInstance | null>(sdkInstanceRegistry.get(initialConfig.container ?? '') ?? null)
+  const instanceToRegister = sdkInstanceRegistry.get(initialConfig.container ?? '') ?? null
 
-  // Register config on first render
-  if (!isRegistered.current) {
-    isRegistered.current = true
+  // Register config the first time the hook is used for a specific container
+  const configRegistry = getConfigRegistry()
+  if (!configRegistry.has(initialConfig.container)) {
     setConfigInRegistry(initialConfig.container, initialConfig)
   }
 
-  const updateConfig = useCallback((partialConfig: Partial<IBeeConfig>) => {
-    if (instance) {
-      instance.loadConfig(partialConfig).then((configResponse) => {
-        setConfig(configResponse)
+  const updateConfig = useCallback((partialConfig: Partial<IBeeConfig>) => (
+    new Promise<IBeeConfig>((resolve, reject) => {
+      instance?.loadConfig(partialConfig).then((configResponse) => {
+        configRef.current = configResponse
+        resolve(configResponse)
       }).catch((error) => {
         // debounce warning but handled by the loader
         if (error.code === 3001) {
-          console.warn('Warning updating builder config:', error)
+          configRef.current.onWarning?.(error)
+          resolve(configRef.current)
         }
         else {
-          console.error('Error updating builder config:', error)
+          configRef.current.onError?.({ code: 1000, message: `Error updating builder config: ${error}` })
         }
+        reject(error)
       })
-    }
-  }, [instance])
+    })
+  ), [instance])
 
   useEffect(() => {
     return () => {
-      removeConfigFromRegistry(config.container)
+      removeConfigFromRegistry(initialConfig.container)
     }
-  }, [config.container])
+  }, [initialConfig.container])
 
   // Listen for changes in the builder registry and update the instance when the builder is registered
   useEffect(() => {
@@ -75,40 +81,54 @@ export const useBuilder = (initialConfig: IBeeConfig): UseBuilderReturnDocs => {
           : instanceToRegister
       })
     }
-  }, [sdkInstanceRegistryVersion])
+  }, [sdkInstanceRegistryVersion, instanceToRegister])
 
-  const bindMethodToInstance = useCallback(<K extends keyof SDKInstance>(methodName: K) => {
-    return (...args: Parameters<SDKInstance[K]>) => {
-      const method = instance?.[methodName]
-      return typeof method === 'function' ? method(...args) : undefined
+  // Listen for changes in the builder registry and update config ref
+  useEffect(() => {
+    if (startVersion.current < sdkInstanceRegistryVersion) {
+      const updatedConfig = configRegistry.get(configRef.current.container ?? '')
+      if (updatedConfig) {
+        configRef.current = updatedConfig
+      }
     }
-  }, [instance])
+  }, [sdkInstanceRegistryVersion, configRegistry])
 
-  return {
-    updateConfig,
-    reload: bindMethodToInstance('reload'),
-    preview: bindMethodToInstance('preview'),
-    load: bindMethodToInstance('load'),
-    save: bindMethodToInstance('save'),
-    saveAsTemplate: bindMethodToInstance('saveAsTemplate'),
-    send: bindMethodToInstance('send'),
-    join: bindMethodToInstance('join'),
-    start: bindMethodToInstance('start'),
-    loadRows: bindMethodToInstance('loadRows'),
-    switchPreview: bindMethodToInstance('switchPreview'),
-    togglePreview: bindMethodToInstance('togglePreview'),
-    toggleComments: bindMethodToInstance('toggleComments'),
-    switchTemplateLanguage: bindMethodToInstance('switchTemplateLanguage'),
-    getTemplateJson: bindMethodToInstance('getTemplateJson'),
-    loadConfig: bindMethodToInstance('loadConfig'),
-    showComment: bindMethodToInstance('showComment'),
-    updateToken: bindMethodToInstance('updateToken'),
-    toggleMergeTagsPreview: bindMethodToInstance('toggleMergeTagsPreview'),
-    execCommand: bindMethodToInstance('execCommand'),
-    getConfig: bindMethodToInstance('getConfig'),
-    loadStageMode: bindMethodToInstance('loadStageMode'),
-    toggleStructure: bindMethodToInstance('toggleStructure'),
-    loadWorkspace: bindMethodToInstance('loadWorkspace'),
-    startFileManager: bindMethodToInstance('startFileManager'),
-  }
+  // Memoize all SDK methods to provide stable references across renders
+  return useMemo(() => {
+    const bindMethod = <K extends keyof SDKInstance>(methodName: K) => {
+      return (...args: Parameters<SDKInstance[K]>) => {
+        const method = instance?.[methodName]
+        return typeof method === 'function' ? method(...args) : undefined
+      }
+    }
+
+    return {
+      id: initialConfig.container,
+      updateConfig,
+      reload: bindMethod('reload'),
+      preview: bindMethod('preview'),
+      load: bindMethod('load'),
+      save: bindMethod('save'),
+      saveAsTemplate: bindMethod('saveAsTemplate'),
+      send: bindMethod('send'),
+      join: bindMethod('join'),
+      start: bindMethod('start'),
+      loadRows: bindMethod('loadRows'),
+      switchPreview: bindMethod('switchPreview'),
+      togglePreview: bindMethod('togglePreview'),
+      toggleComments: bindMethod('toggleComments'),
+      switchTemplateLanguage: bindMethod('switchTemplateLanguage'),
+      getTemplateJson: bindMethod('getTemplateJson'),
+      loadConfig: bindMethod('loadConfig'),
+      showComment: bindMethod('showComment'),
+      updateToken: bindMethod('updateToken'),
+      toggleMergeTagsPreview: bindMethod('toggleMergeTagsPreview'),
+      execCommand: bindMethod('execCommand'),
+      getConfig: bindMethod('getConfig'),
+      loadStageMode: bindMethod('loadStageMode'),
+      toggleStructure: bindMethod('toggleStructure'),
+      loadWorkspace: bindMethod('loadWorkspace'),
+      startFileManager: bindMethod('startFileManager'),
+    }
+  }, [initialConfig.container, instance, updateConfig])
 }
