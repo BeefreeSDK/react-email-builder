@@ -29,7 +29,7 @@ const getToken = async (uid?: string) => {
    *                                                            *
    * ************************************************************
    */
-  const AUTH_URL = 'https://qa-bee-auth.getbee.io/loginV2'
+  const AUTH_URL = 'https://bee-auth.getbee.io/loginV2'
 
   const response = await fetch(AUTH_URL, {
     method: 'POST',
@@ -187,8 +187,7 @@ export const App = () => {
     }
   }, [ready, updateConfig, getRowsHandler, saveRowHandler, sendInviteHandler, getMentionsHandler])
 
-  // const loaderUrl = 'http://localhost:8088/BeeLoader.js'
-  const loaderUrl = 'https://qa-bee-loader.getbee.io/v2/api/loader'
+  const loaderUrl = 'https://bee-loader.getbee.io/v2/api/loader'
 
   const refreshToken = useCallback(async () => {
     const updatedToken = await getToken()
