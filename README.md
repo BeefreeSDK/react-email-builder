@@ -391,7 +391,7 @@ yarn install
 yarn start
 ```
 
-The development server will start at `http://localhost:3003`
+The development server will start at `http://localhost:3000`
 
 ## Development
 

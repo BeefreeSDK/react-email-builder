@@ -1,18 +1,32 @@
 import commonjs from '@rollup/plugin-commonjs'
 import babel from '@rollup/plugin-babel'
+import json from '@rollup/plugin-json'
 import nodeResolve from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
 import devServer from 'rollup-plugin-serve'
-import dotenv from "rollup-plugin-dotenv"
 import livereload from "rollup-plugin-livereload";
 import dts from 'rollup-plugin-dts'
 import pkg from './package.json' with { type: 'json' }
 import terser from '@rollup/plugin-terser'
+import dotenv from 'dotenv'
 
 const production = !process.env.ROLLUP_WATCH;
 
+// Load .env at config time so all process.env.* references are replaced in the example bundle
+dotenv.config()
+
+const exampleEnvReplacements = Object.fromEntries(
+  [
+    'EMAIL_BUILDER_CLIENT_ID', 'EMAIL_BUILDER_CLIENT_SECRET', 'EMAIL_BUILDER_USER_ID',
+    'PAGE_BUILDER_CLIENT_ID', 'PAGE_BUILDER_CLIENT_SECRET', 'PAGE_BUILDER_USER_ID',
+    'POPUP_BUILDER_CLIENT_ID', 'POPUP_BUILDER_CLIENT_SECRET', 'POPUP_BUILDER_USER_ID',
+    'FILE_MANAGER_CLIENT_ID', 'FILE_MANAGER_CLIENT_SECRET', 'FILE_MANAGER_USER_ID',
+  ].map(key => [`process.env.${key}`, JSON.stringify(process.env[key] ?? '')])
+)
+
 const commonPlugins = [
   replace({
+    preventAssignment: true,
     'process.env.NPM_PACKAGE_NAME': `'${pkg.name}'`,
     'process.env.NPM_PACKAGE_VERSION': `'${pkg.version}'`,
   }),
@@ -81,9 +95,11 @@ const exampleConfig = {
     format: 'iife',
   },
   plugins: [
-    dotenv(),
+    json(),
     replace({
+      preventAssignment: true,
       'process.env.NODE_ENV': JSON.stringify('development'),
+      ...exampleEnvReplacements,
     }),
     ...commonPlugins,
     ...(!production ? [
@@ -91,7 +107,7 @@ const exampleConfig = {
         open: false,
         contentBase: ['example'],
         host: 'localhost',
-        port: 3003
+        port: 3000
       }),
       livereload(['dist', 'example/index.js']),
     ] : [])

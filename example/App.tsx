@@ -1,307 +1,98 @@
-import { useCallback, useEffect, useState } from 'react'
-import { Controls } from './Controls'
-import { mockTemplate } from './mockTemplate'
-import { BeePluginError, Builder, IBeeConfig, IPluginRow, IToken, useBuilder } from '../dist/index'
+import { useEffect, useState } from 'react'
+import { BeefreeExample } from './BeefreeExample'
 
-interface ISaveRowResult {
-  name: string
+const UI_LANGUAGES = [
+  'en-US', 'it-IT', 'es-ES', 'fr-FR', 'de-DE', 'pt-BR',
+  'id-ID', 'ja-JP', 'zh-CN', 'zh-HK', 'cs-CZ', 'nb-NO',
+  'da-DK', 'sv-SE', 'pl-PL', 'hu-HU', 'ru-RU', 'ko-KR',
+  'nl-NL', 'fi-FI', 'ro-RO', 'sl-SI',
+]
 
-  [key: string]: unknown
-}
-
-const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'George', 'Hannah']
-
-interface IMention {
-  userColor: string
-  username: string
-  value: string
-  uid: string
-}
-
-const getToken = async (uid?: string) => {
-  /**
-   * ************************************************************
-   *                      !!!! WARNING !!!!                     *
-   *                                                            *
-   *  This is done on the frontend to get the example working.  *
-   *  You must set up a backend server to perform the login.    *
-   *  Otherwise, your credentials will be at risk!              *
-   *                                                            *
-   * ************************************************************
-   */
-  const AUTH_URL = 'https://bee-auth.getbee.io/loginV2'
-
-  const response = await fetch(AUTH_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      client_id: process.env.SDK_CLIENT_ID,
-      client_secret: process.env.SDK_CLIENT_SECRET,
-      uid: uid || 'demo-user',
-    }),
-  })
-  return response.json()
-}
-
-const config: IBeeConfig = {
-  logLevel: 0,
-  container: 'test',
-  username: 'Tester',
-  uid: 'demo-user',
-  userHandle: 'test',
-  userColor: '#fff',
-  saveRows: true,
-  templateLanguage: {
-    label: 'English (US)',
-    value: 'en-US',
-  },
-  templateLanguages: [
-    { value: 'it-IT', label: 'Italiano' },
-  ],
-  rowsConfiguration: {
-    emptyRows: true,
-    defaultRows: true,
-    externalContentURLs: [
-      {
-        name: 'Saved rows',
-        handle: 'saved-rows',
-        isLocal: true,
-      },
-      {
-        name: 'Custom rows',
-        handle: 'custom-rows',
-        isLocal: true,
-        behaviors: {
-          canEdit: false,
-          canDelete: false,
-        },
-      },
-    ],
-  },
-}
-
-const config1 = ({ ...config })
-const config2 = {
-  ...config,
-  username: 'User 2',
-  container: 'bis',
-  userColor: '#000',
-  userHandle: 'bis',
-}
+const REACT_LOGO_DATA_URI = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-11.5 -10.232 23 20.463'%3e%3ccircle r='2.05' fill='white'/%3e%3cg stroke='white' fill='none'%3e%3cellipse rx='11' ry='4.2'/%3e%3cellipse rx='11' ry='4.2' transform='rotate(60)'/%3e%3cellipse rx='11' ry='4.2' transform='rotate(120)'/%3e%3c/g%3e%3c/svg%3e"
 
 export const App = () => {
-  const [users, setUsers] = useState<string[]>([names[0]])
-  const [savedRows, setSavedRows] = useState<IPluginRow[]>([])
-  const [token, setToken] = useState<IToken>()
-  const [isShared, setIsShared] = useState<boolean>(false)
-  const [isEditorStarted, setIsEditorStarted] = useState<boolean>(true)
-  const [sessionId, setSessionId] = useState<string | null>(null)
-  const [ready, setReady] = useState<boolean>(false)
-
-  const {
-    id,
-    updateConfig,
-    save,
-    saveAsTemplate,
-    switchTemplateLanguage,
-    togglePreview,
-    updateToken,
-  } = useBuilder(config1)
-  const builder2 = useBuilder(config2)
-
-  const handleUsers = () => {
-    if (users.length < names.length) setUsers(prevUsers => [...prevUsers, names[prevUsers.length]])
-  }
-
-  const getMentionsHandler = useCallback(async (
-    resolve: (mentions: IMention[]) => void,
-  ) => {
-    resolve(users.map(user => ({
-      userColor: '#ff0000',
-      username: user,
-      value: user,
-      uid: user,
-    })))
-  }, [users])
-
-  const getRowsHandler = useCallback(async (
-    resolve: (data: IPluginRow[], options?: Record<string, unknown> | undefined) => void,
-    reject: () => void,
-    args: {
-      handle: string
-      value: string
-    },
-  ) => {
-    const { handle } = args
-
-    switch (handle) {
-      case 'saved-rows':
-        resolve(savedRows)
-        break
-      default:
-        reject()
-    }
-  }, [savedRows])
-
-  const saveRowHandler = useCallback(async (resolve: (result: ISaveRowResult) => void) => {
-    console.log(`%c[APP] - saveRow handler ->`, `color:${'#00ff00'}`)
-    resolve({ name: 'row from config update' })
-  }, [])
-
-  const sendInviteHandler = useCallback((_resolve: unknown, _reject: unknown, args: unknown) => {
-    console.log(`%c[APP] - sendInvite handler ->`, `color:${'#00ff00'}`, args)
-  }, [])
+  const [selectedBuilderType, setSelectedBuilderType] = useState('emailBuilder')
+  const [selectedBuilderLanguage, setSelectedBuilderLanguage] = useState('en-US')
+  const [isShared, setIsShared] = useState(false)
+  const [showToast, setShowToast] = useState(false)
+  const [toastExiting, setToastExiting] = useState(false)
 
   useEffect(() => {
-    getToken().then(token => setToken(token))
+    const timers: ReturnType<typeof setTimeout>[] = []
+
+    timers.push(setTimeout(() => setShowToast(true), 500))
+    timers.push(setTimeout(() => {
+      setToastExiting(true)
+      timers.push(setTimeout(() => {
+        setShowToast(false)
+        setToastExiting(false)
+      }, 400))
+    }, 5000))
+
+    return () => timers.forEach(clearTimeout)
   }, [])
-
-  useEffect(() => {
-    if (ready) {
-      void updateConfig({
-        hooks: {
-          getMentions: {
-            handler: getMentionsHandler,
-          },
-          getRows: {
-            handler: getRowsHandler,
-          },
-        },
-        contentDialog: {
-          addOn: {
-            label: 'addOns',
-            handler: async (resolve) => {
-              resolve({ type: 'image', value: { alt: '', dynamicSrc: '', href: '', src: '' } })
-            },
-          },
-          saveRow: {
-            label: 'Save',
-            handler: saveRowHandler,
-          },
-          getMention: {
-            label: 'Send an invite',
-            handler: sendInviteHandler,
-          },
-        },
-      })
-    }
-  }, [ready, updateConfig, getRowsHandler, saveRowHandler, sendInviteHandler, getMentionsHandler])
-
-  const loaderUrl = 'https://bee-loader.getbee.io/v2/api/loader'
-
-  const refreshToken = useCallback(async () => {
-    const updatedToken = await getToken()
-    setToken(updatedToken)
-  }, [])
-
-  useEffect(() => {
-    if (token) updateToken(token)
-  }, [updateToken, token])
 
   return (
-    <>
-      <h1>Beefree SDK React Demo</h1>
-      <p>Welcome to the Beefree SDK React Demo</p>
-      <button onClick={handleUsers}>Update users</button>
-      <input id="shared_chk" type="checkbox" checked={isShared} onChange={e => setIsShared(e.target.checked)} />
-      <label htmlFor="shared_chk">Shared session</label>
-      <button onClick={() => setIsEditorStarted(wasShared => !wasShared)}>Toggle builder</button>
-      <div id="email-builder">
-        {token && isEditorStarted
-          ? (
-              <>
-                {ready && (
-                  <Controls
-                    id={config.container}
-                    save={save}
-                    saveAsTemplate={saveAsTemplate}
-                    updateConfig={updateConfig}
-                    switchTemplateLanguage={switchTemplateLanguage}
-                    togglePreview={togglePreview}
-                  />
-                )}
-                <Builder
-                  id={config.container}
-                  template={mockTemplate}
-                  shared={isShared}
-                  onSessionStarted={({ sessionId }: { sessionId: string }) => setSessionId(sessionId)}
-                  token={token}
-                  onSave={(args: unknown) => {
-                    console.log(`%c[APP] - onSave Builder 1 ->`, `color:${'#00ff00'}`, args)
-                  }}
-                  onChange={(args: unknown) => {
-                    console.log(`%c[APP] - onChange Builder 1 ->`, `color:${'#aaf7ff'}`, args)
-                    console.log(`%csf: App - ->`, `color:${'#00ff00'}`, { users })
-                  }}
-                  onRemoteChange={(args: unknown) => {
-                    console.log(`%c[APP] - onRemoteChange Builder 1 ->`, `color:${'#fff7aa'}`, args)
-                  }}
-                  onSaveRow={(savedRow: string): void => {
-                    console.log(`%c[APP] - onSaveRow Builder 1 ->`, `color:${'#00ff00'}`, savedRow)
-                    setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
-                  }}
-                  onError={(error: BeePluginError) => {
-                    console.log(`%c[APP] - onError Builder 1 ->`, `color:${'#ff0000'}`, error)
-                    if (error?.code === 5101) {
-                      void refreshToken()
-                    }
-                  }}
-                  onWarning={(warning: BeePluginError) => {
-                    console.log(`%c[APP] - onWarning Builder 1 ->`, `color:${'#fbda00'}`, warning)
-                  }}
-                  onLoad={() => {
-                    console.log(`%c[APP] - builder is ready ->`, `color:${'#00ff00'}`)
-                    setReady(true)
-                  }}
-                  height="800px"
-                  loaderUrl={loaderUrl}
-                  onTemplateLanguageChange={(language) => {
-                    console.log(`%c[APP] - onTemplateLanguageChange ->`, `color:${'#ff00ff'}`, language)
-                  }}
-                />
-                {sessionId && (
-                  <>
-                    <Controls
-                      id={config2.container}
-                      save={builder2.save}
-                      saveAsTemplate={builder2.saveAsTemplate}
-                      updateConfig={builder2.updateConfig}
-                      switchTemplateLanguage={builder2.switchTemplateLanguage}
-                    />
-                    <Builder
-                      id={id}
-                      template={mockTemplate}
-                      shared={isShared}
-                      sessionId={sessionId}
-                      token={token}
-                      onSave={(args: unknown) => {
-                        console.log(`%c[APP] - onSave Builder 2 ->`, `color:${'#00ff00'}`, args)
-                      }}
-                      onChange={(args: unknown) => {
-                        console.log(`%c[APP] - onChange Builder 2 ->`, `color:${'#aaf7ff'}`, args)
-                      }}
-                      onRemoteChange={(args: unknown) => {
-                        console.log(`%c[APP] - onRemoteChange Builder 2 ->`, `color:${'#fff7aa'}`, args)
-                      }}
-                      onSaveRow={(savedRow: string) => {
-                        console.log(`%c[APP] - onSaveRow Builder 2 ->`, `color:${'#00ff00'}`, savedRow)
-                        setSavedRows((prevRows: IPluginRow[]) => [...prevRows, JSON.parse(savedRow)])
-                      }}
-                      onError={(error: BeePluginError) => {
-                        console.log(`%c[APP] - onError Builder 2 ->`, `color:${'#ff0000'}`, error)
-                      }}
-                      onWarning={(warning: BeePluginError) => {
-                        console.log(`%c[APP] - onWarning Builder 2 ->`, `color:${'#fbda00'}`, warning)
-                      }}
-                      height="800px"
-                      loaderUrl={loaderUrl}
-                    />
-                  </>
-                )}
-              </>
-            )
-          : null}
+    <main className="main">
+      <header>
+        <div className="left-side">
+          <img src="assets/logo.svg" height="40" alt="Beefree SDK" />
+        </div>
+        <div className="right-side">
+          <div className="header-controls">
+            <div className="header-select-group">
+              <label htmlFor="headerBuilderType">Builder:</label>
+              <select
+                id="headerBuilderType"
+                value={selectedBuilderType}
+                onChange={(e) => setSelectedBuilderType(e.target.value)}
+              >
+                <option value="emailBuilder">Email Builder</option>
+                <option value="pageBuilder">Page Builder</option>
+                <option value="popupBuilder">Popup Builder</option>
+                <option value="fileManager">File Manager</option>
+              </select>
+            </div>
+            <div className="header-select-group">
+              <label htmlFor="headerLanguage">Language:</label>
+              <select
+                id="headerLanguage"
+                value={selectedBuilderLanguage}
+                onChange={(e) => setSelectedBuilderLanguage(e.target.value)}
+              >
+                {UI_LANGUAGES.map((lang) => (
+                  <option key={lang} value={lang}>{lang}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              className={`header-coediting-btn${isShared ? ' active' : ''}`}
+              onClick={() => setIsShared((s) => !s)}
+            >
+              Co-editing
+            </button>
+          </div>
+          <div className="react-brand">
+            <img src={REACT_LOGO_DATA_URI} alt="React" />
+            <span>React</span>
+          </div>
+        </div>
+      </header>
+      <div className="content">
+        <BeefreeExample
+          builderType={selectedBuilderType}
+          builderLanguage={selectedBuilderLanguage}
+          isShared={isShared}
+          onIsSharedChange={setIsShared}
+        />
       </div>
-    </>
+
+      {showToast && (
+        <div className={`toast${toastExiting ? ' toast-exit' : ''}`}>
+          <h3>Congratulations!</h3>
+          <p>Your React Beefree SDK app is up and running.</p>
+        </div>
+      )}
+    </main>
   )
 }

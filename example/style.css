@@ -1,20 +1,417 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
 }
 
-body {
-  background-color: #f0f0f0;
-  font-family: Arial, sans-serif;
+:root {
+  --bright-blue: #0065ff;
+  --electric-violet: #7b2fff;
+  --ultraviolet: #7638ff;
+  --french-violet: #7222cc;
+  --vivid-pink: #ff2d8a;
+  --hot-red: #e03420;
+  --orange-red: #e84c00;
+
+  --react-blue: #61dafb;
+
+  --gray-900: #2b2b2e;
+  --gray-700: #54545a;
+  --gray-400: #aeaeb5;
+  --gray-200: #dddde2;
+
+  --white-to-react-horizontal-gradient: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #ffffff 30%,
+    rgb(88, 196, 220) 50%,
+    rgb(8, 126, 164) 65%,
+    #7638ff 80%
+  );
+
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1 {
-  text-align: center;
-  color: #333;
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin: 0;
 }
 
 p {
+  margin: 0;
+}
+
+/* ---------- Header ---------- */
+
+header {
+  display: flex;
+  height: 64px;
+}
+
+header .left-side {
+  display: flex;
+  align-items: center;
+  padding-left: 1.5rem;
+  flex-shrink: 0;
+}
+
+header .right-side {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-grow: 1;
+  padding-right: 2.2rem;
+  gap: 20px;
+  background: var(--white-to-react-horizontal-gradient);
+  height: 100%;
+}
+
+header .right-side img {
+  height: 28px;
+  width: auto;
+}
+
+.react-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.react-brand span {
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-select-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-select-group label {
+  font-size: 13px;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.header-select-group select {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 6px 28px 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  background-image: url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M7 10l5 5 5-5z" fill="white"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 18px;
+}
+
+.header-select-group select option {
+  background: #333;
+  color: white;
+}
+
+/* ---------- Layout ---------- */
+
+.main {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: inherit;
+  position: relative;
+}
+
+header,
+.content {
+  margin: 0;
+  align-items: center;
+  width: 100%;
+}
+
+.content {
+  height: calc(100vh - 64px);
+}
+
+/* ---------- Beefree example ---------- */
+
+.beefree-example {
+  padding: 0;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Header co-editing button ---------- */
+
+.header-coediting-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.header-coediting-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.header-coediting-btn.active {
+  background: #28a745;
+  border-color: #28a745;
+}
+
+/* ---------- Per-panel command bar ---------- */
+
+.command-bar {
+  background: #262626;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  height: 44px;
+  flex-shrink: 0;
+  overflow: hidden;
+  flex-wrap: nowrap;
+}
+
+.command-bar button {
+  padding: 6px 14px;
+  background: var(--ultraviolet);
+  color: white;
+  border: 1px solid var(--ultraviolet);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.command-bar button:disabled {
+  cursor: not-allowed;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 4px,
+      rgba(255, 255, 255, 0.15) 4px,
+      rgba(255, 255, 255, 0.15) 6px
+    ),
+    var(--ultraviolet);
+  opacity: 0.6;
+}
+
+.command-bar button:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+/* ---------- Loading / Error / Credentials ---------- */
+
+.loading, .error {
   text-align: center;
-  color: #666;
+  padding: 40px;
+}
+
+.credentials-notice {
+  max-width: 560px;
+  margin: 60px auto;
+  padding: 32px;
+  background: #eef6fb;
+  border: 1px solid #8fc9e0;
+  border-radius: 8px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.credentials-notice h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  background: linear-gradient(315deg, rgb(8, 126, 164) 25%, #61dafb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.credentials-notice code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.credentials-notice ol {
+  padding-left: 20px;
+  margin: 12px 0;
+}
+
+.credentials-notice a {
+  color: #1677ff;
+  text-decoration: none;
+}
+
+.credentials-notice a:hover {
+  text-decoration: underline;
+}
+
+.credentials-notice button {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(315deg, rgb(8, 126, 164) 25%, #61dafb);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.credentials-notice button:hover {
+  opacity: 0.85;
+}
+
+.error button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ---------- Builders area and split pane ---------- */
+
+.builders-area {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 64px);
+  overflow: hidden;
+}
+
+.builder-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  min-width: 0;
+  position: relative;
+}
+
+.builder-panel.dragging {
+  pointer-events: none;
+}
+
+.builder-container {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.split-divider {
+  flex-shrink: 0;
+  width: 6px;
+  cursor: col-resize;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.split-divider:hover,
+.split-divider.dragging {
+  background: #b0b0b0;
+}
+
+.split-divider-handle {
+  width: 2px;
+  height: 32px;
+  border-radius: 1px;
+  background: #999;
+}
+
+.split-divider.dragging .split-divider-handle {
+  background: #666;
+}
+
+/* ---------- Toast ---------- */
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 28px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  min-width: 280px;
+  animation: toast-slide-in 0.4s ease-out;
+}
+
+.toast.toast-exit {
+  animation: toast-slide-out 0.4s ease-in forwards;
+}
+
+.toast h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.toast p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--gray-700);
+  line-height: 1.4;
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(50px);
+    opacity: 0;
+  }
 }
