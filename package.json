@@ -1,6 +1,6 @@
 {
-  "name": "@mailupinc/react",
-  "version": "1.1.0-refactor-improvements.0",
+  "name": "@beefree.io/react-email-builder",
+  "version": "1.1.0-refactor-builder-state.13",
   "description": "React wrapper for the Beefree SDK – A framework-specific package that provides React components and hooks to integrate the Beefree SDK (Email Builder, Page Builder, File Manager, Popup Builder) into React applications",
   "repository": {
     "type": "git",
@@ -72,6 +72,7 @@
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-replace": "^6.0.2",
+    "@rollup/plugin-terser": "^0.4.4",
     "@stylistic/eslint-plugin": "^5.2.3",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -107,5 +108,5 @@
     "react": ">=17",
     "react-dom": ">=17"
   },
-  "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90"
+  "packageManager": "yarn@4.5.3"
 }

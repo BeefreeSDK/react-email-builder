@@ -7,6 +7,7 @@ import dotenv from "rollup-plugin-dotenv"
 import livereload from "rollup-plugin-livereload";
 import dts from 'rollup-plugin-dts'
 import pkg from './package.json' with { type: 'json' }
+import terser from '@rollup/plugin-terser'
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -45,7 +46,21 @@ const distConfig = {
     format: 'es',
   }],
   external: [/@babel\/runtime/, 'react', 'react/jsx-runtime', '@beefree.io/sdk'],
-  plugins: commonPlugins,
+  plugins: [
+    ...commonPlugins,
+    terser({
+      ecma: 2015,
+      mangle: { toplevel: true },
+      compress: {
+        module: true,
+        toplevel: true,
+        unsafe_arrows: true,
+        drop_debugger: true,
+        drop_console: process.env.LOG_ENABLED !== 'enabled'
+      },
+      output: { comments: false },
+    }),
+  ]
 }
 
 const typesConfig = {

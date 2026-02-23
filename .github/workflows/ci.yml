@@ -62,7 +62,7 @@ jobs:
         with:
           registry-url: "https://registry.npmjs.org"
           node-version: ${{ matrix.node-version }}
-          scope: "@mailupinc"
+          scope: "@beefree.io"
 
       - uses: actions/cache@v4.2.2
         id: yarn-cache
@@ -112,7 +112,7 @@ jobs:
         with:
           registry-url: "https://registry.npmjs.org"
           node-version: "22.x"
-          scope: "@mailupinc"
+          scope: "@beefree.io"
 
       - uses: actions/cache@v4.2.2
         id: yarn-cache
@@ -130,6 +130,6 @@ jobs:
         run: yarn build
 
       - name: Publish package
-        run: npm publish --production --access private
+        run: npm publish --production
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.MAILUP_TEMPORARY_NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

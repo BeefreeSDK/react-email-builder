@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Controls } from './Controls'
 import { mockTemplate } from './mockTemplate'
-import { BeePluginError, Builder, IBeeConfig, ILanguage, IPluginRow, IToken, useBuilder } from '../dist/index'
+import { BeePluginError, Builder, IBeeConfig, IPluginRow, IToken, useBuilder } from '../dist/index'
 
 interface ISaveRowResult {
   name: string
@@ -29,7 +29,7 @@ const getToken = async (uid?: string) => {
    *                                                            *
    * ************************************************************
    */
-  const AUTH_URL = 'https://qa-bee-auth.getbee.io/loginV2'
+  const AUTH_URL = 'https://bee-auth.getbee.io/loginV2'
 
   const response = await fetch(AUTH_URL, {
     method: 'POST',
@@ -170,7 +170,7 @@ export const App = () => {
         contentDialog: {
           addOn: {
             label: 'addOns',
-            handler: async (resolve: (content: Record<string, unknown>) => void) => {
+            handler: async (resolve) => {
               resolve({ type: 'image', value: { alt: '', dynamicSrc: '', href: '', src: '' } })
             },
           },
@@ -187,8 +187,7 @@ export const App = () => {
     }
   }, [ready, updateConfig, getRowsHandler, saveRowHandler, sendInviteHandler, getMentionsHandler])
 
-  // const loaderUrl = 'http://localhost:8088/BeeLoader.js'
-  const loaderUrl = 'https://qa-bee-loader.getbee.io/v2/api/loader'
+  const loaderUrl = 'https://bee-loader.getbee.io/v2/api/loader'
 
   const refreshToken = useCallback(async () => {
     const updatedToken = await getToken()
@@ -256,7 +255,7 @@ export const App = () => {
                   }}
                   height="800px"
                   loaderUrl={loaderUrl}
-                  onTemplateLanguageChange={(language: ILanguage) => {
+                  onTemplateLanguageChange={(language) => {
                     console.log(`%c[APP] - onTemplateLanguageChange ->`, `color:${'#ff00ff'}`, language)
                   }}
                 />
@@ -301,7 +300,7 @@ export const App = () => {
                 )}
               </>
             )
-          : <></>}
+          : null}
       </div>
     </>
   )
