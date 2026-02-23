@@ -1,10 +1,10 @@
 # Beefree SDK React Component
 
-[![npm version](https://badge.fury.io/js/%40beefree.io%2Freact.svg)](https://www.npmjs.com/package/@beefree.io/react)
+[![npm version](https://badge.fury.io/js/%40beefree.io%2Freact-email-builder.svg)](https://www.npmjs.com/package/@beefree.io/react-email-builder)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CI](https://github.com/BeefreeSDK/npm-react/workflows/CI/badge.svg)](https://github.com/BeefreeSDK/npm-react/actions)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19.1-blue)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19.1.1-blue)](https://react.dev/)
 
 A React wrapper component for the [Beefree SDK](https://www.beefree.io/), making it easy to integrate the Beefree email/page builder into your React applications.
 
@@ -37,20 +37,24 @@ This library provides a React component wrapper for the Beefree SDK, allowing yo
 ## Installation
 
 ```bash
-npm install @beefree.io/react
+npm install @beefree.io/react-email-builder
 # or
-yarn add @beefree.io/react
+yarn add @beefree.io/react-email-builder
 ```
 
 ## Quick Start
 
 ```tsx
-import React, {useState, useEffect} from 'react'
-import {Builder, IToken, useBuilder} from '@beefree.io/react'
+import React, { useState, useEffect } from 'react'
+import { Builder, IToken, useBuilder } from '@beefree.io/react-email-builder'
 
 function App() {
   const [token, setToken] = useState<IToken | null>(null)
-  const {id} = useBuilder({ container: 'bee-container' })
+
+  useBuilder({
+    container: 'bee-container',
+    // ... other config options
+  })
 
   useEffect(() => {
     // Fetch token from YOUR backend server
@@ -61,7 +65,7 @@ function App() {
 
   return (
     <Builder
-      id={id}
+      id="bee-container"
       token={token}
       template={{
         comments: {},
@@ -80,15 +84,23 @@ function App() {
 
 | Prop               | Type                                   | Required | Description                                                  |
 |--------------------|----------------------------------------|----------|--------------------------------------------------------------|
-| `id`               | `string`                               | Yes | The identifier of the builder (comes from `useBuilder` hook) |
+| `id`               | `string`                               | Yes | The container ID (must match the `container` from `useBuilder`) |
 | `token`            | `IToken`                               | Yes | Authentication token from Beefree API                        |
 | `template`         | `IEntityContentJson`                   | Yes | Initial template/content to load                             |
 | `shared`           | `boolean`                              | No | Enable collaborative editing session                         |
 | `sessionId`        | `string`                               | No | Session ID to join (for collaborative editing)               |
 | `width`            | `React.CSSProperties['width']`         | No | Container width (default: '100%')                            |
 | `height`           | `React.CSSProperties['height']`        | No | Container height (default: '800px')                          |
-| `onError`          | `(error: Error) => void`               | No | Error callback handler                                       |
+| `loaderUrl`        | `string`                               | No | Custom loader URL for the Beefree SDK                        |
+| `onLoad`           | `() => void`                           | No | Callback when builder is fully loaded and ready              |
+| `onSave`           | `(json, html) => void`                 | No | Callback when content is saved                               |
+| `onChange`         | `(json, metadata) => void`             | No | Callback when content changes                                |
+| `onError`          | `(error: BeePluginError) => void`      | No | Error callback handler                                       |
+| `onWarning`        | `(warning: BeePluginError) => void`    | No | Warning callback handler                                     |
+| `onSaveRow`        | `(row: string) => void`                | No | Callback when a row is saved                                 |
+| `onRemoteChange`   | `(data) => void`                       | No | Callback for collaborative editing remote changes            |
 | `onSessionStarted` | `(data: { sessionId: string }) => void` | No | Callback when collaborative session starts                   |
+| `onTemplateLanguageChange` | `(language) => void`           | No | Callback when template language changes                      |
 
 #### Basic Configuration
 
@@ -112,16 +124,18 @@ useBuilder({
   }
 })
 
-<Builder
-  token={token}
-  template={{
-    comments: {},
-    page: {},
-  }}
-  onSave={(jsonFile, htmlFile) => {
-    console.log('Saved:', { jsonFile, htmlFile })
-  }}
-/>
+return (
+  <Builder
+    token={token}
+    template={{
+      comments: {},
+      page: {},
+    }}
+    onSave={(jsonFile, htmlFile) => {
+      console.log('Saved:', {jsonFile, htmlFile})
+    }}
+  />
+)
 ```
 
 ## Hooks
@@ -131,7 +145,7 @@ useBuilder({
 The `useBuilder` hook provides programmatic control over the builder instance and allows you to dynamically update configuration properties (non-callback properties like `uid`, `language`, etc.).
 
 ```tsx
-import { Builder, useBuilder } from '@beefree.io/react'
+import { Builder, useBuilder } from '@beefree.io/react-email-builder'
 
 function MyComponent() {
   // Initialize useBuilder with config including container ID
@@ -163,8 +177,9 @@ function MyComponent() {
       <button onClick={() => changeLanguage('it-IT')}>Switch to Italian</button>
       <button onClick={() => changeUser('user-456')}>Change User</button>
       <button onClick={handleSave}>Save</button>
-      
+
       <Builder
+        id="bee-editor"
         token={token}
         template={template}
         // Define callbacks directly in the component
@@ -174,7 +189,7 @@ function MyComponent() {
         onChange={(json, metadata) => {
           console.log('Content changed')
         }}
-        onReady={() => {
+        onLoad={() => {
           console.log('Builder is ready!')
         }}
       />
@@ -414,7 +429,7 @@ Outputs:
 
 ## License
 
-[MIT License](LICENSE)
+[Apache-2.0 License](LICENSE)
 
 ## Support
 
