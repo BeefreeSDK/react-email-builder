@@ -76,7 +76,11 @@ const Builder = (props: BuilderPropsWithCallbacks) => {
 
   // Creates and starts SDK instance
   if (instanceRef.current === null && token) {
-    if (config.uid) {
+    if (!config.uid) {
+      callbacksRef.current.onError?.({
+        message: `Can't start the builder without a uid in the config`,
+      })
+    } else {
       instanceRef.current = new BeefreeSDK(token, {
         beePluginUrl: loaderUrl,
         ...(process.env.NPM_PACKAGE_NAME && process.env.NPM_PACKAGE_VERSION
