@@ -1,14 +1,16 @@
-import type { IToken } from '@beefree.io/sdk/dist/types/bee'
+import type { IToken } from '../dist/index'
 
 /**
- * ************************************************************
- *                      !!!! WARNING !!!!                     *
- *                                                            *
- *  This is done on the frontend to get the example working.  *
- *  You must set up a backend server to perform the login.    *
- *  Otherwise, your credentials will be at risk!              *
- *                                                            *
- * ************************************************************
+ * **************************************************************************** *
+ *                              !!!! WARNING !!!!                               *
+ *                                                                              *
+ *  This is done on the frontend to get the example working.                    *
+ *  Set up a backend authentication server to avoid exposing your credentials!  *
+ *                                                                              *
+ *  For a production-ready server implementation, see:                          *
+ *  github.com/BeefreeSDK/beefree-sdk-examples/tree/main/secure-auth-example    *
+ *                                                                              *
+ * **************************************************************************** *
  */
 const AUTH_URL = 'https://auth.getbee.io/loginV2'
 

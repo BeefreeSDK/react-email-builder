@@ -1,7 +1,7 @@
 {
   "credentials": {
     "title": "Недействительные или отсутствующие учётные данные",
-    "description": "Аутентификация не удалась для <strong>{{type}}</strong>. Пожалуйста, проверьте <code>*_CLIENT_ID</code> и <code>*_CLIENT_SECRET</code> в <code>.env</code>.",
+    "description": "Аутентификация не удалась для {type}. Пожалуйста, проверьте {clientId} и {clientSecret} в {envFile}.",
     "step1": "Перейдите в Beefree Developer Console и создайте приложение.",
     "step2": "Скопируйте Client ID и Client Secret в файл .env.",
     "step3": "Перезагрузите эту страницу или нажмите Повторить.",

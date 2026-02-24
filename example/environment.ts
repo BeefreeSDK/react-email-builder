@@ -1,4 +1,19 @@
-export const environment = {
+interface BuilderConfig {
+  clientId: string
+  clientSecret: string
+  userId: string
+  templateUrl: string
+}
+
+interface Environment {
+  production: boolean
+  emailBuilder: BuilderConfig
+  pageBuilder: BuilderConfig
+  popupBuilder: BuilderConfig
+  fileManager: BuilderConfig
+}
+
+export const environment: Environment = {
   production: false,
   emailBuilder: {
     clientId: process.env.EMAIL_BUILDER_CLIENT_ID ?? '',

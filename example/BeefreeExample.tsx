@@ -31,14 +31,16 @@ import i18nNlNL from './i18n/nl-NL.json'
 import i18nFiFI from './i18n/fi-FI.json'
 import i18nRoRO from './i18n/ro-RO.json'
 import i18nSlSI from './i18n/sl-SI.json'
+import type { ToastType } from './App'
 
-type BuilderType = 'emailBuilder' | 'pageBuilder' | 'popupBuilder' | 'fileManager'
+export type BuilderType = 'emailBuilder' | 'pageBuilder' | 'popupBuilder' | 'fileManager'
 
 interface BeefreeExampleProps {
-  builderType: string
+  builderType: BuilderType
   builderLanguage: string
   isShared: boolean
   onIsSharedChange: (shared: boolean) => void
+  onNotify: (message: string, type?: ToastType, title?: string, durationMs?: number) => void
 }
 
 const BLANK_TEMPLATE: IEntityContentJson = {
@@ -71,36 +73,20 @@ const I18N_MAP: Record<string, typeof i18nEnUS> = {
   'sl-SI': i18nSlSI,
 }
 
-function renderSafeHtml(text: string): React.ReactNode[] {
-  const parts: React.ReactNode[] = []
-  const pattern = /<(strong|code)>(.*?)<\/\1>/g
-  let lastIndex = 0
-  let match
-
-  while ((match = pattern.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(text.slice(lastIndex, match.index))
-    }
-    const Tag = match[1] as 'strong' | 'code'
-    parts.push(<Tag key={match.index}>{match[2]}</Tag>)
-    lastIndex = pattern.lastIndex
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex))
-  }
-
-  return parts
+function interpolate(
+  template: string,
+  values: Record<string, React.ReactNode>,
+): React.ReactNode[] {
+  return template.split(/\{(\w+)\}/).map((segment, i) =>
+    i % 2 === 0 ? segment : (values[segment] ?? `{${segment}}`),
+  ).filter(segment => segment !== '')
 }
 
 function isAuthError(error: unknown): boolean {
-  if (error instanceof Error) {
-    const msg = error.message.toLowerCase()
-    return msg.includes('authentication failed') || msg.includes('unauthorized')
-      || msg.includes('401') || msg.includes('403') || msg.includes('400')
-      || msg.includes('invalid') || msg.includes('credentials') || msg.includes('client')
-  }
-  return false
+  if (!(error instanceof Error)) return false
+  const msg = error.message
+  return /^Authentication failed: [45]\d{2}\b/.test(msg)
+    || msg.startsWith('Invalid credentials:')
 }
 
 export const BeefreeExample = ({
@@ -108,6 +94,7 @@ export const BeefreeExample = ({
   builderLanguage,
   isShared,
   onIsSharedChange,
+  onNotify,
 }: BeefreeExampleProps) => {
   const [token, setToken] = useState<IToken | null>(null)
   const [isLoadingToken, setIsLoadingToken] = useState(true)
@@ -130,8 +117,12 @@ export const BeefreeExample = ({
   const builderTypeRef = useRef(builderType)
   const getTemplateJsonRef = useRef<typeof getTemplateJson>(null!)
 
-  useEffect(() => { isSharedRef.current = isShared }, [isShared])
-  useEffect(() => { builderTypeRef.current = builderType }, [builderType])
+  useEffect(() => {
+    isSharedRef.current = isShared
+  }, [isShared])
+  useEffect(() => {
+    builderTypeRef.current = builderType
+  }, [builderType])
 
   const clientConfig = useMemo<IBeeConfig>(() => ({
     uid: 'demo-user',
@@ -171,7 +162,9 @@ export const BeefreeExample = ({
     getTemplateJson: coEditingGetTemplateJson,
   } = useBuilder(coEditingConfig)
 
-  useEffect(() => { getTemplateJsonRef.current = getTemplateJson }, [getTemplateJson])
+  useEffect(() => {
+    getTemplateJsonRef.current = getTemplateJson
+  }, [getTemplateJson])
 
   const builderReady = !!token && !credentialsError && !tokenError && !isLoadingToken
 
@@ -181,7 +174,12 @@ export const BeefreeExample = ({
   )
 
   const i18nDescription = useMemo(
-    () => i18nStrings.description.replace('{{type}}', builderType),
+    () => interpolate(i18nStrings.description, {
+      type: <strong>{builderType}</strong>,
+      clientId: <code>*_CLIENT_ID</code>,
+      clientSecret: <code>*_CLIENT_SECRET</code>,
+      envFile: <code>.env</code>,
+    }),
     [i18nStrings, builderType],
   )
 
@@ -213,12 +211,12 @@ export const BeefreeExample = ({
   }, [])
 
   const refreshToken = useCallback(() => {
-    void loadBeefreeToken(builderTypeRef.current as BuilderType)
+    void loadBeefreeToken(builderTypeRef.current)
   }, [loadBeefreeToken])
 
   const fetchSecondToken = useCallback(async () => {
     try {
-      const bt = builderTypeRef.current as BuilderType
+      const bt = builderTypeRef.current
       const newToken = await getBuilderToken(
         environment[bt].clientId,
         environment[bt].clientSecret,
@@ -241,18 +239,20 @@ export const BeefreeExample = ({
   const handleLoadSampleTemplate = useCallback(async (loadFn: (t: IEntityContentJson) => void) => {
     try {
       setIsExecuting(true)
-      const bt = builderTypeRef.current as BuilderType
-      const sampleTemplate: { json: IEntityContentJson } = await fetch(
-        environment[bt].templateUrl,
-      ).then((res) => res.json())
+      const bt = builderTypeRef.current
+      const response = await fetch(environment[bt].templateUrl)
+      if (!response.ok) {
+        throw new Error(`Failed to load template: ${response.status} ${response.statusText}`)
+      }
+      const sampleTemplate: { json: IEntityContentJson } = await response.json()
       loadFn(sampleTemplate.json)
     } catch (error) {
       console.error('Load template failed:', error)
-      alert(`Load failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      onNotify(error instanceof Error ? error.message : 'Unknown error', 'error', 'Load failed')
     } finally {
       setIsExecuting(false)
     }
-  }, [])
+  }, [onNotify])
 
   const handleExportTemplateJson = useCallback(async (getJsonFn: () => Promise<unknown>) => {
     try {
@@ -267,20 +267,24 @@ export const BeefreeExample = ({
       URL.revokeObjectURL(url)
     } catch (error) {
       console.error('Export failed:', error)
-      alert(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      onNotify(error instanceof Error ? error.message : 'Unknown error', 'error', 'Export failed')
     } finally {
       setIsExecuting(false)
     }
-  }, [])
+  }, [onNotify])
 
   // ---- Draggable split divider ----
+
+  const SPLIT_STEP = 2
+  const SPLIT_MIN = 25
+  const SPLIT_MAX = 75
 
   const onMouseMove = useCallback((e: MouseEvent) => {
     const area = buildersAreaRef.current
     if (!area) return
     const rect = area.getBoundingClientRect()
     const pct = ((e.clientX - rect.left) / rect.width) * 100
-    setSplitPosition(Math.min(75, Math.max(25, pct)))
+    setSplitPosition(Math.min(SPLIT_MAX, Math.max(SPLIT_MIN, pct)))
   }, [])
 
   const onMouseUp = useCallback(() => {
@@ -300,6 +304,14 @@ export const BeefreeExample = ({
     document.addEventListener('mouseup', onMouseUp)
   }, [onMouseMove, onMouseUp])
 
+  const onDividerKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault()
+      const delta = e.key === 'ArrowLeft' ? -SPLIT_STEP : SPLIT_STEP
+      setSplitPosition(pos => Math.min(SPLIT_MAX, Math.max(SPLIT_MIN, pos + delta)))
+    }
+  }, [])
+
   // ---- Effects ----
 
   // Co-editing toggled: capture template, then restart via two-phase approach
@@ -314,18 +326,27 @@ export const BeefreeExample = ({
       setSecondToken(null)
     }
 
+    let cancelled = false
+
     const captureAndRestart = async () => {
       try {
         const result = await getTemplateJsonRef.current()
+        if (cancelled) return
         const template = (result as { data?: { json?: IEntityContentJson } })?.data?.json
         if (template) setActiveTemplate(template)
       } catch {
         // capture failed, activeTemplate keeps its current value
       }
-      setIsRestarting(true)
+      if (!cancelled) {
+        setIsRestarting(true)
+      }
     }
 
     void captureAndRestart()
+
+    return () => {
+      cancelled = true
+    }
   }, [isShared])
 
   // Two-phase restart: builders are unmounted while isRestarting is true,
@@ -333,7 +354,7 @@ export const BeefreeExample = ({
   useEffect(() => {
     if (!isRestarting) return
     const timer = setTimeout(() => {
-      setBuilderKey((k) => k + 1)
+      setBuilderKey(k => k + 1)
       setIsRestarting(false)
     }, 0)
     return () => clearTimeout(timer)
@@ -345,11 +366,11 @@ export const BeefreeExample = ({
       if (isSharedRef.current) {
         onIsSharedChange(false)
       } else {
-        setBuilderKey((k) => k + 1)
+        setBuilderKey(k => k + 1)
       }
     }
     setActiveTemplate(BLANK_TEMPLATE)
-    void loadBeefreeToken(builderType as BuilderType).then(() => {
+    void loadBeefreeToken(builderType).then(() => {
       isFirstMountRef.current = false
     })
   }, [builderType, loadBeefreeToken, onIsSharedChange])
@@ -380,16 +401,16 @@ export const BeefreeExample = ({
     }
   }, [fetchSecondToken])
 
-  const handlePrimaryError = useCallback((error: BeePluginError) => {
+  const handleBuilderError = useCallback((error: BeePluginError) => {
     console.error('Beefree error:', error)
     const msg = error.message || JSON.stringify(error)
     if (isSharedRef.current && /co-editing/i.test(msg)) {
-      alert('Co-editing is only available on Superpowers or Enterprise plans.')
+      onNotify('Co-editing is only available on Superpowers or Enterprise plans.', 'error')
       stopCoEditing()
     } else {
-      alert(`Error: ${msg}`)
+      onNotify(msg, 'error', 'Error')
     }
-  }, [stopCoEditing])
+  }, [stopCoEditing, onNotify])
 
   // ---- Render helpers ----
 
@@ -417,124 +438,154 @@ export const BeefreeExample = ({
 
   return (
     <div className="beefree-example">
-      {credentialsError ? (
-        <div className="credentials-notice">
-          <h2>{i18nStrings.title}</h2>
-          <p>{renderSafeHtml(i18nDescription)}</p>
-          <ol>
-            <li>
-              <a href="https://developers.beefree.io/console" target="_blank" rel="noopener noreferrer">
-                {i18nStrings.step1}
-              </a>
-            </li>
-            <li>{i18nStrings.step2}</li>
-            <li>{i18nStrings.step3}</li>
-          </ol>
-          <p>
-            {i18nStrings.docs}{' '}
-            <a href="https://docs.beefree.io/get-started" target="_blank" rel="noopener noreferrer">
-              Getting Started guide
-            </a>.
-          </p>
-          <button onClick={refreshToken}>{i18nStrings.retry}</button>
-        </div>
-      ) : isLoadingToken ? (
-        <div className="loading">
-          Loading {builderType}...
-        </div>
-      ) : tokenError ? (
-        <div className="error">
-          <p>{tokenError}</p>
-          <button onClick={refreshToken}>Retry</button>
-        </div>
-      ) : token && !isRestarting ? (
-        <div
-          className={`builders-area${isShared ? ' co-editing' : ''}`}
-          ref={buildersAreaRef}
-        >
-          <div
-            className={`builder-panel${isDragging ? ' dragging' : ''}`}
-            style={{ width: isShared ? `${splitPosition}%` : '100%' }}
-          >
-            {renderCommandBar(preview, save, saveAsTemplate, load, getTemplateJson)}
-            <div className="builder-container">
-              <Builder
-                key={`primary-${builderKey}`}
-                id={primaryId}
-                template={activeTemplate}
-                token={token}
-                shared={isShared}
-                onSave={(pageJson: string, pageHtml: string) => {
-                  console.log('onSave called:', { pageJson, pageHtml })
-                  alert('Template saved! Check console for details.')
-                }}
-                onSaveAsTemplate={(pageJson: string) => {
-                  console.log('onSaveAsTemplate called:', { pageJson })
-                  alert('Template saved as template! Check console for details.')
-                }}
-                onSend={(htmlFile: string) => {
-                  console.log('onSend called:', htmlFile)
-                  alert('Template sent! Check console for details.')
-                }}
-                onError={handlePrimaryError}
-                onSessionStarted={handleSessionStarted}
-                onWarning={(warning: BeePluginError) => {
-                  console.warn('Beefree warning:', warning)
-                }}
-                onLoad={() => {
-                  console.log('Builder is ready')
-                }}
-              />
+      {credentialsError
+        ? (
+            <div className="credentials-notice">
+              <h2>{i18nStrings.title}</h2>
+              <p>{i18nDescription}</p>
+              <ol>
+                <li>
+                  <a href="https://developers.beefree.io/console" target="_blank" rel="noopener noreferrer">
+                    {i18nStrings.step1}
+                  </a>
+                </li>
+                <li>{i18nStrings.step2}</li>
+                <li>{i18nStrings.step3}</li>
+              </ol>
+              <p>
+                {i18nStrings.docs}
+                {' '}
+                <a href="https://docs.beefree.io/get-started" target="_blank" rel="noopener noreferrer">
+                  Getting Started guide
+                </a>
+                .
+              </p>
+              <button onClick={refreshToken}>{i18nStrings.retry}</button>
             </div>
-          </div>
-
-          {isShared && (
-            <>
-              <div
-                className={`split-divider${isDragging ? ' dragging' : ''}`}
-                onMouseDown={onDividerMouseDown}
-              >
-                <div className="split-divider-handle" />
+          )
+        : isLoadingToken
+          ? (
+              <div className="loading">
+                Loading
+                {' '}
+                {builderType}
+                ...
               </div>
-              <div
-                className={`builder-panel${isDragging ? ' dragging' : ''}`}
-                style={{ width: `${100 - splitPosition}%` }}
-              >
-                {renderCommandBar(
-                  coEditingPreview,
-                  coEditingSave,
-                  coEditingSaveAsTemplate,
-                  coEditingLoad,
-                  coEditingGetTemplateJson,
-                )}
-                <div className="builder-container">
-                  {secondToken && sessionId ? (
-                    <Builder
-                      key={`co-editing-${builderKey}`}
-                      id={coEditingId}
-                      template={BLANK_TEMPLATE}
-                      token={secondToken}
-                      shared
-                      sessionId={sessionId}
-                      onSave={(pageJson: string) => {
-                        console.log('Co-editing onSave called:', pageJson)
-                      }}
-                      onError={(error: BeePluginError) => {
-                        console.error('Co-editing error:', error)
-                      }}
-                      onWarning={(warning: BeePluginError) => {
-                        console.warn('Co-editing warning:', warning)
-                      }}
-                    />
-                  ) : (
-                    <div className="loading">Joining session...</div>
-                  )}
+            )
+          : tokenError
+            ? (
+                <div className="error">
+                  <p>{tokenError}</p>
+                  <button onClick={refreshToken}>Retry</button>
                 </div>
-              </div>
-            </>
-          )}
-        </div>
-      ) : null}
+              )
+            : token && !isRestarting
+              ? (
+                  <div
+                    className={`builders-area${isShared ? ' co-editing' : ''}`}
+                    ref={buildersAreaRef}
+                  >
+                    <div
+                      className={`builder-panel${isDragging ? ' dragging' : ''}`}
+                      style={{ width: isShared ? `${splitPosition}%` : '100%' }}
+                    >
+                      {renderCommandBar(preview, save, saveAsTemplate, load, getTemplateJson)}
+                      <div className="builder-container">
+                        <Builder
+                          key={`primary-${builderKey}`}
+                          id={primaryId}
+                          template={activeTemplate}
+                          token={token}
+                          shared={isShared}
+                          onSave={(pageJson: string, pageHtml: string) => {
+                            console.log('onSave called:', { pageJson, pageHtml })
+                            onNotify('Check console for details.', 'success', 'Design saved')
+                          }}
+                          onSaveAsTemplate={(pageJson: string) => {
+                            console.log('onSaveAsTemplate called:', { pageJson })
+                            onNotify('Check console for details.', 'success', 'Design saved as template')
+                          }}
+                          onSend={(htmlFile: string) => {
+                            console.log('onSend called:', htmlFile)
+                            onNotify('Check console for details.', 'success', 'Template sent')
+                          }}
+                          onError={handleBuilderError}
+                          onSessionStarted={handleSessionStarted}
+                          onWarning={(warning: BeePluginError) => {
+                            console.warn('Beefree warning:', warning)
+                          }}
+                          onLoad={() => {
+                            console.log('Builder is ready')
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {isShared && (
+                      <>
+                        <div
+                          className={`split-divider${isDragging ? ' dragging' : ''}`}
+                          role="separator"
+                          aria-orientation="vertical"
+                          aria-valuenow={Math.round(splitPosition)}
+                          aria-valuemin={SPLIT_MIN}
+                          aria-valuemax={SPLIT_MAX}
+                          aria-label="Resize panels"
+                          tabIndex={0}
+                          onMouseDown={onDividerMouseDown}
+                          onKeyDown={onDividerKeyDown}
+                        >
+                          <div className="split-divider-handle" />
+                        </div>
+                        <div
+                          className={`builder-panel${isDragging ? ' dragging' : ''}`}
+                          style={{ width: `${100 - splitPosition}%` }}
+                        >
+                          {renderCommandBar(
+                            coEditingPreview,
+                            coEditingSave,
+                            coEditingSaveAsTemplate,
+                            coEditingLoad,
+                            coEditingGetTemplateJson,
+                          )}
+                          <div className="builder-container">
+                            {secondToken && sessionId
+                              ? (
+                                  <Builder
+                                    key={`co-editing-${builderKey}`}
+                                    id={coEditingId}
+                                    template={BLANK_TEMPLATE}
+                                    token={secondToken}
+                                    shared
+                                    sessionId={sessionId}
+                                    onSave={(pageJson: string, pageHtml: string) => {
+                                      console.log('Co-editing onSave called:', { pageJson, pageHtml })
+                                      onNotify('Check console for details.', 'success', 'Design saved')
+                                    }}
+                                    onSaveAsTemplate={(pageJson: string) => {
+                                      console.log('Co-editing onSaveAsTemplate called:', { pageJson })
+                                      onNotify('Check console for details.', 'success', 'Design saved as template')
+                                    }}
+                                    onSend={(htmlFile: string) => {
+                                      console.log('Co-editing onSend called:', htmlFile)
+                                      onNotify('Check console for details.', 'success', 'Template sent')
+                                    }}
+                                    onError={handleBuilderError}
+                                    onWarning={(warning: BeePluginError) => {
+                                      console.warn('Co-editing warning:', warning)
+                                    }}
+                                  />
+                                )
+                              : (
+                                  <div className="loading">Joining session...</div>
+                                )}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )
+              : null}
     </div>
   )
 }

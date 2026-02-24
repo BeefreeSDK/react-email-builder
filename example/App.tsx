@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { BeefreeExample } from './BeefreeExample'
+import type { BuilderType } from './BeefreeExample'
 
 const UI_LANGUAGES = [
   'en-US', 'it-IT', 'es-ES', 'fr-FR', 'de-DE', 'pt-BR',
@@ -10,27 +11,50 @@ const UI_LANGUAGES = [
 
 const REACT_LOGO_DATA_URI = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-11.5 -10.232 23 20.463'%3e%3ccircle r='2.05' fill='white'/%3e%3cg stroke='white' fill='none'%3e%3cellipse rx='11' ry='4.2'/%3e%3cellipse rx='11' ry='4.2' transform='rotate(60)'/%3e%3cellipse rx='11' ry='4.2' transform='rotate(120)'/%3e%3c/g%3e%3c/svg%3e"
 
+export type ToastType = 'success' | 'error' | 'info'
+
+interface ToastState {
+  message: string
+  title?: string
+  type: ToastType
+}
+
 export const App = () => {
-  const [selectedBuilderType, setSelectedBuilderType] = useState('emailBuilder')
+  const [selectedBuilderType, setSelectedBuilderType] = useState<BuilderType>('emailBuilder')
   const [selectedBuilderLanguage, setSelectedBuilderLanguage] = useState('en-US')
   const [isShared, setIsShared] = useState(false)
-  const [showToast, setShowToast] = useState(false)
+  const [toast, setToast] = useState<ToastState | null>(null)
   const [toastExiting, setToastExiting] = useState(false)
+  const toastTimers = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  const clearToastTimers = useCallback(() => {
+    toastTimers.current.forEach(clearTimeout)
+    toastTimers.current = []
+  }, [])
+
+  const showToast = useCallback((message: string, type: ToastType = 'info', title?: string, durationMs = 5000) => {
+    clearToastTimers()
+    setToastExiting(false)
+    setToast({ message, type, title })
+
+    toastTimers.current.push(
+      setTimeout(() => setToastExiting(true), durationMs),
+      setTimeout(() => {
+        setToast(null)
+        setToastExiting(false)
+      }, durationMs + 400),
+    )
+  }, [clearToastTimers])
 
   useEffect(() => {
-    const timers: ReturnType<typeof setTimeout>[] = []
-
-    timers.push(setTimeout(() => setShowToast(true), 500))
-    timers.push(setTimeout(() => {
-      setToastExiting(true)
-      timers.push(setTimeout(() => {
-        setShowToast(false)
-        setToastExiting(false)
-      }, 400))
-    }, 5000))
-
-    return () => timers.forEach(clearTimeout)
-  }, [])
+    const timer = setTimeout(() => {
+      showToast('Your React Beefree SDK app is up and running.', 'success', 'Congratulations!')
+    }, 500)
+    return () => {
+      clearTimeout(timer)
+      clearToastTimers()
+    }
+  }, [showToast, clearToastTimers])
 
   return (
     <main className="main">
@@ -45,7 +69,7 @@ export const App = () => {
               <select
                 id="headerBuilderType"
                 value={selectedBuilderType}
-                onChange={(e) => setSelectedBuilderType(e.target.value)}
+                onChange={(e) => setSelectedBuilderType(e.target.value as BuilderType)}
               >
                 <option value="emailBuilder">Email Builder</option>
                 <option value="pageBuilder">Page Builder</option>
@@ -84,13 +108,14 @@ export const App = () => {
           builderLanguage={selectedBuilderLanguage}
           isShared={isShared}
           onIsSharedChange={setIsShared}
+          onNotify={showToast}
         />
       </div>
 
-      {showToast && (
-        <div className={`toast${toastExiting ? ' toast-exit' : ''}`}>
-          <h3>Congratulations!</h3>
-          <p>Your React Beefree SDK app is up and running.</p>
+      {toast && (
+        <div className={`toast toast-${toast.type}${toastExiting ? ' toast-exit' : ''}`}>
+          {toast.title && <h3>{toast.title}</h3>}
+          <p>{toast.message}</p>
         </div>
       )}
     </main>

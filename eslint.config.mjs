@@ -54,6 +54,7 @@ const eslintConfig = [{
       ],
       warnOnUnassignedImports: true,
     }],
+    '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
     '@typescript-eslint/no-unused-vars': ['error', {
       argsIgnorePattern: '^_',
       varsIgnorePattern: '^_',
