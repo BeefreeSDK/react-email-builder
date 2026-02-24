@@ -1,7 +1,7 @@
 {
   "name": "@beefree.io/react-email-builder",
   "version": "1.1.0-refactor-builder-state.13",
-  "description": "React wrapper for the Beefree SDK – A framework-specific package that provides React components and hooks to integrate the Beefree SDK (Email Builder, Page Builder, File Manager, Popup Builder) into React applications",
+  "description": "React components and hooks for the Beefree SDK — drag-and-drop email, page, and popup builder with collaborative editing",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BeefreeSDK/npm-react.git"
@@ -19,14 +19,28 @@
   "keywords": [
     "react",
     "beefree",
+    "beefree-sdk",
     "email-builder",
+    "email-template",
+    "email-template-builder",
+    "email-design",
+    "email-editor",
+    "html-email",
+    "responsive-email",
+    "newsletter",
     "page-builder",
+    "landing-page-builder",
+    "popup-builder",
     "drag-and-drop",
+    "drag-drop-editor",
     "wysiwyg",
-    "editor",
     "visual-editor",
+    "no-code",
+    "low-code",
     "react-component",
-    "react-hooks"
+    "react-hooks",
+    "collaborative-editing",
+    "real-time-collaboration"
   ],
   "files": [
     "dist",

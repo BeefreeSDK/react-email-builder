@@ -8,9 +8,14 @@
 
 A React wrapper component for the [Beefree SDK](https://www.beefree.io/), making it easy to integrate the Beefree email/page builder into your React applications.
 
+<!-- TODO: Add a screenshot or GIF of the builder running here -->
+<!-- ![Beefree SDK React Builder](docs/screenshot.png) -->
+
 ## Table of Contents
 
+- [What is Beefree SDK?](#what-is-beefree-sdk)
 - [Overview](#overview)
+- [Compatibility](#compatibility)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [API Reference](#api-reference)
@@ -18,12 +23,17 @@ A React wrapper component for the [Beefree SDK](https://www.beefree.io/), making
 - [Best Practices](#best-practices)
 - [Advanced Usage](#advanced-usage)
 - [Examples](#examples)
+- [FAQ](#faq)
 - [Development](#development)
 - [License](#license)
 
-## Overview
+## What is Beefree SDK?
 
-This library provides a React component wrapper for the Beefree SDK, allowing you to easily embed the Beefree email and landing page builder into your React applications. It handles the SDK initialization, lifecycle management, and provides React-friendly APIs including hooks for programmatic control.
+[Beefree SDK](https://www.beefree.io/) is a drag-and-drop visual content builder that lets your users design professional emails, landing pages, and popups — without writing code. It powers thousands of SaaS applications worldwide, offering a white-label, embeddable editing experience with real-time collaborative editing, responsive design output, and extensive customization options.
+
+This React package provides a `Builder` component and a `useBuilder` hook that handle SDK initialization, lifecycle management, and configuration updates — giving you a React-friendly API to integrate the full Beefree editing experience into your application.
+
+## Overview
 
 ### Features
 
@@ -33,6 +43,15 @@ This library provides a React component wrapper for the Beefree SDK, allowing yo
 - 👥 **Collaborative Editing** - Support for shared/collaborative sessions
 - 📦 **TypeScript Support** - Full TypeScript definitions included
 - 🎨 **Customizable** - Full access to Beefree SDK configuration options
+
+## Compatibility
+
+| Requirement | Version |
+|-------------|---------|
+| React | 17, 18, or 19 |
+| Node.js | >= 18.0.0 |
+| TypeScript | >= 4.7 (optional, but recommended) |
+| Browsers | Chrome, Firefox, Safari, Edge (latest 2 versions) |
 
 ## Installation
 
@@ -44,34 +63,67 @@ yarn add @beefree.io/react-email-builder
 
 ## Quick Start
 
+### 1. Get your credentials
+
+Sign up at [developers.beefree.io](https://developers.beefree.io) to get your `client_id` and `client_secret`.
+
+### 2. Set up token generation on your backend
+
+Your backend server should exchange credentials for a short-lived token (see [Security: Server-Side Token Generation](#-security-server-side-token-generation) below for details):
+
+```javascript
+// Example: Node.js/Express backend endpoint
+app.post('/api/beefree/token', async (req, res) => {
+  const response = await fetch('https://auth.getbee.io/apiauth', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_id: process.env.BEEFREE_CLIENT_ID,
+      client_secret: process.env.BEEFREE_CLIENT_SECRET,
+      grant_type: 'password',
+    }),
+  })
+  res.json(await response.json())
+})
+```
+
+### 3. Integrate the builder in your React app
+
 ```tsx
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Builder, IToken, useBuilder } from '@beefree.io/react-email-builder'
 
-function App() {
+function EmailEditor() {
   const [token, setToken] = useState<IToken | null>(null)
 
-  useBuilder({
+  const { save, preview } = useBuilder({
+    uid: 'user-123',
     container: 'bee-container',
-    // ... other config options
+    language: 'en-US',
   })
 
   useEffect(() => {
-    // Fetch token from YOUR backend server
-    fetchTokenFromBackend().then(setToken)
+    fetch('/api/beefree/token', { method: 'POST' })
+      .then((res) => res.json())
+      .then(setToken)
   }, [])
 
-  if (!token) return <div>Loading...</div>
+  if (!token) return <div>Loading builder...</div>
 
   return (
-    <Builder
-      id="bee-container"
-      token={token}
-      template={{
-        comments: {},
-        page: {},
-      }}
-    />
+    <div>
+      <div>
+        <button onClick={() => preview()}>Preview</button>
+        <button onClick={() => save()}>Save</button>
+      </div>
+      <Builder
+        id="bee-container"
+        token={token}
+        template={{ comments: {}, page: {} }}
+        onSave={(json, html) => console.log('Saved:', { json, html })}
+        onError={(err) => console.error('Builder error:', err)}
+      />
+    </div>
   )
 }
 ```
@@ -376,22 +428,49 @@ const config = {
 
 ## Examples
 
-Check the `/example` directory for a complete working example including:
+The [`/example`](example/) directory contains a fully working application that demonstrates:
 
 - Token authentication flow
-- Collaborative editing
-- Custom content dialogs
-- Save/load functionality
-- Hook usage
+- Collaborative editing with template preservation
+- Save, preview, and export functionality
+- Multi-language UI switching
+- Multiple builder types (Email, Page, Popup, File Manager)
 
-To run the example:
+See the [example README](example/README.md) for setup instructions.
+
+**Quick start:**
 
 ```bash
+cp .env.sample .env   # Fill in your Beefree credentials
 yarn install
-yarn start
+yarn start            # Opens at http://localhost:3000
 ```
 
-The development server will start at `http://localhost:3000`
+## FAQ
+
+### How do I authenticate with the Beefree SDK?
+
+Authentication requires a `client_id` and `client_secret`, which you get by signing up at [developers.beefree.io](https://developers.beefree.io). These credentials should **never** be exposed in frontend code. Instead, create a backend endpoint that exchanges them for a short-lived token and pass that token to the `Builder` component. See [Security: Server-Side Token Generation](#-security-server-side-token-generation) for a complete example.
+
+### Can I use this with Next.js, Remix, or Vite?
+
+Yes. This package works with any React-based framework. The `Builder` component renders a client-side iframe, so in Next.js you should use it inside a `'use client'` component. For Vite, it works out of the box. For Remix, use a `ClientOnly` wrapper or lazy-load the component.
+
+### Does it support collaborative editing?
+
+Yes. Set `shared={true}` on the `Builder` component to create a collaborative session. The `onSessionStarted` callback provides a `sessionId` that other users can use to join the same session. See [Collaborative Editing](#-collaborative-editing) for a full example.
+
+### What email clients are supported?
+
+The Beefree SDK generates responsive HTML that is compatible with all major email clients, including Gmail, Outlook (desktop and web), Apple Mail, Yahoo Mail, and mobile email apps. The output follows email HTML best practices with inline CSS and table-based layouts for maximum compatibility.
+
+### Can I customize the builder UI?
+
+Yes. The Beefree SDK supports extensive UI customization including custom content dialogs, external content sources, merge tags, special links, and more. See [Advanced Usage](#advanced-usage) and the [Beefree SDK Documentation](https://docs.beefree.io/) for the full range of customization options.
+
+### How do I load an existing template?
+
+Pass your template JSON to the `template` prop of the `Builder` component. You can also use the `load` method from the `useBuilder` hook to programmatically load a template at any time after initialization.
 
 ## Development
 

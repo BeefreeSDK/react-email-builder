@@ -41,7 +41,7 @@ This project and everyone participating in it is governed by our Code of Conduct
 yarn start
 ```
 
-This will start the development server with hot reload at `http://localhost:3003`.
+This will start the development server with hot reload at `http://localhost:3000`.
 
 ### Building the Library
 
