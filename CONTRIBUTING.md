@@ -1,6 +1,6 @@
 # Contributing to @beefree.io/react
 
-First off, thank you for considering contributing to `@beefree.io/react`! 🎉
+First off, thank you for considering contributing to `@BeefreeSDK/react-email-builder`! 🎉
 
 ## Table of Contents
 
