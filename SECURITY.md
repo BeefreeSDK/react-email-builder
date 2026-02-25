@@ -13,7 +13,7 @@ We actively support the following versions with security updates:
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-Instead, please report them to: **[security@beefree.io](https://beefree.io/report-security-issue)**
+Instead, please report them to: **[support@beefree.io](https://beefree.io/report-security-issue)**
 
 You should receive a response within 48 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
 
@@ -31,7 +31,7 @@ This information will help us triage your report more quickly.
 
 ## Security Best Practices
 
-When using `@beefree.io/react`:
+When using `@BeefreeSDK/react-email-builder`:
 
 ### 1. Never Expose API Credentials
 
@@ -62,10 +62,10 @@ Always validate and sanitize any user input before passing it to the builder.
 
 ### 3. Keep Dependencies Updated
 
-Regularly update `@beefree.io/react` and its dependencies:
+Regularly update `@BeefreeSDK/react-email-builder` and its dependencies:
 
 ```bash
-yarn upgrade @beefree.io/react
+yarn upgrade @BeefreeSDK/react-email-builder
 ```
 
 ### 4. Use HTTPS

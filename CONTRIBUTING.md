@@ -1,4 +1,4 @@
-# Contributing to @beefree.io/react
+# Contributing to @BeefreeSDK/react-email-builder
 
 First off, thank you for considering contributing to `@BeefreeSDK/react-email-builder`! 🎉
 
@@ -21,8 +21,8 @@ This project and everyone participating in it is governed by our Code of Conduct
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/npm-react.git
-   cd npm-react
+   git clone https://github.com/YOUR_USERNAME/react-email-builder.git
+   cd react-email-builder
    ```
 3. **Install dependencies**:
    ```bash
