@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - '*'
+
+permissions:
+  actions: write
+  checks: write
+  contents: read
+  deployments: read
+  issues: read
+  packages: read
+  pull-requests: write
+  repository-projects: read
+  security-events: read
+  statuses: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn --immutable
+
+      - name: Run ESLint
+        run: yarn lint
+
+  build:
+    runs-on: ubuntu-latest
+    needs: lint
+    environment:
+      name: build
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Use Node Version ${{ matrix.node-version }}
+        uses: actions/setup-node@v6
+        with:
+          registry-url: "https://registry.npmjs.org"
+          node-version: ${{ matrix.node-version }}
+          scope: "@beefree.io"
+
+      - uses: actions/cache@v4.2.2
+        id: yarn-cache
+        with:
+          path: ".yarn/cache"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - uses: actions/cache@v4.2.2
+        name: Cache node_modules
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.node-version }}-nodemodules-
+
+      - uses: actions/cache@v4.2.2
+        name: Cache Jest cache
+        id: cache-jest-cache
+        with:
+          path: .jest-cache
+          key: ${{ runner.os }}-${{ matrix.node-version }}-jest
+
+      - name: Install Dependencies
+        run: yarn --immutable
+        if: steps.cache-yarn-cache.outputs.cache-hit != 'true' || steps.cache-node-modules.outputs.cache-hit != 'true'
+
+      - name: Unit tests
+        run: yarn test --all --cacheDirectory .jest-cache --watchAll false
+
+  release:
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    if: contains(github.ref, 'tag')
+    needs: build
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Use Node Version 22.x
+        uses: actions/setup-node@v1
+        with:
+          registry-url: "https://registry.npmjs.org"
+          node-version: "22.x"
+          scope: "@beefree.io"
+
+      - uses: actions/cache@v4.2.2
+        id: yarn-cache
+        with:
+          path: ".yarn/cache"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install Dependencies
+        run: yarn --immutable
+        if: steps.cache-yarn-cache.outputs.cache-hit != 'true' || steps.cache-node-modules.outputs.cache-hit != 'true'
+
+      - name: Build package
+        run: yarn build
+
+      - name: Publish package
+        run: npm publish --production
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

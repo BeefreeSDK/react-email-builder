@@ -1,0 +1,11 @@
+{
+  "credentials": {
+    "title": "Ogiltiga eller saknade autentiseringsuppgifter",
+    "description": "Autentisering misslyckades för {type}. Kontrollera {clientId} och {clientSecret} i {envFile}.",
+    "step1": "Gå till Beefree Developer Console och skapa en applikation.",
+    "step2": "Kopiera Client ID och Client Secret till din .env-fil.",
+    "step3": "Ladda om denna sida eller klicka på Försök igen.",
+    "docs": "Se",
+    "retry": "Försök igen"
+  }
+}

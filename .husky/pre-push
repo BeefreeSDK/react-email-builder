@@ -1,0 +1,2 @@
+echo "Pre-push: running tests (CI mode)"
+yarn test:ci

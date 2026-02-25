@@ -1,0 +1,11 @@
+{
+  "credentials": {
+    "title": "Credențiale invalide sau lipsă",
+    "description": "Autentificarea a eșuat pentru {type}. Vă rugăm să verificați {clientId} și {clientSecret} din {envFile}.",
+    "step1": "Accesați Beefree Developer Console și creați o aplicație.",
+    "step2": "Copiați Client ID și Client Secret în fișierul .env.",
+    "step3": "Reîncărcați această pagină sau faceți clic pe Reîncercați.",
+    "docs": "Consultați",
+    "retry": "Reîncercați"
+  }
+}

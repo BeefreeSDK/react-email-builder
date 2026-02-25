@@ -1,0 +1,11 @@
+{
+  "credentials": {
+    "title": "Ugyldige eller manglende legitimationsoplysninger",
+    "description": "Godkendelse mislykkedes for {type}. Kontrollér venligst {clientId} og {clientSecret} i {envFile}.",
+    "step1": "Gå til Beefree Developer Console og opret en applikation.",
+    "step2": "Kopiér Client ID og Client Secret til din .env-fil.",
+    "step3": "Genindlæs denne side eller klik Prøv igen.",
+    "docs": "Se",
+    "retry": "Prøv igen"
+  }
+}

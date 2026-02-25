@@ -1,0 +1,41 @@
+# dependencies
+node_modules
+
+# testing
+coverage
+
+# production
+dist
+build
+
+# misc
+.DS_Store
+npm-debug.log
+yarn-error.log
+.yalc
+yalc.lock
+
+# example
+example/index.js
+example/index.es.js
+example/index.js.map
+example/index.es.js.map
+
+# Environments
+.env
+.env.*
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.idea/
+
+#except
+!.env.sample
+
+# Yarn v2
+.yarn/

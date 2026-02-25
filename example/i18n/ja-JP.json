@@ -1,0 +1,11 @@
+{
+  "credentials": {
+    "title": "認証情報が無効または未設定です",
+    "description": "{type} の認証に失敗しました。{envFile} の {clientId} と {clientSecret} を確認してください。",
+    "step1": "Beefree Developer Console にアクセスし、アプリケーションを作成してください。",
+    "step2": "Client ID と Client Secret を .env ファイルにコピーしてください。",
+    "step3": "このページを再読み込みするか、再試行をクリックしてください。",
+    "docs": "詳細は",
+    "retry": "再試行"
+  }
+}
