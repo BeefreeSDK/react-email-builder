@@ -8,8 +8,7 @@
 
 A React wrapper component for the [Beefree SDK](https://www.beefree.io/), making it easy to integrate the Beefree email/page builder into your React applications.
 
-<!-- TODO: Add a screenshot or GIF of the builder running here -->
-<!-- ![Beefree SDK React Builder](docs/screenshot.png) -->
+![Beefree SDK React Builder](docs/screenshot.png)
 
 ## Table of Contents
 
