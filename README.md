@@ -24,6 +24,7 @@ A React wrapper component for the [Beefree SDK](https://www.beefree.io/), making
 - [Examples](#examples)
 - [FAQ](#faq)
 - [Development](#development)
+- [Other Frameworks](#other-frameworks)
 - [License](#license)
 
 ## What is Beefree SDK?
@@ -73,7 +74,7 @@ Your backend server should exchange credentials for a short-lived token (see [Se
 ```javascript
 // Example: Node.js/Express backend endpoint
 app.post('/api/beefree/token', async (req, res) => {
-  const response = await fetch('https://auth.getbee.io/apiauth', {
+  const response = await fetch('https://auth.getbee.io/loginV2', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -504,6 +505,14 @@ Outputs:
 1. Verify token is valid and not expired
 2. Check console for errors
 3. Ensure `container` ID is unique on the page
+
+## Other Frameworks
+
+Beefree SDK wrappers are available for the following frameworks:
+
+| Framework | Package | Repository |
+|-----------|---------|------------|
+| Angular | `@beefree.io/angular-email-builder` | [BeefreeSDK/angular-email-builder](https://github.com/BeefreeSDK/angular-email-builder) |
 
 ## License
 
