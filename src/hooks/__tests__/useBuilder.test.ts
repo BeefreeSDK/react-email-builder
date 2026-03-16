@@ -18,6 +18,36 @@ describe('useBuilder', () => {
     ],
   }
 
+  it('handles undefined container by falling back to empty string key', () => {
+    const configWithoutContainer: IBeeConfig = { uid: 'user-1' }
+    const { result } = renderHook(() => useBuilder(configWithoutContainer))
+
+    // Trigger a version change to exercise both registry-watch effects
+    // with an undefined container (covers the ?? '' branches and if (updatedConfig) false branch)
+    act(() => {
+      setSDKInstanceToRegistry('unrelated-key', {} as BeefreeSDK)
+    })
+
+    expect(result.current).toBeDefined()
+  })
+
+  it('returns unchanged instance when re-registering the same SDK instance', () => {
+    const mockInstance = { loadConfig: jest.fn() } as unknown as BeefreeSDK
+    const { result } = renderHook(() => useBuilder(mockConfig))
+
+    // First registration sets the instance
+    act(() => {
+      setSDKInstanceToRegistry('test', mockInstance)
+    })
+
+    // Second registration with the same instance covers the prevInstance === instanceToRegister branch
+    act(() => {
+      setSDKInstanceToRegistry('test', mockInstance)
+    })
+
+    expect(result.current.save).toBeDefined()
+  })
+
   it('stores config in registry on mount', () => {
     renderHook(() => useBuilder(mockConfig))
 
@@ -84,6 +114,46 @@ describe('useBuilder', () => {
     })
 
     expect(mockLoadConfig).toHaveBeenCalledWith({ language: 'it-IT' })
+  })
+
+  it('updateConfig calls onWarning and resolves when loadConfig rejects with code 3001', async () => {
+    const onWarning = jest.fn()
+    const configWithCallbacks: IBeeConfig = { ...mockConfig, onWarning }
+    const mockLoadConfig = jest.fn().mockRejectedValue({ code: 3001, message: 'debounced' })
+    const mockInstance = { loadConfig: mockLoadConfig } as unknown as BeefreeSDK
+
+    const { result } = renderHook(() => useBuilder(configWithCallbacks))
+
+    act(() => {
+      setSDKInstanceToRegistry('test', mockInstance)
+    })
+
+    await act(async () => {
+      await result.current.updateConfig({ language: 'it-IT' })
+    })
+
+    expect(onWarning).toHaveBeenCalledWith({ code: 3001, message: 'debounced' })
+  })
+
+  it('updateConfig calls onError and rejects when loadConfig rejects with a generic error', async () => {
+    const onError = jest.fn()
+    const configWithCallbacks: IBeeConfig = { ...mockConfig, onError }
+    const mockLoadConfig = jest.fn().mockRejectedValue(new Error('loadConfig failed'))
+    const mockInstance = { loadConfig: mockLoadConfig } as unknown as BeefreeSDK
+
+    const { result } = renderHook(() => useBuilder(configWithCallbacks))
+
+    act(() => {
+      setSDKInstanceToRegistry('test', mockInstance)
+    })
+
+    await act(async () => {
+      await result.current.updateConfig({ language: 'it-IT' }).catch(() => {})
+    })
+
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 1000, message: expect.stringContaining('loadConfig failed') }),
+    )
   })
 
   it('provides stable function references across renders', () => {

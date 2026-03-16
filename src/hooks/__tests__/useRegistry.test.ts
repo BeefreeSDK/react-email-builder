@@ -4,6 +4,9 @@ import {
   useSDKInstanceRegistry,
   setSDKInstanceToRegistry,
   removeSDKInstanceFromRegistry,
+  removeConfigFromRegistry,
+  setConfigInRegistry,
+  getConfigRegistry,
 } from '../useRegistry'
 
 describe('useRegistry', () => {
@@ -41,5 +44,11 @@ describe('useRegistry', () => {
     })
 
     expect(result.current[1]).toBeGreaterThan(initialVersion)
+  })
+
+  it('removeConfigFromRegistry does nothing when key is undefined', () => {
+    setConfigInRegistry('keep-me', { container: 'keep-me', uid: 'user-x' })
+    removeConfigFromRegistry(undefined)
+    expect(getConfigRegistry().has('keep-me')).toBe(true)
   })
 })

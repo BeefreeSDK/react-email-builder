@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Limbă:",
+    "coEditing": "Co-editare",
+    "builderTypes": {
+      "emailBuilder": "Builder de e-mailuri",
+      "pageBuilder": "Builder de pagini",
+      "popupBuilder": "Builder de popup-uri",
+      "fileManager": "Manager de fișiere"
+    },
+    "welcomeTitle": "Felicitări!",
+    "welcomeMessage": "Aplicația dvs. React cu Beefree SDK funcționează."
+  },
+  "example": {
+    "loading": "Se încarcă {type}...",
+    "retry": "Reîncercați",
+    "preview": "Previzualizare",
+    "save": "Salvează",
+    "saveAsTemplate": "Salvează ca șablon",
+    "loadSampleTemplate": "Încarcă șablonul exemplu",
+    "loadBlankTemplate": "Încarcă șablonul gol",
+    "joiningSession": "Se alătură sesiunii...",
+    "resizePanels": "Redimensionează panourile",
+    "checkConsole": "Consultați consola pentru detalii.",
+    "templateSent": "Șablon trimis",
+    "coEditingPlanError": "Co-editarea este disponibilă doar în planurile Superpowers sau Enterprise.",
+    "error": "Eroare",
+    "loadFailed": "Nu s-a putut încărca {type}. Încercați din nou.",
+    "loadFailedTitle": "Încărcarea a eșuat"
+  },
   "credentials": {
     "title": "Credențiale invalide sau lipsă",
     "description": "Autentificarea a eșuat pentru {type}. Vă rugăm să verificați {clientId} și {clientSecret} din {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Copiați Client ID și Client Secret în fișierul .env.",
     "step3": "Reîncărcați această pagină sau faceți clic pe Reîncercați.",
     "docs": "Consultați",
-    "retry": "Reîncercați"
+    "retry": "Reîncercați",
+    "gettingStartedGuide": "ghidul de început"
   }
 }

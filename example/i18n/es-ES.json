@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Idioma:",
+    "coEditing": "Coedición",
+    "builderTypes": {
+      "emailBuilder": "Editor de correo",
+      "pageBuilder": "Editor de páginas",
+      "popupBuilder": "Editor de ventanas emergentes",
+      "fileManager": "Administrador de archivos"
+    },
+    "welcomeTitle": "¡Enhorabuena!",
+    "welcomeMessage": "Tu aplicación React con Beefree SDK ya está funcionando."
+  },
+  "example": {
+    "loading": "Cargando {type}...",
+    "retry": "Reintentar",
+    "preview": "Vista previa",
+    "save": "Guardar",
+    "saveAsTemplate": "Guardar como plantilla",
+    "loadSampleTemplate": "Cargar plantilla de ejemplo",
+    "loadBlankTemplate": "Cargar plantilla en blanco",
+    "joiningSession": "Uniéndose a la sesión...",
+    "resizePanels": "Redimensionar paneles",
+    "checkConsole": "Consulta la consola para más detalles.",
+    "templateSent": "Plantilla enviada",
+    "coEditingPlanError": "La coedición solo está disponible en los planes Superpowers o Enterprise.",
+    "error": "Error",
+    "loadFailed": "No se pudo cargar {type}. Inténtalo de nuevo.",
+    "loadFailedTitle": "Error de carga"
+  },
   "credentials": {
     "title": "Credenciales no válidas o ausentes",
     "description": "La autenticación falló para {type}. Verifica {clientId} y {clientSecret} en {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Copia el Client ID y el Client Secret en tu archivo .env.",
     "step3": "Recarga la página o haz clic en Reintentar.",
     "docs": "Consulta la",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "gettingStartedGuide": "guía de inicio"
   }
 }

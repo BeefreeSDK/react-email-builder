@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Jezik:",
+    "coEditing": "Skupno urejanje",
+    "builderTypes": {
+      "emailBuilder": "Urejevalnik e-pošte",
+      "pageBuilder": "Urejevalnik strani",
+      "popupBuilder": "Urejevalnik pojavnih oken",
+      "fileManager": "Upravitelj datotek"
+    },
+    "welcomeTitle": "Čestitamo!",
+    "welcomeMessage": "Vaša aplikacija React z Beefree SDK deluje."
+  },
+  "example": {
+    "loading": "Nalaganje {type}...",
+    "retry": "Poskusi znova",
+    "preview": "Predogled",
+    "save": "Shrani",
+    "saveAsTemplate": "Shrani kot predlogo",
+    "loadSampleTemplate": "Naloži vzorčno predlogo",
+    "loadBlankTemplate": "Naloži prazno predlogo",
+    "joiningSession": "Pridruževanje seji...",
+    "resizePanels": "Spremeni velikost panelov",
+    "checkConsole": "Za podrobnosti preverite konzolo.",
+    "templateSent": "Predloga je poslana",
+    "coEditingPlanError": "Skupno urejanje je na voljo samo v paketih Superpowers ali Enterprise.",
+    "error": "Napaka",
+    "loadFailed": "Nalaganje {type} ni uspelo. Poskusite znova.",
+    "loadFailedTitle": "Nalaganje ni uspelo"
+  },
   "credentials": {
     "title": "Neveljavni ali manjkajoči prijavni podatki",
     "description": "Preverjanje pristnosti za {type} ni uspelo. Preverite {clientId} in {clientSecret} v {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Kopirajte Client ID in Client Secret v datoteko .env.",
     "step3": "Znova naložite to stran ali kliknite Poskusi znova.",
     "docs": "Glejte",
-    "retry": "Poskusi znova"
+    "retry": "Poskusi znova",
+    "gettingStartedGuide": "uvodni vodnik"
   }
 }

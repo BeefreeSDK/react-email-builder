@@ -101,6 +101,7 @@ export const BeefreeExample = ({
   const [tokenError, setTokenError] = useState<string | null>(null)
   const [credentialsError, setCredentialsError] = useState(false)
   const [isExecuting, setIsExecuting] = useState(false)
+  const [loadedTemplate, setLoadedTemplate] = useState<'sample' | 'blank' | null>(null)
 
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [secondToken, setSecondToken] = useState<IToken | null>(null)
@@ -159,7 +160,6 @@ export const BeefreeExample = ({
     save: coEditingSave,
     saveAsTemplate: coEditingSaveAsTemplate,
     load: coEditingLoad,
-    getTemplateJson: coEditingGetTemplateJson,
   } = useBuilder(coEditingConfig)
 
   useEffect(() => {
@@ -168,9 +168,19 @@ export const BeefreeExample = ({
 
   const builderReady = !!token && !credentialsError && !tokenError && !isLoadingToken
 
-  const i18nStrings = useMemo(
-    () => (I18N_MAP[builderLanguage] ?? i18nEnUS).credentials,
+  const i18nMessages = useMemo(
+    () => I18N_MAP[builderLanguage] ?? i18nEnUS,
     [builderLanguage],
+  )
+
+  const i18nStrings = useMemo(
+    () => i18nMessages.credentials,
+    [i18nMessages],
+  )
+
+  const exampleStrings = useMemo(
+    () => i18nMessages.example,
+    [i18nMessages],
   )
 
   const i18nDescription = useMemo(
@@ -236,16 +246,49 @@ export const BeefreeExample = ({
 
   // ---- Builder actions ----
 
+  const downloadFile = useCallback((filename: string, content: string, contentType = 'application/json') => {
+    const blob = new Blob([content], { type: contentType })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, [])
+
+  const handleBuilderSave = useCallback((_pageJson: string, pageHtml: string) => {
+    downloadFile(`design-${Date.now()}.html`, pageHtml, 'text/html;charset=utf-8')
+  }, [downloadFile])
+
+  const handleBuilderSaveAsTemplate = useCallback((pageJson: string) => {
+    const parsed = typeof pageJson === 'string' ? JSON.parse(pageJson) : pageJson
+    const content = JSON.stringify(parsed, null, 2)
+    downloadFile(`template-${Date.now()}.json`, content, 'application/json')
+  }, [downloadFile])
+
   const handleLoadSampleTemplate = useCallback(async (loadFn: (t: IEntityContentJson) => void) => {
     try {
       setIsExecuting(true)
       const bt = builderTypeRef.current
-      const response = await fetch(environment[bt].templateUrl)
+      const url = environment[bt].sampleTemplateUrl
+
+      if (!url) {
+        loadFn({} as IEntityContentJson)
+        setLoadedTemplate('sample')
+        return
+      }
+
+      const response = await fetch(url)
       if (!response.ok) {
         throw new Error(`Failed to load template: ${response.status} ${response.statusText}`)
       }
-      const sampleTemplate: { json: IEntityContentJson } = await response.json()
-      loadFn(sampleTemplate.json)
+      const json: IEntityContentJson = await response.json()
+      const template = (json as unknown as { json: IEntityContentJson }).json ?? json
+
+      loadFn(template)
+      setLoadedTemplate('sample')
     } catch (error) {
       console.error('Load template failed:', error)
       onNotify(error instanceof Error ? error.message : 'Unknown error', 'error', 'Load failed')
@@ -254,24 +297,37 @@ export const BeefreeExample = ({
     }
   }, [onNotify])
 
-  const handleExportTemplateJson = useCallback(async (getJsonFn: () => Promise<unknown>) => {
+  const handleLoadBlankTemplate = useCallback(async (loadFn: (t: IEntityContentJson) => void) => {
     try {
       setIsExecuting(true)
-      const json = await getJsonFn()
-      const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const anchor = document.createElement('a')
-      anchor.href = url
-      anchor.download = `template-${Date.now()}.json`
-      anchor.click()
-      URL.revokeObjectURL(url)
+      const bt = builderTypeRef.current
+      const response = await fetch(environment[bt].blankTemplateUrl)
+      if (!response.ok) {
+        throw new Error(`Failed to load template: ${response.status} ${response.statusText}`)
+      }
+      const json: IEntityContentJson = await response.json()
+
+      loadFn(json)
+      setLoadedTemplate('blank')
     } catch (error) {
-      console.error('Export failed:', error)
-      onNotify(error instanceof Error ? error.message : 'Unknown error', 'error', 'Export failed')
+      console.error('Load template failed:', error)
+      onNotify(error instanceof Error ? error.message : 'Unknown error', 'error', 'Load failed')
     } finally {
       setIsExecuting(false)
     }
   }, [onNotify])
+
+  const handleLoadTemplateButton = useCallback((loadFn: (t: IEntityContentJson) => void) => {
+    if (loadedTemplate === 'sample') {
+      void handleLoadBlankTemplate(loadFn)
+    } else {
+      void handleLoadSampleTemplate(loadFn)
+    }
+  }, [loadedTemplate, handleLoadSampleTemplate, handleLoadBlankTemplate])
+
+  const loadTemplateButtonLabel = loadedTemplate === 'sample'
+    ? exampleStrings.loadBlankTemplate
+    : exampleStrings.loadSampleTemplate
 
   // ---- Draggable split divider ----
 
@@ -370,6 +426,7 @@ export const BeefreeExample = ({
       }
     }
     setActiveTemplate(BLANK_TEMPLATE)
+    setLoadedTemplate(null)
     void loadBeefreeToken(builderType).then(() => {
       isFirstMountRef.current = false
     })
@@ -405,12 +462,12 @@ export const BeefreeExample = ({
     console.error('Beefree error:', error)
     const msg = error.message || JSON.stringify(error)
     if (isSharedRef.current && /co-editing/i.test(msg)) {
-      onNotify('Co-editing is only available on Superpowers or Enterprise plans.', 'error')
+      onNotify(exampleStrings.coEditingPlanError, 'error')
       stopCoEditing()
     } else {
-      onNotify(msg, 'error', 'Error')
+      onNotify(msg, 'error', exampleStrings.error)
     }
-  }, [stopCoEditing, onNotify])
+  }, [stopCoEditing, onNotify, exampleStrings])
 
   // ---- Render helpers ----
 
@@ -421,16 +478,14 @@ export const BeefreeExample = ({
     saveFn: typeof save,
     saveAsTemplateFn: typeof saveAsTemplate,
     loadFn: typeof load,
-    getJsonFn: typeof getTemplateJson,
   ) => (
     <div className="command-bar">
-      <button disabled={buttonsDisabled} onClick={() => previewFn()}>Preview</button>
-      <button disabled={buttonsDisabled} onClick={() => saveFn()}>Save</button>
-      <button disabled={buttonsDisabled} onClick={() => saveAsTemplateFn()}>Save as Template</button>
+      <button disabled={buttonsDisabled} onClick={() => previewFn()}>{exampleStrings.preview}</button>
+      <button disabled={buttonsDisabled} onClick={() => saveFn()}>{exampleStrings.save}</button>
+      <button disabled={buttonsDisabled} onClick={() => saveAsTemplateFn()}>{exampleStrings.saveAsTemplate}</button>
       {!isShared && (
-        <button disabled={buttonsDisabled} onClick={() => handleLoadSampleTemplate(loadFn)}>Load Template</button>
+        <button disabled={buttonsDisabled} onClick={() => handleLoadTemplateButton(loadFn)}>{loadTemplateButtonLabel}</button>
       )}
-      <button disabled={buttonsDisabled} onClick={() => handleExportTemplateJson(getJsonFn)}>Export JSON</button>
     </div>
   )
 
@@ -456,7 +511,7 @@ export const BeefreeExample = ({
                 {i18nStrings.docs}
                 {' '}
                 <a href="https://docs.beefree.io/get-started" target="_blank" rel="noopener noreferrer">
-                  Getting Started guide
+                  {i18nStrings.gettingStartedGuide}
                 </a>
                 .
               </p>
@@ -466,17 +521,14 @@ export const BeefreeExample = ({
         : isLoadingToken
           ? (
               <div className="loading">
-                Loading
-                {' '}
-                {builderType}
-                ...
+                {exampleStrings.loading.replace('{type}', builderType)}
               </div>
             )
           : tokenError
             ? (
                 <div className="error">
                   <p>{tokenError}</p>
-                  <button onClick={refreshToken}>Retry</button>
+                  <button onClick={refreshToken}>{exampleStrings.retry}</button>
                 </div>
               )
             : token && !isRestarting
@@ -489,7 +541,7 @@ export const BeefreeExample = ({
                       className={`builder-panel${isDragging ? ' dragging' : ''}`}
                       style={{ width: isShared ? `${splitPosition}%` : '100%' }}
                     >
-                      {renderCommandBar(preview, save, saveAsTemplate, load, getTemplateJson)}
+                      {renderCommandBar(preview, save, saveAsTemplate, load)}
                       <div className="builder-container">
                         <Builder
                           key={`primary-${builderKey}`}
@@ -497,17 +549,11 @@ export const BeefreeExample = ({
                           template={activeTemplate}
                           token={token}
                           shared={isShared}
-                          onSave={(pageJson: string, pageHtml: string) => {
-                            console.log('onSave called:', { pageJson, pageHtml })
-                            onNotify('Check console for details.', 'success', 'Design saved')
-                          }}
-                          onSaveAsTemplate={(pageJson: string) => {
-                            console.log('onSaveAsTemplate called:', { pageJson })
-                            onNotify('Check console for details.', 'success', 'Design saved as template')
-                          }}
+                          onSave={handleBuilderSave}
+                          onSaveAsTemplate={handleBuilderSaveAsTemplate}
                           onSend={(htmlFile: string) => {
                             console.log('onSend called:', htmlFile)
-                            onNotify('Check console for details.', 'success', 'Template sent')
+                            onNotify(exampleStrings.checkConsole, 'success', exampleStrings.templateSent)
                           }}
                           onError={handleBuilderError}
                           onSessionStarted={handleSessionStarted}
@@ -530,7 +576,7 @@ export const BeefreeExample = ({
                           aria-valuenow={Math.round(splitPosition)}
                           aria-valuemin={SPLIT_MIN}
                           aria-valuemax={SPLIT_MAX}
-                          aria-label="Resize panels"
+                          aria-label={exampleStrings.resizePanels}
                           tabIndex={0}
                           onMouseDown={onDividerMouseDown}
                           onKeyDown={onDividerKeyDown}
@@ -546,7 +592,6 @@ export const BeefreeExample = ({
                             coEditingSave,
                             coEditingSaveAsTemplate,
                             coEditingLoad,
-                            coEditingGetTemplateJson,
                           )}
                           <div className="builder-container">
                             {secondToken && sessionId
@@ -558,17 +603,11 @@ export const BeefreeExample = ({
                                     token={secondToken}
                                     shared
                                     sessionId={sessionId}
-                                    onSave={(pageJson: string, pageHtml: string) => {
-                                      console.log('Co-editing onSave called:', { pageJson, pageHtml })
-                                      onNotify('Check console for details.', 'success', 'Design saved')
-                                    }}
-                                    onSaveAsTemplate={(pageJson: string) => {
-                                      console.log('Co-editing onSaveAsTemplate called:', { pageJson })
-                                      onNotify('Check console for details.', 'success', 'Design saved as template')
-                                    }}
+                                    onSave={handleBuilderSave}
+                                    onSaveAsTemplate={handleBuilderSaveAsTemplate}
                                     onSend={(htmlFile: string) => {
                                       console.log('Co-editing onSend called:', htmlFile)
-                                      onNotify('Check console for details.', 'success', 'Template sent')
+                                      onNotify(exampleStrings.checkConsole, 'success', exampleStrings.templateSent)
                                     }}
                                     onError={handleBuilderError}
                                     onWarning={(warning: BeePluginError) => {
@@ -577,7 +616,7 @@ export const BeefreeExample = ({
                                   />
                                 )
                               : (
-                                  <div className="loading">Joining session...</div>
+                                  <div className="loading">{exampleStrings.joiningSession}</div>
                                 )}
                           </div>
                         </div>

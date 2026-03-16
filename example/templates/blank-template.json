@@ -1,0 +1,32 @@
+{
+    "page": {
+        "body": {
+            "container": {
+                "style": {
+                    "background-color": "#FFFFFF"
+                }
+            },
+            "content": {
+                "computedStyle": {
+                    "linkColor": "#0068a5",
+                    "messageBackgroundColor": "transparent",
+                    "messageWidth": "600px"
+                },
+                "style": {
+                    "color": "#000000",
+                    "font-family": "Arial, 'Helvetica Neue', Helvetica, sans-serif"
+                }
+            },
+            "type": "mailup-bee-page-properties",
+            "webFonts": []
+        },
+        "description": "",
+        "rows": [],
+        "template": {
+            "name": "template-base",
+            "type": "basic",
+            "version": "2.0.0"
+        },
+        "title": ""
+    }
+}

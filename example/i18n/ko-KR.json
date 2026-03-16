@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "빌더:",
+    "languageLabel": "언어:",
+    "coEditing": "공동 편집",
+    "builderTypes": {
+      "emailBuilder": "이메일 빌더",
+      "pageBuilder": "페이지 빌더",
+      "popupBuilder": "팝업 빌더",
+      "fileManager": "파일 관리자"
+    },
+    "welcomeTitle": "축하합니다!",
+    "welcomeMessage": "React Beefree SDK 앱이 정상적으로 실행 중입니다."
+  },
+  "example": {
+    "loading": "{type} 로딩 중...",
+    "retry": "다시 시도",
+    "preview": "미리보기",
+    "save": "저장",
+    "saveAsTemplate": "템플릿으로 저장",
+    "loadSampleTemplate": "샘플 템플릿 불러오기",
+    "loadBlankTemplate": "빈 템플릿 불러오기",
+    "joiningSession": "세션에 참여하는 중...",
+    "resizePanels": "패널 크기 조정",
+    "checkConsole": "자세한 내용은 콘솔을 확인하세요.",
+    "templateSent": "템플릿이 전송되었습니다",
+    "coEditingPlanError": "공동 편집은 Superpowers 또는 Enterprise 플랜에서만 사용할 수 있습니다.",
+    "error": "오류",
+    "loadFailed": "{type}을(를) 불러오지 못했습니다. 다시 시도해 주세요.",
+    "loadFailedTitle": "불러오기 실패"
+  },
   "credentials": {
     "title": "유효하지 않거나 누락된 자격 증명",
     "description": "{type}에 대한 인증에 실패했습니다. {envFile}에서 {clientId}와 {clientSecret}을 확인해 주세요.",
@@ -6,6 +36,7 @@
     "step2": "Client ID와 Client Secret을 .env 파일에 복사하세요.",
     "step3": "이 페이지를 새로고침하거나 다시 시도를 클릭하세요.",
     "docs": "참조:",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "gettingStartedGuide": "시작 가이드"
   }
 }

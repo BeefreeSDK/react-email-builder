@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Sprache:",
+    "coEditing": "Gemeinsames Bearbeiten",
+    "builderTypes": {
+      "emailBuilder": "E-Mail-Builder",
+      "pageBuilder": "Seiten-Builder",
+      "popupBuilder": "Popup-Builder",
+      "fileManager": "Dateimanager"
+    },
+    "welcomeTitle": "Glückwunsch!",
+    "welcomeMessage": "Ihre React-App mit Beefree SDK läuft jetzt."
+  },
+  "example": {
+    "loading": "{type} wird geladen...",
+    "retry": "Erneut versuchen",
+    "preview": "Vorschau",
+    "save": "Speichern",
+    "saveAsTemplate": "Als Vorlage speichern",
+    "loadSampleTemplate": "Beispielvorlage laden",
+    "loadBlankTemplate": "Leere Vorlage laden",
+    "joiningSession": "Sitzung wird beigetreten...",
+    "resizePanels": "Bereiche anpassen",
+    "checkConsole": "Weitere Details finden Sie in der Konsole.",
+    "templateSent": "Vorlage gesendet",
+    "coEditingPlanError": "Gemeinsames Bearbeiten ist nur in den Tarifen Superpowers oder Enterprise verfügbar.",
+    "error": "Fehler",
+    "loadFailed": "{type} konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "loadFailedTitle": "Laden fehlgeschlagen"
+  },
   "credentials": {
     "title": "Ungültige oder fehlende Anmeldedaten",
     "description": "Authentifizierung fehlgeschlagen für {type}. Überprüfen Sie {clientId} und {clientSecret} in {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Kopieren Sie Client ID und Client Secret in Ihre .env-Datei.",
     "step3": "Laden Sie die Seite neu oder klicken Sie auf Erneut versuchen.",
     "docs": "Siehe den",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "gettingStartedGuide": "Einstiegsleitfaden"
   }
 }
