@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Конструктор:",
+    "languageLabel": "Язык:",
+    "coEditing": "Совместное редактирование",
+    "builderTypes": {
+      "emailBuilder": "Конструктор писем",
+      "pageBuilder": "Конструктор страниц",
+      "popupBuilder": "Конструктор всплывающих окон",
+      "fileManager": "Файловый менеджер"
+    },
+    "welcomeTitle": "Поздравляем!",
+    "welcomeMessage": "Ваше приложение React с Beefree SDK успешно запущено."
+  },
+  "example": {
+    "loading": "Загрузка {type}...",
+    "retry": "Повторить",
+    "preview": "Предпросмотр",
+    "save": "Сохранить",
+    "saveAsTemplate": "Сохранить как шаблон",
+    "loadSampleTemplate": "Загрузить пример шаблона",
+    "loadBlankTemplate": "Загрузить пустой шаблон",
+    "joiningSession": "Подключение к сессии...",
+    "resizePanels": "Изменить размер панелей",
+    "checkConsole": "Подробности смотрите в консоли.",
+    "templateSent": "Шаблон отправлен",
+    "coEditingPlanError": "Совместное редактирование доступно только в тарифах Superpowers или Enterprise.",
+    "error": "Ошибка",
+    "loadFailed": "Не удалось загрузить {type}. Пожалуйста, попробуйте снова.",
+    "loadFailedTitle": "Не удалось загрузить"
+  },
   "credentials": {
     "title": "Недействительные или отсутствующие учётные данные",
     "description": "Аутентификация не удалась для {type}. Пожалуйста, проверьте {clientId} и {clientSecret} в {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Скопируйте Client ID и Client Secret в файл .env.",
     "step3": "Перезагрузите эту страницу или нажмите Повторить.",
     "docs": "См.",
-    "retry": "Повторить"
+    "retry": "Повторить",
+    "gettingStartedGuide": "руководство по началу работы"
   }
 }

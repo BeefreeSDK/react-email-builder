@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "建立器：",
+    "languageLabel": "語言：",
+    "coEditing": "協同編輯",
+    "builderTypes": {
+      "emailBuilder": "電郵建立器",
+      "pageBuilder": "頁面建立器",
+      "popupBuilder": "彈出視窗建立器",
+      "fileManager": "檔案管理器"
+    },
+    "welcomeTitle": "恭喜！",
+    "welcomeMessage": "您的 React Beefree SDK 應用程式已成功啟動。"
+  },
+  "example": {
+    "loading": "正在載入 {type}...",
+    "retry": "重試",
+    "preview": "預覽",
+    "save": "儲存",
+    "saveAsTemplate": "另存為範本",
+    "loadSampleTemplate": "載入示例範本",
+    "loadBlankTemplate": "載入空白範本",
+    "joiningSession": "正在加入工作階段...",
+    "resizePanels": "調整面板大小",
+    "checkConsole": "請查看主控台以取得詳細資料。",
+    "templateSent": "範本已發送",
+    "coEditingPlanError": "協同編輯僅適用於 Superpowers 或 Enterprise 方案。",
+    "error": "錯誤",
+    "loadFailed": "無法載入 {type}。請重試。",
+    "loadFailedTitle": "載入失敗"
+  },
   "credentials": {
     "title": "憑據無效或缺失",
     "description": "{type} 的身份驗證失敗。請檢查 {envFile} 中的 {clientId} 和 {clientSecret}。",
@@ -6,6 +36,7 @@
     "step2": "將 Client ID 和 Client Secret 複製到您的 .env 檔案中。",
     "step3": "重新載入此頁面或點擊重試。",
     "docs": "請參閱",
-    "retry": "重試"
+    "retry": "重試",
+    "gettingStartedGuide": "入門指南"
   }
 }

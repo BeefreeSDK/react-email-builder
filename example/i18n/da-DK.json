@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Sprog:",
+    "coEditing": "Samskrivning",
+    "builderTypes": {
+      "emailBuilder": "E-mail-builder",
+      "pageBuilder": "Side-builder",
+      "popupBuilder": "Popup-builder",
+      "fileManager": "Filhåndtering"
+    },
+    "welcomeTitle": "Tillykke!",
+    "welcomeMessage": "Din React-app med Beefree SDK kører nu."
+  },
+  "example": {
+    "loading": "Indlæser {type}...",
+    "retry": "Prøv igen",
+    "preview": "Forhåndsvisning",
+    "save": "Gem",
+    "saveAsTemplate": "Gem som skabelon",
+    "loadSampleTemplate": "Indlæs eksempelskabelon",
+    "loadBlankTemplate": "Indlæs tom skabelon",
+    "joiningSession": "Deltager i session...",
+    "resizePanels": "Tilpas panelstørrelse",
+    "checkConsole": "Se konsollen for detaljer.",
+    "templateSent": "Skabelon sendt",
+    "coEditingPlanError": "Samskrivning er kun tilgængelig på Superpowers- eller Enterprise-planer.",
+    "error": "Fejl",
+    "loadFailed": "Kunne ikke indlæse {type}. Prøv igen.",
+    "loadFailedTitle": "Indlæsning mislykkedes"
+  },
   "credentials": {
     "title": "Ugyldige eller manglende legitimationsoplysninger",
     "description": "Godkendelse mislykkedes for {type}. Kontrollér venligst {clientId} og {clientSecret} i {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Kopiér Client ID og Client Secret til din .env-fil.",
     "step3": "Genindlæs denne side eller klik Prøv igen.",
     "docs": "Se",
-    "retry": "Prøv igen"
+    "retry": "Prøv igen",
+    "gettingStartedGuide": "introduktionsguiden"
   }
 }

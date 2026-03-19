@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Lingua:",
+    "coEditing": "Co-editing",
+    "builderTypes": {
+      "emailBuilder": "Editor email",
+      "pageBuilder": "Editor pagine",
+      "popupBuilder": "Editor popup",
+      "fileManager": "Gestore file"
+    },
+    "welcomeTitle": "Complimenti!",
+    "welcomeMessage": "La tua app React con Beefree SDK è attiva."
+  },
+  "example": {
+    "loading": "Caricamento di {type}...",
+    "retry": "Riprova",
+    "preview": "Anteprima",
+    "save": "Salva",
+    "saveAsTemplate": "Salva come modello",
+    "loadSampleTemplate": "Carica modello di esempio",
+    "loadBlankTemplate": "Carica modello vuoto",
+    "joiningSession": "Accesso alla sessione...",
+    "resizePanels": "Ridimensiona pannelli",
+    "checkConsole": "Controlla la console per i dettagli.",
+    "templateSent": "Modello inviato",
+    "coEditingPlanError": "Il co-editing è disponibile solo con i piani Superpowers o Enterprise.",
+    "error": "Errore",
+    "loadFailed": "Impossibile caricare {type}. Riprova.",
+    "loadFailedTitle": "Caricamento non riuscito"
+  },
   "credentials": {
     "title": "Credenziali non valide o mancanti",
     "description": "Autenticazione fallita per {type}. Verifica {clientId} e {clientSecret} in {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Copia Client ID e Client Secret nel file .env.",
     "step3": "Ricarica la pagina o clicca Riprova.",
     "docs": "Consulta la",
-    "retry": "Riprova"
+    "retry": "Riprova",
+    "gettingStartedGuide": "guida introduttiva"
   }
 }

@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Språk:",
+    "coEditing": "Samskrivning",
+    "builderTypes": {
+      "emailBuilder": "E-postbyggare",
+      "pageBuilder": "Sidbyggare",
+      "popupBuilder": "Popup-byggare",
+      "fileManager": "Filhanterare"
+    },
+    "welcomeTitle": "Grattis!",
+    "welcomeMessage": "Din React-app med Beefree SDK är igång."
+  },
+  "example": {
+    "loading": "Läser in {type}...",
+    "retry": "Försök igen",
+    "preview": "Förhandsgranska",
+    "save": "Spara",
+    "saveAsTemplate": "Spara som mall",
+    "loadSampleTemplate": "Ladda exempelmall",
+    "loadBlankTemplate": "Ladda tom mall",
+    "joiningSession": "Ansluter till session...",
+    "resizePanels": "Ändra panelstorlek",
+    "checkConsole": "Se konsolen för detaljer.",
+    "templateSent": "Mallen har skickats",
+    "coEditingPlanError": "Samskrivning är endast tillgängligt på Superpowers- eller Enterprise-planer.",
+    "error": "Fel",
+    "loadFailed": "Det gick inte att läsa in {type}. Försök igen.",
+    "loadFailedTitle": "Inläsning misslyckades"
+  },
   "credentials": {
     "title": "Ogiltiga eller saknade autentiseringsuppgifter",
     "description": "Autentisering misslyckades för {type}. Kontrollera {clientId} och {clientSecret} i {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Kopiera Client ID och Client Secret till din .env-fil.",
     "step3": "Ladda om denna sida eller klicka på Försök igen.",
     "docs": "Se",
-    "retry": "Försök igen"
+    "retry": "Försök igen",
+    "gettingStartedGuide": "kom igång-guiden"
   }
 }

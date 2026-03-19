@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder :",
+    "languageLabel": "Langue :",
+    "coEditing": "Co-édition",
+    "builderTypes": {
+      "emailBuilder": "Éditeur d'e-mails",
+      "pageBuilder": "Éditeur de pages",
+      "popupBuilder": "Éditeur de popups",
+      "fileManager": "Gestionnaire de fichiers"
+    },
+    "welcomeTitle": "Félicitations !",
+    "welcomeMessage": "Votre application React avec Beefree SDK est opérationnelle."
+  },
+  "example": {
+    "loading": "Chargement de {type}...",
+    "retry": "Réessayer",
+    "preview": "Aperçu",
+    "save": "Enregistrer",
+    "saveAsTemplate": "Enregistrer comme modèle",
+    "loadSampleTemplate": "Charger le modèle d'exemple",
+    "loadBlankTemplate": "Charger le modèle vide",
+    "joiningSession": "Connexion à la session...",
+    "resizePanels": "Redimensionner les panneaux",
+    "checkConsole": "Consultez la console pour plus de détails.",
+    "templateSent": "Modèle envoyé",
+    "coEditingPlanError": "La co-édition est disponible uniquement avec les forfaits Superpowers ou Enterprise.",
+    "error": "Erreur",
+    "loadFailed": "Impossible de charger {type}. Veuillez réessayer.",
+    "loadFailedTitle": "Échec du chargement"
+  },
   "credentials": {
     "title": "Identifiants invalides ou manquants",
     "description": "L'authentification a échoué pour {type}. Vérifiez {clientId} et {clientSecret} dans {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Copiez le Client ID et le Client Secret dans votre fichier .env.",
     "step3": "Rechargez la page ou cliquez sur Réessayer.",
     "docs": "Consultez le",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "gettingStartedGuide": "guide de démarrage"
   }
 }

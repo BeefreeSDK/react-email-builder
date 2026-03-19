@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Język:",
+    "coEditing": "Współedycja",
+    "builderTypes": {
+      "emailBuilder": "Kreator e-maili",
+      "pageBuilder": "Kreator stron",
+      "popupBuilder": "Kreator popupów",
+      "fileManager": "Menedżer plików"
+    },
+    "welcomeTitle": "Gratulacje!",
+    "welcomeMessage": "Twoja aplikacja React z Beefree SDK już działa."
+  },
+  "example": {
+    "loading": "Ładowanie {type}...",
+    "retry": "Ponów",
+    "preview": "Podgląd",
+    "save": "Zapisz",
+    "saveAsTemplate": "Zapisz jako szablon",
+    "loadSampleTemplate": "Wczytaj przykładowy szablon",
+    "loadBlankTemplate": "Wczytaj pusty szablon",
+    "joiningSession": "Dołączanie do sesji...",
+    "resizePanels": "Zmień rozmiar paneli",
+    "checkConsole": "Sprawdź konsolę, aby zobaczyć szczegóły.",
+    "templateSent": "Szablon został wysłany",
+    "coEditingPlanError": "Współedycja jest dostępna tylko w planach Superpowers lub Enterprise.",
+    "error": "Błąd",
+    "loadFailed": "Nie udało się załadować {type}. Spróbuj ponownie.",
+    "loadFailedTitle": "Ładowanie nie powiodło się"
+  },
   "credentials": {
     "title": "Nieprawidłowe lub brakujące dane uwierzytelniające",
     "description": "Uwierzytelnianie nie powiodło się dla {type}. Sprawdź {clientId} i {clientSecret} w {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Skopiuj Client ID i Client Secret do pliku .env.",
     "step3": "Przeładuj tę stronę lub kliknij Ponów.",
     "docs": "Zobacz",
-    "retry": "Ponów"
+    "retry": "Ponów",
+    "gettingStartedGuide": "przewodnik wprowadzający"
   }
 }

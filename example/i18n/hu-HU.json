@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Nyelv:",
+    "coEditing": "Közös szerkesztés",
+    "builderTypes": {
+      "emailBuilder": "E-mail builder",
+      "pageBuilder": "Oldalbuilder",
+      "popupBuilder": "Popup builder",
+      "fileManager": "Fájlkezelő"
+    },
+    "welcomeTitle": "Gratulálunk!",
+    "welcomeMessage": "A React alkalmazása a Beefree SDK-val elindult."
+  },
+  "example": {
+    "loading": "{type} betöltése...",
+    "retry": "Újra",
+    "preview": "Előnézet",
+    "save": "Mentés",
+    "saveAsTemplate": "Mentés sablonként",
+    "loadSampleTemplate": "Mintasablon betöltése",
+    "loadBlankTemplate": "Üres sablon betöltése",
+    "joiningSession": "Csatlakozás a munkamenethez...",
+    "resizePanels": "Panelek átméretezése",
+    "checkConsole": "A részletekért nézze meg a konzolt.",
+    "templateSent": "Sablon elküldve",
+    "coEditingPlanError": "A közös szerkesztés csak a Superpowers vagy Enterprise csomagokban érhető el.",
+    "error": "Hiba",
+    "loadFailed": "Nem sikerült betölteni ezt: {type}. Próbálja újra.",
+    "loadFailedTitle": "Betöltés sikertelen"
+  },
   "credentials": {
     "title": "Érvénytelen vagy hiányzó hitelesítő adatok",
     "description": "A hitelesítés sikertelen a következőhöz: {type}. Kérjük, ellenőrizze a {clientId} és {clientSecret} értékeket a {envFile} fájlban.",
@@ -6,6 +36,7 @@
     "step2": "Másolja a Client ID-t és a Client Secret-et az .env fájlba.",
     "step3": "Töltse újra ezt az oldalt, vagy kattintson az Újra gombra.",
     "docs": "Lásd a",
-    "retry": "Újra"
+    "retry": "Újra",
+    "gettingStartedGuide": "kezdő útmutatót"
   }
 }

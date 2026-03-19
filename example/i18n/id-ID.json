@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Bahasa:",
+    "coEditing": "Penyuntingan bersama",
+    "builderTypes": {
+      "emailBuilder": "Builder email",
+      "pageBuilder": "Builder halaman",
+      "popupBuilder": "Builder popup",
+      "fileManager": "Pengelola file"
+    },
+    "welcomeTitle": "Selamat!",
+    "welcomeMessage": "Aplikasi React Anda dengan Beefree SDK sudah berjalan."
+  },
+  "example": {
+    "loading": "Memuat {type}...",
+    "retry": "Coba Lagi",
+    "preview": "Pratinjau",
+    "save": "Simpan",
+    "saveAsTemplate": "Simpan sebagai template",
+    "loadSampleTemplate": "Muat template contoh",
+    "loadBlankTemplate": "Muat template kosong",
+    "joiningSession": "Bergabung ke sesi...",
+    "resizePanels": "Ubah ukuran panel",
+    "checkConsole": "Periksa konsol untuk detail.",
+    "templateSent": "Template terkirim",
+    "coEditingPlanError": "Penyuntingan bersama hanya tersedia pada paket Superpowers atau Enterprise.",
+    "error": "Kesalahan",
+    "loadFailed": "Gagal memuat {type}. Silakan coba lagi.",
+    "loadFailedTitle": "Gagal memuat"
+  },
   "credentials": {
     "title": "Kredensial tidak valid atau tidak ditemukan",
     "description": "Autentikasi gagal untuk {type}. Silakan periksa {clientId} dan {clientSecret} di {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Salin Client ID dan Client Secret ke file .env Anda.",
     "step3": "Muat ulang halaman ini atau klik Coba Lagi.",
     "docs": "Lihat",
-    "retry": "Coba Lagi"
+    "retry": "Coba Lagi",
+    "gettingStartedGuide": "panduan memulai"
   }
 }

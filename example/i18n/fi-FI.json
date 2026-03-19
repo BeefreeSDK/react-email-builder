@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Kieli:",
+    "coEditing": "Yhteismuokkaus",
+    "builderTypes": {
+      "emailBuilder": "Sähköpostirakentaja",
+      "pageBuilder": "Sivurakentaja",
+      "popupBuilder": "Ponnahdusikkunarakentaja",
+      "fileManager": "Tiedostonhallinta"
+    },
+    "welcomeTitle": "Onnittelut!",
+    "welcomeMessage": "React-sovelluksesi Beefree SDK:lla on nyt käynnissä."
+  },
+  "example": {
+    "loading": "Ladataan kohdetta {type}...",
+    "retry": "Yritä uudelleen",
+    "preview": "Esikatselu",
+    "save": "Tallenna",
+    "saveAsTemplate": "Tallenna mallina",
+    "loadSampleTemplate": "Lataa esimerkkimalli",
+    "loadBlankTemplate": "Lataa tyhjä malli",
+    "joiningSession": "Liitytään istuntoon...",
+    "resizePanels": "Muuta paneelien kokoa",
+    "checkConsole": "Katso lisätiedot konsolista.",
+    "templateSent": "Malli lähetetty",
+    "coEditingPlanError": "Yhteismuokkaus on saatavilla vain Superpowers- tai Enterprise-paketeissa.",
+    "error": "Virhe",
+    "loadFailed": "Kohteen {type} lataaminen epäonnistui. Yritä uudelleen.",
+    "loadFailedTitle": "Lataus epäonnistui"
+  },
   "credentials": {
     "title": "Virheelliset tai puuttuvat tunnistetiedot",
     "description": "Todennus epäonnistui kohteelle {type}. Tarkista {clientId} ja {clientSecret} tiedostossa {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Kopioi Client ID ja Client Secret .env-tiedostoosi.",
     "step3": "Lataa tämä sivu uudelleen tai napsauta Yritä uudelleen.",
     "docs": "Katso",
-    "retry": "Yritä uudelleen"
+    "retry": "Yritä uudelleen",
+    "gettingStartedGuide": "aloitusopas"
   }
 }

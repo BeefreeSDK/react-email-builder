@@ -71,6 +71,26 @@ describe('Builder Component', () => {
     expect(div?.getAttribute('style')).toContain('width: 80%')
   })
 
+  it('passes wrapperInfo to SDK when package name and version env vars are set', () => {
+    const prevName = process.env.NPM_PACKAGE_NAME
+    const prevVersion = process.env.NPM_PACKAGE_VERSION
+    process.env.NPM_PACKAGE_NAME = '@beefree.io/react-email-builder'
+    process.env.NPM_PACKAGE_VERSION = '1.0.0'
+
+    try {
+      render(<Builder id={config.container} token={mockToken} template={mockTemplate} />)
+      expect(BeefreeSDK).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          wrapperInfo: { packageName: '@beefree.io/react-email-builder', packageVersion: '1.0.0' },
+        }),
+      )
+    } finally {
+      process.env.NPM_PACKAGE_NAME = prevName
+      process.env.NPM_PACKAGE_VERSION = prevVersion
+    }
+  })
+
   it('calls start when no sessionId', () => {
     const mockStart = jest.fn().mockResolvedValue(undefined);
     (BeefreeSDK as jest.Mock).mockImplementation(() => ({
@@ -144,6 +164,50 @@ describe('Builder Component', () => {
     )
 
     await waitFor(() => expect(onError).toHaveBeenCalled())
+  })
+
+  it('calls onWarning when loadConfig rejects with code 3001 after editor is ready', async () => {
+    const onWarning = jest.fn()
+    const mockLoadConfig = jest.fn().mockRejectedValue({ code: 3001, message: 'debounced' })
+    const mockStart = jest.fn().mockResolvedValue(undefined);
+    (BeefreeSDK as jest.Mock).mockImplementation(() => ({
+      start: mockStart,
+      join: jest.fn(),
+      loadConfig: mockLoadConfig,
+    }))
+
+    render(<Builder id={config.container} token={mockToken} template={mockTemplate} onWarning={onWarning} />)
+
+    await waitFor(() => expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 3001 }),
+    ))
+  })
+
+  it('calls onError when loadConfig rejects with a generic error after editor is ready', async () => {
+    const onError = jest.fn()
+    const mockLoadConfig = jest.fn().mockRejectedValue(new Error('loadConfig error'))
+    const mockStart = jest.fn().mockResolvedValue(undefined);
+    (BeefreeSDK as jest.Mock).mockImplementation(() => ({
+      start: mockStart,
+      join: jest.fn(),
+      loadConfig: mockLoadConfig,
+    }))
+
+    render(<Builder id={config.container} token={mockToken} template={mockTemplate} onError={onError} />)
+
+    await waitFor(() => expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 1000, message: expect.stringContaining('loadConfig error') }),
+    ))
+  })
+
+  it('calls onError when uid is missing from config', () => {
+    const onError = jest.fn()
+    // 'no-uid-container' has no registry entry, so config.uid will be undefined
+    render(<Builder id="no-uid-container" token={mockToken} template={mockTemplate} onError={onError} />)
+
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining('uid') }),
+    )
   })
 
   it('clears container content on unmount', async () => {

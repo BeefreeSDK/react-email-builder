@@ -8,7 +8,7 @@
 
 A React wrapper component for the [Beefree SDK](https://www.beefree.io/), making it easy to integrate the Beefree email/page builder into your React applications.
 
-![Beefree SDK React Builder](docs/screenshot.png)
+![Beefree SDK React Builder](docs/react-email-builder-example.png)
 
 ## Table of Contents
 
@@ -46,12 +46,12 @@ This React package provides a `Builder` component and a `useBuilder` hook that h
 
 ## Compatibility
 
-| Requirement | Version |
-|-------------|---------|
-| React | 17, 18, or 19 |
-| Node.js | >= 18.0.0 |
-| TypeScript | >= 4.7 (optional, but recommended) |
-| Browsers | Chrome, Firefox, Safari, Edge (latest 2 versions) |
+| Requirement | Version                                           |
+| ----------- | ------------------------------------------------- |
+| React       | 17, 18, or 19                                     |
+| Node.js     | >= 18.0.0                                         |
+| TypeScript  | >= 4.7 (optional, but recommended)                |
+| Browsers    | Chrome, Firefox, Safari, Edge (latest 2 versions) |
 
 ## Installation
 
@@ -73,42 +73,42 @@ Your backend server should exchange credentials for a short-lived token (see [Se
 
 ```javascript
 // Example: Node.js/Express backend endpoint
-app.post('/api/beefree/token', async (req, res) => {
-  const response = await fetch('https://auth.getbee.io/loginV2', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+app.post("/api/beefree/token", async (req, res) => {
+  const response = await fetch("https://auth.getbee.io/loginV2", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       client_id: process.env.BEEFREE_CLIENT_ID,
       client_secret: process.env.BEEFREE_CLIENT_SECRET,
-      grant_type: 'password',
+      grant_type: "password",
     }),
-  })
-  res.json(await response.json())
-})
+  });
+  res.json(await response.json());
+});
 ```
 
 ### 3. Integrate the builder in your React app
 
 ```tsx
-import { useState, useEffect } from 'react'
-import { Builder, IToken, useBuilder } from '@beefree.io/react-email-builder'
+import { useState, useEffect } from "react";
+import { Builder, IToken, useBuilder } from "@beefree.io/react-email-builder";
 
 function EmailEditor() {
-  const [token, setToken] = useState<IToken | null>(null)
+  const [token, setToken] = useState<IToken | null>(null);
 
   const { save, preview } = useBuilder({
-    uid: 'user-123',
-    container: 'bee-container',
-    language: 'en-US',
-  })
+    uid: "user-123",
+    container: "bee-container",
+    language: "en-US",
+  });
 
   useEffect(() => {
-    fetch('/api/beefree/token', { method: 'POST' })
+    fetch("/api/beefree/token", { method: "POST" })
       .then((res) => res.json())
-      .then(setToken)
-  }, [])
+      .then(setToken);
+  }, []);
 
-  if (!token) return <div>Loading builder...</div>
+  if (!token) return <div>Loading builder...</div>;
 
   return (
     <div>
@@ -120,11 +120,11 @@ function EmailEditor() {
         id="bee-container"
         token={token}
         template={{ comments: {}, page: {} }}
-        onSave={(json, html) => console.log('Saved:', { json, html })}
-        onError={(err) => console.error('Builder error:', err)}
+        onSave={(json, html) => console.log("Saved:", { json, html })}
+        onError={(err) => console.error("Builder error:", err)}
       />
     </div>
-  )
+  );
 }
 ```
 
@@ -134,47 +134,47 @@ function EmailEditor() {
 
 #### Props
 
-| Prop               | Type                                   | Required | Description                                                  |
-|--------------------|----------------------------------------|----------|--------------------------------------------------------------|
-| `id`               | `string`                               | Yes | The container ID (must match the `container` from `useBuilder`) |
-| `token`            | `IToken`                               | Yes | Authentication token from Beefree API                        |
-| `template`         | `IEntityContentJson`                   | Yes | Initial template/content to load                             |
-| `shared`           | `boolean`                              | No | Enable collaborative editing session                         |
-| `sessionId`        | `string`                               | No | Session ID to join (for collaborative editing)               |
-| `width`            | `React.CSSProperties['width']`         | No | Container width (default: '100%')                            |
-| `height`           | `React.CSSProperties['height']`        | No | Container height (default: '800px')                          |
-| `loaderUrl`        | `string`                               | No | Custom loader URL for the Beefree SDK                        |
-| `onLoad`           | `() => void`                           | No | Callback when builder is fully loaded and ready              |
-| `onSave`           | `(json, html) => void`                 | No | Callback when content is saved                               |
-| `onChange`         | `(json, metadata) => void`             | No | Callback when content changes                                |
-| `onError`          | `(error: BeePluginError) => void`      | No | Error callback handler                                       |
-| `onWarning`        | `(warning: BeePluginError) => void`    | No | Warning callback handler                                     |
-| `onSaveRow`        | `(row: string) => void`                | No | Callback when a row is saved                                 |
-| `onRemoteChange`   | `(data) => void`                       | No | Callback for collaborative editing remote changes            |
-| `onSessionStarted` | `(data: { sessionId: string }) => void` | No | Callback when collaborative session starts                   |
-| `onTemplateLanguageChange` | `(language) => void`           | No | Callback when template language changes                      |
+| Prop                       | Type                                    | Required | Description                                                     |
+| -------------------------- | --------------------------------------- | -------- | --------------------------------------------------------------- |
+| `id`                       | `string`                                | Yes      | The container ID (must match the `container` from `useBuilder`) |
+| `token`                    | `IToken`                                | Yes      | Authentication token from Beefree API                           |
+| `template`                 | `IEntityContentJson`                    | Yes      | Initial template/content to load                                |
+| `shared`                   | `boolean`                               | No       | Enable collaborative editing session                            |
+| `sessionId`                | `string`                                | No       | Session ID to join (for collaborative editing)                  |
+| `width`                    | `React.CSSProperties['width']`          | No       | Container width (default: '100%')                               |
+| `height`                   | `React.CSSProperties['height']`         | No       | Container height (default: '800px')                             |
+| `loaderUrl`                | `string`                                | No       | Custom loader URL for the Beefree SDK                           |
+| `onLoad`                   | `() => void`                            | No       | Callback when builder is fully loaded and ready                 |
+| `onSave`                   | `(json, html) => void`                  | No       | Callback when content is saved                                  |
+| `onChange`                 | `(json, metadata) => void`              | No       | Callback when content changes                                   |
+| `onError`                  | `(error: BeePluginError) => void`       | No       | Error callback handler                                          |
+| `onWarning`                | `(warning: BeePluginError) => void`     | No       | Warning callback handler                                        |
+| `onSaveRow`                | `(row: string) => void`                 | No       | Callback when a row is saved                                    |
+| `onRemoteChange`           | `(data) => void`                        | No       | Callback for collaborative editing remote changes               |
+| `onSessionStarted`         | `(data: { sessionId: string }) => void` | No       | Callback when collaborative session starts                      |
+| `onTemplateLanguageChange` | `(language) => void`                    | No       | Callback when template language changes                         |
 
 #### Basic Configuration
 
 ```tsx
 useBuilder({
-  uid: 'user-123',
-  container: 'bee-container',
+  uid: "user-123",
+  container: "bee-container",
 
   // Customization
-  language: 'en-US',
+  language: "en-US",
   specialLinks: [
-    { type: 'unsubscribe', label: 'Unsubscribe', link: '[unsubscribe]' }
+    { type: "unsubscribe", label: "Unsubscribe", link: "[unsubscribe]" },
   ],
 
   // Content management
   contentDialog: {
     saveRow: {
-      label: 'Save Row',
-      handler: (resolve) => resolve({ name: 'My Row' })
-    }
-  }
-})
+      label: "Save Row",
+      handler: (resolve) => resolve({ name: "My Row" }),
+    },
+  },
+});
 
 return (
   <Builder
@@ -184,10 +184,10 @@ return (
       page: {},
     }}
     onSave={(jsonFile, htmlFile) => {
-      console.log('Saved:', {jsonFile, htmlFile})
+      console.log("Saved:", { jsonFile, htmlFile });
     }}
   />
-)
+);
 ```
 
 ## Hooks
@@ -197,37 +197,38 @@ return (
 The `useBuilder` hook provides programmatic control over the builder instance and allows you to dynamically update configuration properties (non-callback properties like `uid`, `language`, etc.).
 
 ```tsx
-import { Builder, useBuilder } from '@beefree.io/react-email-builder'
+import { Builder, useBuilder } from "@beefree.io/react-email-builder";
 
 function MyComponent() {
   // Initialize useBuilder with config including container ID
   const initialConfig = {
-    container: 'bee-editor', // This is the ID that links hook and component
-    uid: 'user-123',
-    language: 'en-US',
+    container: "bee-editor", // This is the ID that links hook and component
+    uid: "user-123",
+    language: "en-US",
     // ...more configs
-  }
+  };
 
-  const { updateConfig, load, save, saveAsTemplate } = useBuilder(initialConfig)
+  const { updateConfig, load, save, saveAsTemplate } =
+    useBuilder(initialConfig);
 
   // Update configuration dynamically
   const changeLanguage = (lang: string) => {
-    updateConfig({ language: lang })
-  }
+    updateConfig({ language: lang });
+  };
 
   const changeUser = (userId: string) => {
-    updateConfig({ uid: userId })
-  }
+    updateConfig({ uid: userId });
+  };
 
   const handleSave = async () => {
-    const result = await save()
-    console.log('Saved:', result)
-  }
+    const result = await save();
+    console.log("Saved:", result);
+  };
 
   return (
     <div>
-      <button onClick={() => changeLanguage('it-IT')}>Switch to Italian</button>
-      <button onClick={() => changeUser('user-456')}>Change User</button>
+      <button onClick={() => changeLanguage("it-IT")}>Switch to Italian</button>
+      <button onClick={() => changeUser("user-456")}>Change User</button>
       <button onClick={handleSave}>Save</button>
 
       <Builder
@@ -236,17 +237,17 @@ function MyComponent() {
         template={template}
         // Define callbacks directly in the component
         onSave={(json, html) => {
-          console.log('Content saved:', json, html)
+          console.log("Content saved:", json, html);
         }}
         onChange={(json, metadata) => {
-          console.log('Content changed')
+          console.log("Content changed");
         }}
         onLoad={() => {
-          console.log('Builder is ready!')
+          console.log("Builder is ready!");
         }}
       />
     </div>
-  )
+  );
 }
 ```
 
@@ -260,13 +261,13 @@ function MyComponent() {
 
 ```tsx
 // DON'T DO THIS!
-const token = await fetch('https://auth.beefree.io/token', {
-  method: 'POST',
+const token = await fetch("https://auth.beefree.io/token", {
+  method: "POST",
   body: JSON.stringify({
-    client_id: 'your-client-id',      // ❌ Exposed!
-    client_secret: 'your-secret',      // ❌ Exposed!
-  })
-})
+    client_id: "your-client-id", // ❌ Exposed!
+    client_secret: "your-secret", // ❌ Exposed!
+  }),
+});
 ```
 
 **✅ Good (Secure):**
@@ -275,20 +276,20 @@ const token = await fetch('https://auth.beefree.io/token', {
 
 ```javascript
 // backend/routes/auth.js
-app.post('/api/beefree/token', async (req, res) => {
-  const response = await fetch('https://auth.beefree.io/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+app.post("/api/beefree/token", async (req, res) => {
+  const response = await fetch("https://auth.beefree.io/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       client_id: process.env.BEEFREE_CLIENT_ID,
       client_secret: process.env.BEEFREE_CLIENT_SECRET,
-      uid: req.user.id // Your user's ID
-    })
-  })
+      uid: req.user.id, // Your user's ID
+    }),
+  });
 
-  const token = await response.json()
-  res.json(token)
-})
+  const token = await response.json();
+  res.json(token);
+});
 ```
 
 2. **Frontend:**
@@ -296,11 +297,11 @@ app.post('/api/beefree/token', async (req, res) => {
 ```tsx
 // frontend/App.tsx
 const fetchToken = async () => {
-  const response = await fetch('/api/beefree/token', {
-    credentials: 'include' // Include session cookies
-  })
-  return response.json()
-}
+  const response = await fetch("/api/beefree/token", {
+    credentials: "include", // Include session cookies
+  });
+  return response.json();
+};
 ```
 
 ### 📝 Configuration Management
@@ -308,12 +309,15 @@ const fetchToken = async () => {
 Keep your configuration in `useMemo` to prevent unnecessary re-renders:
 
 ```tsx
-const config = useMemo(() => ({
-  uid: user.id,
-  container: 'bee-container',
-  onSave: handleSave,
-  // ... other config
-}), [user.id, handleSave])
+const config = useMemo(
+  () => ({
+    uid: user.id,
+    container: "bee-container",
+    onSave: handleSave,
+    // ... other config
+  }),
+  [user.id, handleSave],
+);
 ```
 
 ### 🎯 Unique Container IDs
@@ -321,8 +325,8 @@ const config = useMemo(() => ({
 When using multiple builders on the same page, ensure unique `container` IDs:
 
 ```tsx
-const config1 = useBuilder({ container: 'builder-1', ...otherProperties })
-const config2 = useBuilder({ container: 'builder-2', ...otherProperties})
+const config1 = useBuilder({ container: "builder-1", ...otherProperties });
+const config2 = useBuilder({ container: "builder-2", ...otherProperties });
 ```
 
 ### 🔄 Collaborative Editing
@@ -331,7 +335,7 @@ For collaborative sessions, share the `sessionId` between users:
 
 ```tsx
 function CollaborativeEditor() {
-  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   return (
     <>
@@ -344,14 +348,10 @@ function CollaborativeEditor() {
 
       {/* Guest joins with sessionId */}
       {sessionId && (
-        <Builder
-          shared={true}
-          sessionId={sessionId}
-          {...otherProps}
-        />
+        <Builder shared={true} sessionId={sessionId} {...otherProps} />
       )}
     </>
-  )
+  );
 }
 ```
 
@@ -363,21 +363,21 @@ function CollaborativeEditor() {
 const config = {
   contentDialog: {
     saveRow: {
-      label: 'Save to Library',
+      label: "Save to Library",
       handler: async (resolve) => {
         // Show your custom UI, then resolve
-        const rowName = await showCustomDialog()
-        resolve({ name: rowName })
-      }
+        const rowName = await showCustomDialog();
+        resolve({ name: rowName });
+      },
     },
     addOn: {
       handler: async (resolve) => {
-        const content = await fetchCustomContent()
-        resolve(content)
-      }
-    }
-  }
-}
+        const content = await fetchCustomContent();
+        resolve(content);
+      },
+    },
+  },
+};
 ```
 
 ### External Content Sources
@@ -387,25 +387,25 @@ const config = {
   rowsConfiguration: {
     externalContentURLs: [
       {
-        name: 'My Saved Rows',
-        handle: 'saved-rows',
-        isLocal: true
-      }
-    ]
+        name: "My Saved Rows",
+        handle: "saved-rows",
+        isLocal: true,
+      },
+    ],
   },
   hooks: {
     getRows: {
       handler: async (resolve, reject, args) => {
-        if (args.handle === 'saved-rows') {
-          const rows = await fetchSavedRows()
-          resolve(rows)
+        if (args.handle === "saved-rows") {
+          const rows = await fetchSavedRows();
+          resolve(rows);
         } else {
-          reject('Handle not found')
+          reject("Handle not found");
         }
-      }
-    }
-  }
-}
+      },
+    },
+  },
+};
 ```
 
 ### Mentions/Merge Tags
@@ -416,14 +416,14 @@ const config = {
     getMentions: {
       handler: async (resolve) => {
         const mentions = [
-          { username: 'FirstName', value: '{{firstName}}', uid: 'fn' },
-          { username: 'LastName', value: '{{lastName}}', uid: 'ln' }
-        ]
-        resolve(mentions)
-      }
-    }
-  }
-}
+          { username: "FirstName", value: "{{firstName}}", uid: "fn" },
+          { username: "LastName", value: "{{lastName}}", uid: "ln" },
+        ];
+        resolve(mentions);
+      },
+    },
+  },
+};
 ```
 
 ## Examples
@@ -432,11 +432,13 @@ The [`/example`](example/) directory contains a fully working application that d
 
 - Token authentication flow
 - Collaborative editing with template preservation
-- Save, preview, and export functionality
-- Multi-language UI switching
-- Multiple builder types (Email, Page, Popup, File Manager)
-
-See the [example README](example/README.md) for setup instructions.
+- Save/preview actions and downloads from builder callbacks (`Save` -> `.html`, `Save as Template` -> `.json`)
+- Multi-language UI switching (header + example control labels outside the builder)
+- Sample/blank template toggle with local blank template fallback
+- Different builder modes (email, page, popup, file manager) via config
+- Per-instance control bars in co-editing mode
+- Keyboard-accessible split divider with ARIA attributes
+- Reusable toast notification system
 
 **Quick start:**
 
@@ -474,17 +476,31 @@ Pass your template JSON to the `template` prop of the `Builder` component. You c
 
 ## Development
 
+### Prerequisites
+
+- Node.js >= 18 (see `.nvmrc`)
+- Yarn
+
 ### Setup
 
 ```bash
 # Install dependencies
 yarn install
 
-# Start development server
+# Start the example dev server
 yarn start
 
 # Run tests
 yarn test
+
+# Run tests once (CI)
+yarn test:ci
+
+# Lint
+yarn lint
+
+# Build library
+yarn build
 ```
 
 ### Building
@@ -493,10 +509,54 @@ yarn test
 yarn build
 ```
 
+The library build uses **Rollup** and generates CJS, ESM, and DTS outputs.
+
 Outputs:
+
 - `dist/index.js` - CommonJS bundle
 - `dist/index.es.js` - ES module bundle
 - `dist/index.d.ts` - TypeScript definitions
+
+### Project Structure
+
+```
+src/                      # Library source
+  Builder.tsx             # React component (Builder)
+  hooks/                  # React hooks (useBuilder, useRegistry)
+  types.ts                # TypeScript types
+  index.ts                # Public API exports
+  __tests__/              # Test files
+
+example/                  # Example application (Rollup dev server)
+  App.tsx                 # Root component with toast system
+  BeefreeExample.tsx      # Demo component with co-editing
+  beefree-token.ts        # Token service (demo only)
+  environment.ts          # Environment config
+  i18n/                   # Localization files (22 languages)
+  templates/              # Local template files
+```
+
+### Environment Variables
+
+Copy `.env.sample` to `.env` and fill in your Beefree SDK credentials:
+
+```
+EMAIL_BUILDER_CLIENT_ID=your-client-id
+EMAIL_BUILDER_CLIENT_SECRET=your-client-secret
+# EMAIL_BUILDER_USER_ID=your-user-id
+
+PAGE_BUILDER_CLIENT_ID=your-client-id
+PAGE_BUILDER_CLIENT_SECRET=your-client-secret
+# PAGE_BUILDER_USER_ID=your-user-id
+
+POPUP_BUILDER_CLIENT_ID=your-client-id
+POPUP_BUILDER_CLIENT_SECRET=your-client-secret
+# POPUP_BUILDER_USER_ID=your-user-id
+
+FILE_MANAGER_CLIENT_ID=your-client-id
+FILE_MANAGER_CLIENT_SECRET=your-client-secret
+# FILE_MANAGER_USER_ID=your-user-id
+```
 
 ## Troubleshooting
 
@@ -510,9 +570,10 @@ Outputs:
 
 Beefree SDK wrappers are available for the following frameworks:
 
-| Framework | Package | Repository |
-|-----------|---------|------------|
-| Angular | `@beefree.io/angular-email-builder` | [BeefreeSDK/angular-email-builder](https://github.com/BeefreeSDK/angular-email-builder) |
+| Framework | Package                             | Repository                                                                              |
+| --------- | ----------------------------------- | --------------------------------------------------------------------------------------- |
+| Angular   | `@beefree.io/angular-email-builder` | [BeefreeSDK/angular-email-builder](https://github.com/BeefreeSDK/angular-email-builder) |
+| Vue       | `@beefree.io/vue-email-builder`     | [BeefreeSDK/vue-email-builder](https://github.com/BeefreeSDK/vue-email-builder)         |
 
 ## License
 
@@ -521,6 +582,7 @@ Beefree SDK wrappers are available for the following frameworks:
 ## Support
 
 For issues related to:
+
 - **This React wrapper**: Open an issue on this repository
 - **Beefree SDK**: Visit [Beefree Developer Documentation](https://docs.beefree.io/)
 - **Account/billing**: Contact [Beefree Support](https://www.beefree.io/support/)

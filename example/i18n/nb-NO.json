@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Språk:",
+    "coEditing": "Samskriving",
+    "builderTypes": {
+      "emailBuilder": "E-postbygger",
+      "pageBuilder": "Sidebygger",
+      "popupBuilder": "Popup-bygger",
+      "fileManager": "Filbehandling"
+    },
+    "welcomeTitle": "Gratulerer!",
+    "welcomeMessage": "React-appen din med Beefree SDK kjører nå."
+  },
+  "example": {
+    "loading": "Laster {type}...",
+    "retry": "Prøv igjen",
+    "preview": "Forhåndsvisning",
+    "save": "Lagre",
+    "saveAsTemplate": "Lagre som mal",
+    "loadSampleTemplate": "Last inn eksempelmal",
+    "loadBlankTemplate": "Last inn tom mal",
+    "joiningSession": "Blir med i økten...",
+    "resizePanels": "Endre panelstørrelse",
+    "checkConsole": "Se konsollen for detaljer.",
+    "templateSent": "Mal sendt",
+    "coEditingPlanError": "Samskriving er bare tilgjengelig på Superpowers- eller Enterprise-planer.",
+    "error": "Feil",
+    "loadFailed": "Kunne ikke laste {type}. Prøv igjen.",
+    "loadFailedTitle": "Lasting mislyktes"
+  },
   "credentials": {
     "title": "Ugyldige eller manglende legitimasjonsopplysninger",
     "description": "Autentisering mislyktes for {type}. Vennligst sjekk {clientId} og {clientSecret} i {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Kopier Client ID og Client Secret til .env-filen din.",
     "step3": "Last inn denne siden på nytt eller klikk Prøv igjen.",
     "docs": "Se",
-    "retry": "Prøv igjen"
+    "retry": "Prøv igjen",
+    "gettingStartedGuide": "kom i gang-guiden"
   }
 }

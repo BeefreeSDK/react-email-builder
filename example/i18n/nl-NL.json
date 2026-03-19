@@ -1,4 +1,34 @@
 {
+  "app": {
+    "builderLabel": "Builder:",
+    "languageLabel": "Taal:",
+    "coEditing": "Samen bewerken",
+    "builderTypes": {
+      "emailBuilder": "E-mailbuilder",
+      "pageBuilder": "Paginabuilder",
+      "popupBuilder": "Popupbuilder",
+      "fileManager": "Bestandsbeheer"
+    },
+    "welcomeTitle": "Gefeliciteerd!",
+    "welcomeMessage": "Uw React-app met Beefree SDK is actief."
+  },
+  "example": {
+    "loading": "{type} laden...",
+    "retry": "Opnieuw proberen",
+    "preview": "Voorbeeld",
+    "save": "Opslaan",
+    "saveAsTemplate": "Opslaan als sjabloon",
+    "loadSampleTemplate": "Voorbeeldsjabloon laden",
+    "loadBlankTemplate": "Lege sjabloon laden",
+    "joiningSession": "Deelnemen aan sessie...",
+    "resizePanels": "Panelen vergroten of verkleinen",
+    "checkConsole": "Bekijk de console voor details.",
+    "templateSent": "Sjabloon verzonden",
+    "coEditingPlanError": "Samen bewerken is alleen beschikbaar met Superpowers- of Enterprise-abonnementen.",
+    "error": "Fout",
+    "loadFailed": "Kan {type} niet laden. Probeer het opnieuw.",
+    "loadFailedTitle": "Laden mislukt"
+  },
   "credentials": {
     "title": "Ongeldige of ontbrekende inloggegevens",
     "description": "Authenticatie mislukt voor {type}. Controleer de {clientId} en {clientSecret} in {envFile}.",
@@ -6,6 +36,7 @@
     "step2": "Kopieer de Client ID en Client Secret naar uw .env-bestand.",
     "step3": "Laad deze pagina opnieuw of klik op Opnieuw proberen.",
     "docs": "Zie de",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "gettingStartedGuide": "handleiding om te beginnen"
   }
 }
