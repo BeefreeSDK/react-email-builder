@@ -1,6 +1,6 @@
 {
   "name": "@beefree.io/react-email-builder",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "React components and hooks for the Beefree SDK — drag-and-drop email, page, and popup builder with collaborative editing",
   "repository": {
     "type": "git",

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.4](https://github.com/BeefreeSDK/npm-react/compare/v1.0.3...v1.0.4) (2026-06-04)
+
+
+### Bug Fixes
+
+* **BEE-11886:** strict mode race condition ([2b7b8d7](https://github.com/BeefreeSDK/npm-react/commit/2b7b8d7fe9d80412d4a392159662932409bdf6ae))
+
 ### [1.0.3](https://github.com/BeefreeSDK/npm-react/compare/v1.0.2...v1.0.3) (2026-02-26)
 
 ### [1.0.2](https://github.com/BeefreeSDK/npm-react/compare/v1.0.1...v1.0.2) (2026-02-25)
