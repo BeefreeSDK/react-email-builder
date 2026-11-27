@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40beefree.io%2Freact-email-builder.svg)](https://www.npmjs.com/package/@beefree.io/react-email-builder)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CI](https://github.com/BeefreeSDK/npm-react/workflows/CI/badge.svg)](https://github.com/BeefreeSDK/npm-react/actions)
+[![CI](https://github.com/BeefreeSDK/react-email-builder/workflows/CI/badge.svg)](https://github.com/BeefreeSDK/react-email-builder/actions)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.1.1-blue)](https://react.dev/)
 

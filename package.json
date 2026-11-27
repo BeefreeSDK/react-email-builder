@@ -4,12 +4,12 @@
   "description": "React components and hooks for the Beefree SDK — drag-and-drop email, page, and popup builder with collaborative editing",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BeefreeSDK/npm-react.git"
+    "url": "git+https://github.com/BeefreeSDK/react-email-builder.git"
   },
   "bugs": {
-    "url": "https://github.com/BeefreeSDK/npm-react/issues"
+    "url": "https://github.com/BeefreeSDK/react-email-builder/issues"
   },
-  "homepage": "https://github.com/BeefreeSDK/npm-react#readme",
+  "homepage": "https://github.com/BeefreeSDK/react-email-builder#readme",
   "author": "Beefree <dev@beefree.io> (https://www.beefree.io)",
   "license": "Apache-2.0",
   "main": "dist/index.js",
