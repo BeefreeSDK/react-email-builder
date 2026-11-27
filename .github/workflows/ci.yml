@@ -101,18 +101,24 @@ jobs:
       name: release
     if: contains(github.ref, 'tag')
     needs: build
+    permissions:
+      contents: read
+      id-token: write # required for npm trusted publishing (OIDC)
     steps:
       - uses: actions/checkout@v4.2.2
 
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Use Node Version 22.x
-        uses: actions/setup-node@v1
+      - name: Use Node Version 24.x
+        uses: actions/setup-node@v4
         with:
           registry-url: "https://registry.npmjs.org"
-          node-version: "22.x"
+          node-version: "24.x"
           scope: "@beefree.io"
+
+      - name: Ensure npm >= 11.5.1 (required for trusted publishing)
+        run: npm install -g npm@latest
 
       - uses: actions/cache@v4.2.2
         id: yarn-cache
@@ -130,6 +136,10 @@ jobs:
         run: yarn build
 
       - name: Publish package
-        run: npm publish --production
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Prerelease versions (any tag with a "-", e.g. v1.2.0-beta.0) go to "unstable", never "latest"
+          if [[ "${{ github.ref_name }}" == *-* ]]; then
+            npm publish --tag unstable
+          else
+            npm publish
+          fi
