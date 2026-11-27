@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.5-beta.1](https://github.com/BeefreeSDK/react-email-builder/compare/v1.0.5-beta.0...v1.0.5-beta.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* **BEE-12976:** update repository URLs after rename to react-email-builder ([8f75650](https://github.com/BeefreeSDK/react-email-builder/commit/8f75650ccff59cc58b18f24651b2f46c5892ac38))
+
+### Security
+
+* **BEE-12976:** harden npm package publishing: releases are now published from GitHub Actions via npm trusted publishing (OIDC) with signed provenance attestations, replacing the long-lived npm token ([4519a54](https://github.com/BeefreeSDK/react-email-builder/commit/4519a54c9e6aafecb99130716a31f7cb37850d91))
+
+### [1.0.5-beta.0](https://github.com/BeefreeSDK/npm-react/compare/v1.0.4...v1.0.5-beta.0) (2026-11-27)
+
 ### [1.0.4](https://github.com/BeefreeSDK/npm-react/compare/v1.0.3...v1.0.4) (2026-06-04)
 
 
